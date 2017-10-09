@@ -31,20 +31,20 @@ build:
 run: $(DEPLOYDIR)/editcp.sh
 	$(DEPLOYDIR)/editcp.sh
 
-tar: $(DEPLOYDIR)/editcp.$(VERSION).tar.xz
+tar: $(DEPLOYDIR)/editcp-$(VERSION).tar.xz
 
-editcp.$(VERSION).tar.xz: $(DEPLOYDIR)/editcp.sh
-	rm -rf editcp.$(VERSION)
-	mkdir -p editcp.$(VERSION)
-	cp -al deploy/linux/* editcp.$(VERSION)
-	tar cJf editcp.$(VERSION).tar.xz editcp.$(VERSION)
-	rm -rf editcp.$(VERSION)
+editcp-$(VERSION).tar.xz: $(DEPLOYDIR)/editcp.sh
+	rm -rf editcp-$(VERSION)
+	mkdir -p editcp-$(VERSION)
+	cp -al deploy/linux/* editcp-$(VERSION)
+	tar cJf editcp-$(VERSION).tar.xz editcp-$(VERSION)
+	rm -rf editcp-$(VERSION)
 
-upload: editcp.$(VERSION).tar.xz
-	rsync editcp.$(VERSION).tar.xz farnsworth.org:
+upload: editcp-$(VERSION).tar.xz
+	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 
 clean:
-	rm -rf editcp editcp.$(VERSION)
+	rm -rf editcp editcp-$(VERSION)
 
 clobber: clean
 	rm -f $(DEPLOYDIR)/editcp $(DEPLOYDIR)/editcp.sh
