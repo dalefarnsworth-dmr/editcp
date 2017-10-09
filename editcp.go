@@ -35,7 +35,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-const version = "0.1"
+const version = "0.2"
 const autosaveSuffix = ".autosave"
 const maxRecentFiles = 10
 
