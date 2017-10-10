@@ -1,50 +1,56 @@
 SHELL = /bin/sh
 
-.PHONY: default clean clobber build install run tar upload
+.PHONY: default clean clobber build install run tar upload windows
 
 EDITCP_SOURCES = *.go
 UI_SOURCES = ../ui/*.go
 CODEPLUG_SOURCES = ../codeplug/*.go
 SOURCES = $(EDITCP_SOURCES) $(UI_SOURCES) $(CODEPLUG_SOURCES)
-DEPLOYDIR = deploy/linux
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
-default: $(DEPLOYDIR)/editcp.sh
+default: deploy/linux/editcp.sh
 
-$(DEPLOYDIR)/editcp.sh: $(DEPLOYDIR)/editcp editcp.sh $(DEPLOYDIR)/install
-	cp editcp.sh $(DEPLOYDIR)/editcp.sh
-	@cd $(DEPLOYDIR) && ./install .
+deploy/linux/editcp.sh: deploy/linux/editcp editcp.sh deploy/linux/install
+	cp editcp.sh deploy/linux/editcp.sh
+	@cd deploy/linux && ./install .
 
-$(DEPLOYDIR)/install: install.sh
-	cp install.sh $(DEPLOYDIR)/install
+deploy/linux/install: install.sh
+	cp install.sh deploy/linux/install
 
-$(DEPLOYDIR)/editcp: $(SOURCES)
+deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
 
-install: $(DEPLOYDIR)/editcp.sh
-	@mkdir -p $(DEPLOYDIR)/bin
-	@cd $(DEPLOYDIR) && ./install 
+windows: deploy/windows/editcp.exe
+
+deploy/windows/editcp.exe: $(SOURCES)
+	qtdeploy -docker build windows_64_static
+
+install: deploy/linux/editcp.sh
+	@mkdir -p deploy/linux/bin
+	@cd deploy/linux && ./install 
 
 build:
 	go build
 
-run: $(DEPLOYDIR)/editcp.sh
-	$(DEPLOYDIR)/editcp.sh
+run: deploy/linux/editcp.sh
+	deploy/linux/editcp.sh
 
-tar: $(DEPLOYDIR)/editcp-$(VERSION).tar.xz
+tar: deploy/linux/editcp-$(VERSION).tar.xz
 
-editcp-$(VERSION).tar.xz: $(DEPLOYDIR)/editcp.sh
+editcp-$(VERSION).tar.xz: deploy/linux/editcp.sh
 	rm -rf editcp-$(VERSION)
 	mkdir -p editcp-$(VERSION)
 	cp -al deploy/linux/* editcp-$(VERSION)
 	tar cJf editcp-$(VERSION).tar.xz editcp-$(VERSION)
 	rm -rf editcp-$(VERSION)
 
-upload: editcp-$(VERSION).tar.xz
+upload: editcp-$(VERSION).tar.xz windows
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
+	rsync deploy/windows/editcp.exe farnsworth.org:editcp-$(VERSION).exe
 
 clean:
 	rm -rf editcp editcp-$(VERSION)
 
 clobber: clean
-	rm -f $(DEPLOYDIR)/editcp $(DEPLOYDIR)/editcp.sh
+	rm -f deploy/linux/editcp deploy/linux/editcp.sh \
+		deploy/windows/editcp.exe
