@@ -48,6 +48,9 @@ upload: editcp-$(VERSION).tar.xz windows
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync deploy/windows/editcp.exe farnsworth.org:editcp-$(VERSION).exe
 
+tag:
+	git tag -s -m "editcp v$(VERSION)" v$(VERSION)
+
 clean:
 	rm -rf editcp editcp-$(VERSION)
 
