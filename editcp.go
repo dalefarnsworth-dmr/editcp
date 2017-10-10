@@ -35,7 +35,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-const version = "0.2"
+const version = "0.3"
 const autosaveSuffix = ".autosave"
 const maxRecentFiles = 10
 
@@ -613,20 +613,23 @@ func (edt *editor) importText() {
 }
 
 func about() {
-	msg := `editcp is free software licensed under version 3 of the GPL.
+	msg := fmt.Sprintf("editcp Version %s\n", version)
+	msg += `
+editcp is free software licensed
+under version 3 of the GPL.
 
-	Copyright 2017 Dale Farnsworth
+Copyright 2017 Dale Farnsworth
 
-	Dale Farnsworth
-	1007 W Mendoza Ave
-	Mesa, AZ  85210
-	USA
+Dale Farnsworth
+1007 W Mendoza Ave
+Mesa, AZ  85210
+USA
 
-	dale@farnsworth.org
+dale@farnsworth.org
 
-	The source code for editcp may be found at
-	https://github.com/dalefarnsworth/codeplug
-	`
+The source code for editcp may be found at
+https://github.com/dalefarnsworth/codeplug
+`
 	ui.InfoPopup("About editcp", msg)
 }
 
