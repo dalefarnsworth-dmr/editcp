@@ -7,7 +7,7 @@ UI_SOURCES = ../ui/*.go
 CODEPLUG_SOURCES = ../codeplug/*.go
 SOURCES = $(EDITCP_SOURCES) $(UI_SOURCES) $(CODEPLUG_SOURCES)
 DEPLOYDIR = deploy/linux
-VERSION = $(shell sed -n '/^const version =/{s/^[^"]*"//;s/".*//p;q}' <editcp.go)
+VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: $(DEPLOYDIR)/editcp.sh
 
