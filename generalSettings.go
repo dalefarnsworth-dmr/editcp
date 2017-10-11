@@ -74,7 +74,7 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddFieldRows(r,
 		codeplug.FtPwAndLockEnable,
 	)
-	form.AddEnabledFieldRows(r, codeplug.FtPwAndLockEnable, "On",
+	form.AddFieldRows(r,
 		codeplug.FtPowerOnPassword,
 	)
 

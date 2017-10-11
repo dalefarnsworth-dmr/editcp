@@ -74,7 +74,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = groupBox.AddVbox()
 	form = column.AddForm()
 
-	form.AddEnabledFieldRows(r, codeplug.FtChannelMode, "Digital",
+	form.AddFieldRows(r,
 		codeplug.FtPrivateCallConfirmed,
 		codeplug.FtEmergencyAlarmAck,
 		codeplug.FtDataCallConfirmed,
@@ -83,9 +83,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGroupList,
 		codeplug.FtColorCode,
 		codeplug.FtRepeaterSlot,
-		codeplug.FtPrivacy)
-
-	form.AddDisabledFieldRows(r, codeplug.FtPrivacy, "None",
+		codeplug.FtPrivacy,
 		codeplug.FtPrivacyNumber)
 
 	row = mainBox.AddHbox()
@@ -94,30 +92,24 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddEnabledFieldRows(r, codeplug.FtChannelMode, "Analog",
-		codeplug.FtCtcssDecode)
-
-	form.AddDisabledFieldRows(r, codeplug.FtCtcssEncode, "None",
-		codeplug.FtQtReverse)
-
-	form.AddEnabledFieldRows(r, codeplug.FtChannelMode, "Analog",
+	form.AddFieldRows(r,
+		codeplug.FtCtcssDecode,
+		codeplug.FtQtReverse,
 		codeplug.FtRxSignallingSystem,
 		codeplug.FtDisplayPTTID)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddEnabledFieldRows(r, codeplug.FtChannelMode, "Analog",
+	form.AddFieldRows(r,
 		codeplug.FtCtcssEncode,
-		codeplug.FtTxSignallingSystem)
-
-	form.AddDisabledFieldRows(r, codeplug.FtCtcssEncode, "None",
+		codeplug.FtTxSignallingSystem,
 		codeplug.FtReverseBurst)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddDisabledFieldRows(r, codeplug.FtRxSignallingSystem, "Off",
+	form.AddFieldRows(r,
 		codeplug.FtDecode1,
 		codeplug.FtDecode2,
 		codeplug.FtDecode3,
@@ -126,7 +118,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddDisabledFieldRows(r, codeplug.FtRxSignallingSystem, "Off",
+	form.AddFieldRows(r,
 		codeplug.FtDecode5,
 		codeplug.FtDecode6,
 		codeplug.FtDecode7,

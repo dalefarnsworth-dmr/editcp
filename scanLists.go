@@ -47,10 +47,8 @@ func slRecord(edt *editor, recordBox *ui.HBox) {
 	column.SetContentsMargins(0, 0, 0, 0)
 	form := column.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtPriorityChannel1)
-	form.AddDisabledFieldRows(r, codeplug.FtPriorityChannel1, "None",
-		codeplug.FtPriorityChannel2)
-	form.AddFieldRows(r,
+		codeplug.FtPriorityChannel1,
+		codeplug.FtPriorityChannel2,
 		codeplug.FtTxDesignatedChannel)
 
 	column = row.AddVbox()
