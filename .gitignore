@@ -1,4 +1,6 @@
 editcp
 editcp*.tar.*
+editcp-*.wxs
+editcp-*.msi
 deploy/
 *.rdt

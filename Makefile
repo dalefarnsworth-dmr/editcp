@@ -20,7 +20,12 @@ deploy/linux/install: install.sh
 deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
 
-windows: deploy/windows/editcp.exe
+windows: editcp-$(VERSION).msi
+
+editcp-$(VERSION).msi: deploy/windows/editcp.exe editcp.wxs
+	sed 's/VERSION/$(VERSION)/g' editcp.wxs >editcp-$(VERSION).wxs
+	wixl --arch x64 -o editcp-$(VERSION).msi editcp-$(VERSION).wxs
+	rm editcp-$(VERSION).wxs
 
 deploy/windows/editcp.exe: $(SOURCES)
 	qtdeploy -docker build windows_64_static
@@ -46,14 +51,13 @@ editcp-$(VERSION).tar.xz: deploy/linux/editcp.sh
 
 upload: editcp-$(VERSION).tar.xz windows
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
-	rsync deploy/windows/editcp.exe farnsworth.org:editcp-$(VERSION).exe
+	rsync editcp-$(VERSION).msi farnsworth.org:
 
 tag:
 	git tag -s -m "editcp v$(VERSION)" v$(VERSION)
 
 clean:
-	rm -rf editcp editcp-$(VERSION)
+	rm -rf editcp editcp-$(VERSION) editcp-*.wxs
 
 clobber: clean
-	rm -f deploy/linux/editcp deploy/linux/editcp.sh \
-		deploy/windows/editcp.exe
+	rm -f deploy editcp-*.wxs
