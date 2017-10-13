@@ -76,7 +76,7 @@ $ editcp file.rdt
 ```
 
 ## Installing Pre-built Executables
-Instructions for downloading pre-built executables for Linux are
+Instructions for downloading pre-built executables for Windows and Linux are
 available at https://www.farnsworth.org/dale/codeplug/editcp.
 
 ## Disclaimer
