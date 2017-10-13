@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Name='editcp VERSION' Id='8ae8ca2f-787c-459e-9821-56ff6a1442d4' UpgradeCode='1a73b9b7-7eed-4f31-96b9-92e2db4ddee5'
-    Language='1033' Codepage='1252' Version='VERSION.0' Manufacturer='Dale Farnsworth'>
+    Language='1033' Codepage='1252' Version='VERSION' Manufacturer='Dale Farnsworth'>
 
     <Package Id='*' Keywords='Installer' Description="editcp VERSION Installer"
       Comments='editcp is licensed under the GNU GPL version 3' Manufacturer='Dale Farnsworth'
