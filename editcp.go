@@ -725,6 +725,8 @@ func addRecordSelector(box *ui.VBox) {
 	add := row.AddButton("Add")
 	row.AddSpace(3)
 	delete := row.AddButton("Delete")
+	row.AddFiller()
+	box.AddFiller()
 
 	decrement.ConnectClicked(func() {
 		rIndex := rl.Current()
