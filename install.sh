@@ -1,5 +1,4 @@
 #!/bin/bash
-dirname=/home/dale/go/src/github.com/dalefarnsworth/codeplug/editcp/deploy/linux
 appname=editcp
 
 install() {
@@ -74,6 +73,6 @@ if [ ! -f "./$appname.sh" ]; then
 	exit 1
 fi
 
-dirname=$(pwd)
+dirname="$(pwd)"
 sed --in-place -e "/^dirname=/cdirname=$dirname" $appname.sh
 install "$@"

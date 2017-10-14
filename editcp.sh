@@ -1,5 +1,5 @@
 #!/bin/bash
-dirname=xyzzy
+dirname=
 appname=editcp
 
 if [ ! -f "$dirname/$appname" -o ! -d "$dirname/qml" ]; then
