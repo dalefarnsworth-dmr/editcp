@@ -99,25 +99,6 @@ func checkAutosave(filename string) {
 	}
 }
 
-func (edt *editor) openFile(filename string) error {
-	if filename == "" {
-		filename = ui.OpenFilename("Open md380 codeplug file")
-		if filename == "" {
-			return nil
-		}
-	}
-
-	checkAutosave(filename)
-
-	cp, err := codeplug.NewCodeplug(filename, codeplug.CtMd380)
-	if err != nil {
-		return err
-	}
-	edt.codeplug = cp
-
-	return nil
-}
-
 func (edt *editor) revertFile() error {
 	var err error
 
@@ -240,23 +221,7 @@ func deleteString(strs *[]string, i int) {
 	*strs = (*strs)[:len(*strs)-1]
 }
 
-func newEditor(app *ui.App, filename string) {
-	cmdline := filename != ""
-	edt := new(editor)
-	edt.app = app
-
-retry:
-	if filename == "" {
-		filename = ui.OpenFilename("Open md380 codeplug file")
-		if filename == "" {
-			if editorOpened {
-				return
-			}
-			app.Quit()
-			return
-		}
-	}
-
+func (edt *editor) openCodeplugFile(filename string) {
 	if absPath, err := filepath.Abs(filename); err == nil {
 		filename = absPath
 	}
@@ -265,8 +230,7 @@ retry:
 	if err != nil {
 		ui.WarningPopup(filename, err.Error())
 		removeRecentFile(filename)
-		filename = ""
-		goto retry
+		return
 	}
 
 	for _, cp := range codeplug.Codeplugs() {
@@ -278,27 +242,21 @@ retry:
 	}
 
 	if edt.codeplug == nil {
-		err := edt.openFile(filename)
+		checkAutosave(filename)
+
+		cp, err := codeplug.NewCodeplug(filename, codeplug.CtMd380)
 		if err != nil {
 			ui.WarningPopup("Codeplug Error", err.Error())
-		}
-		if err != nil || edt.codeplug == nil {
-			if cmdline {
-				app.Quit()
-			}
 			return
 		}
+
+		edt.codeplug = cp
 		edt.codeplugHash = edt.codeplug.CurrentHash()
 		loadSettings()
 		edt.setAutosaveInterval(settings.autosaveInterval)
 	}
 
 	addRecentFile(filename)
-
-	mw := ui.NewMainWindow(edt.codeplug)
-	edt.mainWindow = mw
-
-	editors = append(editors, edt)
 
 	highCount := 0
 	cp := edt.codeplug
@@ -308,33 +266,70 @@ retry:
 		}
 	}
 	edt.codeplugCount = highCount + 1
+}
 
-	mw.SetTitle(filename + edt.titleSuffix())
+func newEditor(app *ui.App, filename string) {
+	var edt *editor
+	for _, ed := range editors {
+		if ed.codeplug == nil {
+			edt = ed
+			break
+		}
+	}
+
+	if edt == nil {
+		edt = new(editor)
+		edt.app = app
+		editors = append(editors, edt)
+	}
+
+	mw := edt.mainWindow
+	if mw == nil {
+		mw = ui.NewMainWindow()
+		edt.mainWindow = mw
+	}
+
+	if filename != "" {
+		edt.openCodeplugFile(filename)
+	}
+
+	cp := edt.codeplug
+	if cp != nil {
+		mw.SetCodeplug(cp)
+	}
+
+	title := "md-380 Codeplug Editor"
+	if cp != nil {
+		title = filename + edt.titleSuffix()
+	}
+	mw.SetTitle(title)
 
 	mw.ConnectClose(func() bool {
-		cp := edt.codeplug
-		count := 0
-		for _, edt := range editors {
-			if edt.codeplug == cp {
-				count++
+		if cp != nil {
+			count := 0
+			for _, edt := range editors {
+				if edt.codeplug == cp {
+					count++
+				}
+			}
+
+			if count == 1 && cp.Changed() {
+				title := fmt.Sprintf("Save %s", cp.Filename())
+				msg := cp.Filename() + " has been modified.\n"
+				msg += "Do you want to save the changes?"
+				switch ui.SavePopup(title, msg) {
+				case ui.PopupSave:
+					edt.save()
+
+				case ui.PopupDiscard:
+					break
+
+				case ui.PopupCancel:
+					return false
+				}
 			}
 		}
 
-		if count == 1 && cp.Changed() {
-			title := fmt.Sprintf("Save %s", cp.Filename())
-			msg := cp.Filename() + " has been modified.\n"
-			msg += "Do you want to save the changes?"
-			switch ui.SavePopup(title, msg) {
-			case ui.PopupSave:
-				edt.save()
-
-			case ui.PopupDiscard:
-				break
-
-			case ui.PopupCancel:
-				return false
-			}
-		}
 		for i, editor := range editors {
 			if editor == edt {
 				deleteEditor(&editors, i)
@@ -352,29 +347,39 @@ retry:
 	})
 
 	mb := mw.MenuBar()
+	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("Open...", func() {
-		newEditor(edt.app, "")
+		filename = ui.OpenFilename("Open md380 codeplug file")
+		if filename == "" {
+			return
+		}
+		newEditor(edt.app, filename)
 	})
 	recentMenu := menu.AddMenu("Open Recent...")
 	recentMenu.ConnectAboutToShow(func() {
 		edt.updateRecentMenu(recentMenu)
 	})
+
 	menu.AddAction("Revert", func() {
 		edt.revertFile()
-	})
+	}).SetDisabled(cp == nil)
+
 	menu.AddAction("Export to text file...", func() {
 		edt.exportText()
-	})
+	}).SetDisabled(cp == nil)
+
 	menu.AddAction("Import from text file...", func() {
 		edt.importText()
-	})
+	}).SetDisabled(cp == nil)
+
 	menu.AddAction("Save", func() {
 		edt.save()
-	})
+	}).SetDisabled(cp == nil)
+
 	menu.AddAction("Save As...", func() {
 		edt.saveAs("")
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Preferences...", func() {
 		edt.preferences()
@@ -395,27 +400,27 @@ retry:
 	menu = mb.AddMenu("Edit")
 	menu.AddAction("General Settings", func() {
 		generalSettings(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Channel Information", func() {
 		channelInformation(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Digital Contacts", func() {
 		digitalContacts(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Digital Rx Group Lists", func() {
 		groupLists(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Scan Lists", func() {
 		scanLists(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	menu.AddAction("Zone Information", func() {
 		zoneInformation(edt)
-	})
+	}).SetDisabled(cp == nil)
 
 	edt.undoAction = menu.AddAction("Undo", func() {
 		edt.codeplug.UndoChange()
@@ -441,21 +446,27 @@ retry:
 	column := row.AddVbox()
 
 	gsButton := column.AddButton("GeneralSettings")
+	gsButton.SetDisabled(cp == nil)
 	gsButton.ConnectClicked(func() { generalSettings(edt) })
 
 	ciButton := column.AddButton("Channel Information")
+	ciButton.SetDisabled(cp == nil)
 	ciButton.ConnectClicked(func() { channelInformation(edt) })
 
 	dcButton := column.AddButton("Digital Contacts")
+	dcButton.SetDisabled(cp == nil)
 	dcButton.ConnectClicked(func() { digitalContacts(edt) })
 
 	glButton := column.AddButton("Digital Rx Group Lists")
+	glButton.SetDisabled(cp == nil)
 	glButton.ConnectClicked(func() { groupLists(edt) })
 
 	slButton := column.AddButton("Scan Lists")
+	slButton.SetDisabled(cp == nil)
 	slButton.ConnectClicked(func() { scanLists(edt) })
 
 	ziButton := column.AddButton("Zone Information")
+	ziButton.SetDisabled(cp == nil)
 	ziButton.ConnectClicked(func() { zoneInformation(edt) })
 
 	column.AddFiller()
