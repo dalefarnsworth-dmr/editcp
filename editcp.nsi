@@ -10,7 +10,7 @@
 Name "editcp"
 
 ; The file to write
-OutFile "editcp-${VERSION}.exe"
+OutFile "editcp-${VERSION}-installer.exe"
 
 !include "LogicLib.nsh"
 !include "x64.nsh"

@@ -32,9 +32,9 @@ editcp-$(VERSION).tar.xz: deploy/linux/editcp.sh
 install: linux
 	cd deploy/linux && ./install .
 
-windows: editcp-$(VERSION).exe
+windows: editcp-$(VERSION)-installer.exe
 
-editcp-$(VERSION).exe: deploy/win32/editcp.exe deploy/win64/editcp.exe editcp.nsi
+editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe deploy/win64/editcp.exe editcp.nsi
 	makensis -DVERSION=$(VERSION) editcp.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
@@ -54,9 +54,9 @@ clobber: clean
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
-upload: editcp-$(VERSION).tar.xz editcp-$(VERSION).exe
+upload: editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
-	rsync editcp-$(VERSION).exe farnsworth.org:
+	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
 
 tag:
 	git tag -s -m "editcp v$(VERSION)" v$(VERSION)
