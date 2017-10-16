@@ -458,7 +458,7 @@ func newEditor(app *ui.App, filename string) {
 	row := mw.AddHbox()
 	column := row.AddVbox()
 
-	gsButton := column.AddButton("GeneralSettings")
+	gsButton := column.AddButton("General Settings")
 	gsButton.SetDisabled(cp == nil)
 	gsButton.ConnectClicked(func() { generalSettings(edt) })
 
