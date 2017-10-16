@@ -38,10 +38,10 @@ func dcRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	form := column.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtContactName,
-		codeplug.FtCallID,
-		codeplug.FtCallType,
-		codeplug.FtCallReceiveTone)
+		codeplug.FtDcContactName,
+		codeplug.FtDcCallID,
+		codeplug.FtDcCallType,
+		codeplug.FtDcCallReceiveTone)
 
 	recordBox.AddFiller()
 }

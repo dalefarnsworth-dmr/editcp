@@ -74,12 +74,12 @@ func checkAutosave(filename string) {
 		return
 	}
 
-	fInfo, err := os.Stat(filename)
+	fieldInfo, err := os.Stat(filename)
 	if err != nil {
 		return
 	}
 
-	if fInfo.ModTime().After(asInfo.ModTime()) {
+	if fieldInfo.ModTime().After(asInfo.ModTime()) {
 		os.Remove(asFilename)
 		return
 	}
@@ -235,7 +235,7 @@ func (edt *editor) openCodeplugFile(filename string) {
 		filename = absPath
 	}
 
-	fInfo, err := os.Stat(filename)
+	fieldInfo, err := os.Stat(filename)
 	if err != nil {
 		ui.WarningPopup(filename, err.Error())
 		removeRecentFile(filename)
@@ -243,8 +243,8 @@ func (edt *editor) openCodeplugFile(filename string) {
 	}
 
 	for _, cp := range codeplug.Codeplugs() {
-		xfInfo, err := os.Stat(cp.Filename())
-		if err == nil && os.SameFile(xfInfo, fInfo) {
+		xfieldInfo, err := os.Stat(cp.Filename())
+		if err == nil && os.SameFile(xfieldInfo, fieldInfo) {
 			edt.codeplug = cp
 			break
 		}

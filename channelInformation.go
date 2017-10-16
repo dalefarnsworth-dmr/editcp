@@ -45,29 +45,29 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	r := currentRecord(recordBox.Window())
 
 	form.AddFieldRows(r,
-		codeplug.FtChannelMode,
-		codeplug.FtBandwidth,
-		codeplug.FtScanList,
-		codeplug.FtSquelch,
-		codeplug.FtRxRefFrequency,
-		codeplug.FtTxRefFrequency,
-		codeplug.FtTot,
-		codeplug.FtTotRekeyDelay,
-		codeplug.FtPower)
+		codeplug.FtCiChannelMode,
+		codeplug.FtCiBandwidth,
+		codeplug.FtCiScanList,
+		codeplug.FtCiSquelch,
+		codeplug.FtCiRxRefFrequency,
+		codeplug.FtCiTxRefFrequency,
+		codeplug.FtCiTot,
+		codeplug.FtCiTotRekeyDelay,
+		codeplug.FtCiPower)
 
 	column = groupBox.AddVbox()
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtChannelName,
-		codeplug.FtRxFrequency,
-		codeplug.FtTxFrequency,
-		codeplug.FtAdmitCriteria,
-		codeplug.FtAutoscan,
-		codeplug.FtRxOnly,
-		codeplug.FtLoneWorker,
-		codeplug.FtVox,
-		codeplug.FtAllowTalkaround)
+		codeplug.FtCiChannelName,
+		codeplug.FtCiRxFrequency,
+		codeplug.FtCiTxFrequency,
+		codeplug.FtCiAdmitCriteria,
+		codeplug.FtCiAutoscan,
+		codeplug.FtCiRxOnly,
+		codeplug.FtCiLoneWorker,
+		codeplug.FtCiVox,
+		codeplug.FtCiAllowTalkaround)
 
 	column = row.AddVbox()
 	groupBox = column.AddGroupbox("Digital Data")
@@ -75,16 +75,16 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtPrivateCallConfirmed,
-		codeplug.FtEmergencyAlarmAck,
-		codeplug.FtDataCallConfirmed,
-		codeplug.FtCompressedUdpDataHeader,
-		codeplug.FtContactName,
-		codeplug.FtGroupList,
-		codeplug.FtColorCode,
-		codeplug.FtRepeaterSlot,
-		codeplug.FtPrivacy,
-		codeplug.FtPrivacyNumber)
+		codeplug.FtCiPrivateCallConfirmed,
+		codeplug.FtCiEmergencyAlarmAck,
+		codeplug.FtCiDataCallConfirmed,
+		codeplug.FtCiCompressedUdpDataHeader,
+		codeplug.FtCiContactName,
+		codeplug.FtCiGroupList,
+		codeplug.FtCiColorCode,
+		codeplug.FtCiRepeaterSlot,
+		codeplug.FtCiPrivacy,
+		codeplug.FtCiPrivacyNumber)
 
 	row = mainBox.AddHbox()
 	groupBox = row.AddGroupbox("Analog Data")
@@ -93,36 +93,36 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtCtcssDecode,
-		codeplug.FtQtReverse,
-		codeplug.FtRxSignallingSystem,
-		codeplug.FtDisplayPTTID)
+		codeplug.FtCiCtcssDecode,
+		codeplug.FtCiQtReverse,
+		codeplug.FtCiRxSignallingSystem,
+		codeplug.FtCiDisplayPTTID)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtCtcssEncode,
-		codeplug.FtTxSignallingSystem,
-		codeplug.FtReverseBurst)
+		codeplug.FtCiCtcssEncode,
+		codeplug.FtCiTxSignallingSystem,
+		codeplug.FtCiReverseBurst)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtDecode1,
-		codeplug.FtDecode2,
-		codeplug.FtDecode3,
-		codeplug.FtDecode4)
+		codeplug.FtCiDecode1,
+		codeplug.FtCiDecode2,
+		codeplug.FtCiDecode3,
+		codeplug.FtCiDecode4)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtDecode5,
-		codeplug.FtDecode6,
-		codeplug.FtDecode7,
-		codeplug.FtDecode8)
+		codeplug.FtCiDecode5,
+		codeplug.FtCiDecode6,
+		codeplug.FtCiDecode7,
+		codeplug.FtCiDecode8)
 
 	mainBox.AddFiller()
 }

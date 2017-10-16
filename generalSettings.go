@@ -42,75 +42,75 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	groupBox := column.AddGroupbox("Save")
 	form := groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtSavePreamble,
-		codeplug.FtSaveModeReceive,
+		codeplug.FtGsSavePreamble,
+		codeplug.FtGsSaveModeReceive,
 	)
 
 	groupBox = column.AddGroupbox("Alert Tone")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtDisableAllTones,
-		codeplug.FtChFreeIndicationTone,
-		codeplug.FtTalkPermitTone,
-		codeplug.FtCallAlertToneDuration,
+		codeplug.FtGsDisableAllTones,
+		codeplug.FtGsChFreeIndicationTone,
+		codeplug.FtGsTalkPermitTone,
+		codeplug.FtGsCallAlertToneDuration,
 	)
 
 	groupBox = column.AddGroupbox("Scan")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtScanDigitalHangTime,
-		codeplug.FtScanAnalogHangTime,
+		codeplug.FtGsScanDigitalHangTime,
+		codeplug.FtGsScanAnalogHangTime,
 	)
 
 	groupBox = column.AddGroupbox("Lone Worker")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtLoneWorkerResponseTime,
-		codeplug.FtLoneWorkerReminderTime,
+		codeplug.FtGsLoneWorkerResponseTime,
+		codeplug.FtGsLoneWorkerReminderTime,
 	)
 
 	groupBox = column.AddGroupbox("Power On Password")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtPwAndLockEnable,
+		codeplug.FtGsPwAndLockEnable,
 	)
 	form.AddFieldRows(r,
-		codeplug.FtPowerOnPassword,
+		codeplug.FtGsPowerOnPassword,
 	)
 
 	column = row.AddVbox()
 	form = column.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtRadioName,
-		codeplug.FtRadioID,
-		codeplug.FtMonitorType,
-		codeplug.FtVoxSensitivity,
-		codeplug.FtTxPreambleDuration,
-		codeplug.FtRxLowBatteryInterval,
-		codeplug.FtBacklightColor,
-		codeplug.FtFreqChannelMode,
-		codeplug.FtModeSelect,
-		codeplug.FtLockUnlock,
-		codeplug.FtPcProgPw,
-		codeplug.FtRadioProgPw,
-		codeplug.FtBacklightTime,
-		codeplug.FtSetKeypadLockTime,
-		codeplug.FtDisableAllLeds,
+		codeplug.FtGsRadioName,
+		codeplug.FtGsRadioID,
+		codeplug.FtGsMonitorType,
+		codeplug.FtGsVoxSensitivity,
+		codeplug.FtGsTxPreambleDuration,
+		codeplug.FtGsRxLowBatteryInterval,
+		codeplug.FtGsBacklightColor,
+		codeplug.FtGsFreqChannelMode,
+		codeplug.FtGsModeSelect,
+		codeplug.FtGsLockUnlock,
+		codeplug.FtGsPcProgPw,
+		codeplug.FtGsRadioProgPw,
+		codeplug.FtGsBacklightTime,
+		codeplug.FtGsSetKeypadLockTime,
+		codeplug.FtGsDisableAllLeds,
 	)
 
 	groupBox = column.AddGroupbox("Talkaround")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtGroupCallHangTime,
-		codeplug.FtPrivateCallHangTime,
+		codeplug.FtGsGroupCallHangTime,
+		codeplug.FtGsPrivateCallHangTime,
 	)
 
 	groupBox = column.AddGroupbox("Intro Screen")
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtIntroScreen,
-		codeplug.FtIntroScreenLine1,
-		codeplug.FtIntroScreenLine2,
+		codeplug.FtGsIntroScreen,
+		codeplug.FtGsIntroScreenLine1,
+		codeplug.FtGsIntroScreenLine2,
 	)
 
 	mainBox.AddFiller()

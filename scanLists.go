@@ -36,7 +36,7 @@ func slRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	column.SetContentsMargins(0, 0, 0, 0)
 	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtName, codeplug.FtChannelMember, "Channels")
+		codeplug.FtSlName, codeplug.FtSlChannelMember, "Channels")
 
 	row := column.AddHbox()
 	row.SetContentsMargins(0, 0, 0, 0)
@@ -47,14 +47,14 @@ func slRecord(edt *editor, recordBox *ui.HBox) {
 	column.SetContentsMargins(0, 0, 0, 0)
 	form := column.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtPriorityChannel1,
-		codeplug.FtPriorityChannel2,
-		codeplug.FtTxDesignatedChannel)
+		codeplug.FtSlPriorityChannel1,
+		codeplug.FtSlPriorityChannel2,
+		codeplug.FtSlTxDesignatedChannel)
 
 	column = row.AddVbox()
 	column.SetContentsMargins(0, 0, 0, 0)
 	form = column.AddForm()
 	form.AddFieldRows(r,
-		codeplug.FtSignallingHoldTime,
-		codeplug.FtPrioritySampleTime)
+		codeplug.FtSlSignallingHoldTime,
+		codeplug.FtSlPrioritySampleTime)
 }
