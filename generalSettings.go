@@ -87,8 +87,13 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtVoxSensitivity,
 		codeplug.FtTxPreambleDuration,
 		codeplug.FtRxLowBatteryInterval,
+		codeplug.FtBacklightColor,
+		codeplug.FtFreqChannelMode,
+		codeplug.FtModeSelect,
+		codeplug.FtLockUnlock,
 		codeplug.FtPcProgPw,
 		codeplug.FtRadioProgPw,
+		codeplug.FtBacklightTime,
 		codeplug.FtSetKeypadLockTime,
 		codeplug.FtDisableAllLeds,
 	)
