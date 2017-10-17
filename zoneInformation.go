@@ -29,11 +29,11 @@ import (
 )
 
 func zoneInformation(edt *editor) {
-	edt.recordWindow(codeplug.RtZoneInformation, ziRecord)
+	edt.recordWindow(codeplug.RtZoneInformation_md380, ziRecord)
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtZiName, codeplug.FtZiChannelMember, "Channels")
+		codeplug.FtZiName, codeplug.FtZiChannelMember_md380, "Channels")
 }
