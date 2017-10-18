@@ -26,6 +26,7 @@ package main
 import (
 	"crypto/sha256"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -177,7 +178,11 @@ func (edt *editor) autosave() {
 }
 
 func main() {
-	app := ui.NewApp()
+	app, err := ui.NewApp()
+	if err != nil {
+		log.Print(err.Error())
+		return
+	}
 	app.SetOrganizationName("codeplug")
 	app.SetApplicationName("Codeplug Editor")
 	appSettings = app.NewSettings()
