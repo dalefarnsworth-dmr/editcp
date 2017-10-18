@@ -45,6 +45,7 @@ var editors []*editor
 type editorSettings struct {
 	sortAvailableChannels bool
 	sortAvailableContacts bool
+	codeplugDirectory     string
 	autosaveInterval      int
 	recentFiles           []string
 }
@@ -132,10 +133,13 @@ func (edt *editor) saveAs(filename string) {
 	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
 
 	if filename == "" {
-		filename = ui.SaveFilename("Save md380 codeplug file")
+		dir := settings.codeplugDirectory
+		filename = ui.SaveFilename("Save codeplug file", dir)
 		if filename == "" {
 			return
 		}
+		settings.codeplugDirectory = filepath.Dir(filename)
+		saveSettings()
 	}
 	err := edt.codeplug.SaveAs(filename)
 	if err != nil {
@@ -355,10 +359,14 @@ func newEditor(app *ui.App, filename string) {
 	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("Open...", func() {
-		filename = ui.OpenFilename("Open md380 codeplug file")
+		dir := settings.codeplugDirectory
+		filename = ui.OpenFilename("Open codeplug file", dir)
 		if filename == "" {
 			return
 		}
+		settings.codeplugDirectory = filepath.Dir(filename)
+		saveSettings()
+
 		newEditor(edt.app, filename)
 	})
 	recentMenu := menu.AddMenu("Open Recent...")
@@ -571,10 +579,13 @@ func removeRecentFile(name string) {
 }
 
 func (edt *editor) exportText() {
-	filename := ui.SaveFilename("Export to text file")
+	dir := settings.codeplugDirectory
+	filename := ui.SaveFilename("Export to text file", dir)
 	if filename == "" {
 		return
 	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
 
 	err := edt.codeplug.ExportTo(filename)
 	if err != nil {
@@ -599,10 +610,13 @@ func (edt *editor) importText() {
 		}
 	}
 
-	filename := ui.OpenFilename("Import from text file")
+	dir := settings.codeplugDirectory
+	filename := ui.OpenFilename("Import from text file", dir)
 	if filename == "" {
 		return
 	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
 
 	_, err := os.Stat(filename)
 	if err != nil {
@@ -805,6 +819,7 @@ func loadSettings() {
 	as.Sync()
 	settings.sortAvailableChannels = as.Bool("sortAvailableChannels", false)
 	settings.sortAvailableContacts = as.Bool("sortAvailableContacts", false)
+	settings.codeplugDirectory = as.String("codeplugDirectory", "")
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -819,6 +834,7 @@ func saveSettings() {
 	as := appSettings
 	as.SetBool("sortAvailableChannels", settings.sortAvailableChannels)
 	as.SetBool("sortAvailableContacts", settings.sortAvailableContacts)
+	as.SetString("codeplugDirectory", settings.codeplugDirectory)
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
