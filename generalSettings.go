@@ -77,39 +77,42 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddFieldRows(r,
 		codeplug.FtGsPowerOnPassword,
 	)
-	md380FieldTypes := []codeplug.FieldType{
-		codeplug.FtGsRadioName,
-		codeplug.FtGsRadioID,
-		codeplug.FtGsMonitorType,
-		codeplug.FtGsVoxSensitivity,
-		codeplug.FtGsTxPreambleDuration,
-		codeplug.FtGsRxLowBatteryInterval,
-		codeplug.FtGsPcProgPw,
-		codeplug.FtGsRadioProgPw,
-		codeplug.FtGsBacklightTime,
-		codeplug.FtGsSetKeypadLockTime,
-		codeplug.FtGsDisableAllLeds,
-	}
 
-	md40FieldTypes := []codeplug.FieldType{
-		codeplug.FtGsRadioName,
-		codeplug.FtGsRadioID,
-		codeplug.FtGsMonitorType,
-		codeplug.FtGsVoxSensitivity,
-		codeplug.FtGsTxPreambleDuration,
-		codeplug.FtGsRxLowBatteryInterval,
-		codeplug.FtGsBacklightColor,
-		codeplug.FtGsFreqChannelMode,
-		codeplug.FtGsModeSelect,
-		codeplug.FtGsLockUnlock,
-		codeplug.FtGsPcProgPw,
-		codeplug.FtGsRadioProgPw,
-		codeplug.FtGsSetKeypadLockTime,
-		codeplug.FtGsDisableAllLeds,
-	}
-	fieldTypes := md380FieldTypes
-	if false {
-		fieldTypes = md40FieldTypes
+	var fieldTypes []codeplug.FieldType
+
+	switch edt.codeplug.Type() {
+	case "md380":
+		fieldTypes = []codeplug.FieldType{
+			codeplug.FtGsRadioName,
+			codeplug.FtGsRadioID,
+			codeplug.FtGsMonitorType,
+			codeplug.FtGsVoxSensitivity,
+			codeplug.FtGsTxPreambleDuration,
+			codeplug.FtGsRxLowBatteryInterval,
+			codeplug.FtGsPcProgPw,
+			codeplug.FtGsRadioProgPw,
+			codeplug.FtGsBacklightTime,
+			codeplug.FtGsSetKeypadLockTime,
+			codeplug.FtGsDisableAllLeds,
+		}
+
+	case "md40":
+		fieldTypes = []codeplug.FieldType{
+			codeplug.FtGsRadioName,
+			codeplug.FtGsRadioID,
+			codeplug.FtGsMonitorType,
+			codeplug.FtGsVoxSensitivity,
+			codeplug.FtGsTxPreambleDuration,
+			codeplug.FtGsRxLowBatteryInterval,
+			codeplug.FtGsBacklightColor,
+			codeplug.FtGsFreqChannelMode,
+			codeplug.FtGsModeSelect,
+			codeplug.FtGsLockUnlock,
+			codeplug.FtGsPcProgPw,
+			codeplug.FtGsRadioProgPw,
+			codeplug.FtGsSetKeypadLockTime,
+			codeplug.FtGsDisableAllLeds,
+		}
 	}
 
 	column = row.AddVbox()

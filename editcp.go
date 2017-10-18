@@ -253,9 +253,35 @@ func (edt *editor) openCodeplugFile(filename string) {
 	if edt.codeplug == nil {
 		checkAutosave(filename)
 
-		cp, err := codeplug.NewCodeplug(filename, codeplug.CtMd380)
+		cp, err := codeplug.NewCodeplug(filename)
 		if err != nil {
 			ui.WarningPopup("Codeplug Error", err.Error())
+			return
+		}
+
+		names := cp.Names()
+		var name string
+
+		if len(names) > 1 {
+			title := "Select codeplug type"
+			msg := "Without the RDT file header, the type of " +
+				"codeplug is ambiguous.\n" +
+				"(If you always use only one of these types, " +
+				"you can disable\n" +
+				"the others in File->Preferences.)\n\n" +
+				fmt.Sprintf("File: %s\n\n", filename) +
+				"Please select the correct codeplug type:"
+
+			name = ui.RadioPopup(title, msg, name, names...)
+		}
+
+		if name == "" {
+			return
+		}
+
+		err = cp.Load(name)
+		if err != nil {
+			ui.WarningPopup("Codeplug Load Error", err.Error())
 			return
 		}
 
