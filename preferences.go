@@ -24,18 +24,16 @@
 package main
 
 import (
+	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
 func (edt *editor) preferences() {
-	if edt.prefWindow != nil {
-		edt.prefWindow.Show()
-		return
-	}
-	edt.prefWindow = edt.mainWindow.NewWindow()
+	w := edt.mainWindow.NewWindow()
 
-	column := edt.prefWindow.AddVbox()
-	groupBox := column.AddGroupbox("AutoSave")
+	column := w.AddVbox()
+	row := column.AddHbox()
+	groupBox := row.AddGroupbox("AutoSave")
 	form := groupBox.AddForm()
 
 	loadSettings()
@@ -43,9 +41,50 @@ func (edt *editor) preferences() {
 	spinbox := ui.NewSpinbox(settings.autosaveInterval, 0, 60, func(i int) {
 		edt.setAutosaveInterval(i)
 		settings.autosaveInterval = i
-		saveSettings()
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
+	row.AddFiller()
 
-	edt.prefWindow.Show()
+	text := "Select the action to be taken when the codeplug type " +
+		"is ambiguous\n" +
+		"  Ask: ask each time a codplug file is opened.\n" +
+		"  Type: the file is opened as that type of codeplug."
+	column.AddLabel(text)
+
+	nameMap := make(map[string]bool)
+	for _, name := range settings.ambiguousNames {
+		nameMap[name] = true
+	}
+
+	ambigs := codeplug.AmbiguousCodeplugNames()
+	buttons := make([]*ui.RadioButton, 0)
+	for _, names := range ambigs {
+		row := column.AddHbox()
+		b := row.AddRadioButton("Ask")
+		b.SetChecked(true)
+		for _, name := range names {
+			b := row.AddRadioButton(name)
+			if nameMap[name] {
+				b.SetChecked(true)
+			}
+			buttons = append(buttons, b)
+		}
+		column.AddSpace(3)
+	}
+
+	w.ConnectClose(func() bool {
+		names := make([]string, 0)
+		for _, b := range buttons {
+			if b.IsChecked() {
+				names = append(names, b.Text())
+			}
+		}
+		settings.ambiguousNames = names
+		saveSettings()
+
+		w.DeleteLater()
+		return true
+	})
+
+	w.Show()
 }

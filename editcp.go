@@ -48,6 +48,7 @@ type editorSettings struct {
 	codeplugDirectory     string
 	autosaveInterval      int
 	recentFiles           []string
+	ambiguousNames        []string
 }
 
 var appSettings *ui.AppSettings
@@ -260,8 +261,17 @@ func (edt *editor) openCodeplugFile(filename string) {
 		}
 
 		names := cp.Names()
-		var name string
+	outerLoop:
+		for _, name := range names {
+			for _, amName := range settings.ambiguousNames {
+				if name == amName {
+					names = []string{name}
+					break outerLoop
+				}
+			}
+		}
 
+		name := names[0]
 		if len(names) > 1 {
 			title := "Select codeplug type"
 			msg := "Without the RDT file header, the type of " +
@@ -272,7 +282,7 @@ func (edt *editor) openCodeplugFile(filename string) {
 				fmt.Sprintf("File: %s\n\n", filename) +
 				"Please select the correct codeplug type:"
 
-			name = ui.RadioPopup(title, msg, name, names...)
+			name = ui.RadioPopup(title, msg, "", names...)
 		}
 
 		if name == "" {
@@ -847,11 +857,20 @@ func loadSettings() {
 	settings.sortAvailableContacts = as.Bool("sortAvailableContacts", false)
 	settings.codeplugDirectory = as.String("codeplugDirectory", "")
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
+
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
 	for i := 0; i < size; i++ {
 		as.SetArrayIndex(i)
 		settings.recentFiles[i] = as.String("filename", "")
+	}
+	as.EndArray()
+
+	size = as.BeginReadArray("ambiguousNames")
+	settings.ambiguousNames = make([]string, size)
+	for i := 0; i < size; i++ {
+		as.SetArrayIndex(i)
+		settings.ambiguousNames[i] = as.String("name", "")
 	}
 	as.EndArray()
 }
@@ -862,11 +881,20 @@ func saveSettings() {
 	as.SetBool("sortAvailableContacts", settings.sortAvailableContacts)
 	as.SetString("codeplugDirectory", settings.codeplugDirectory)
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
+
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
 		as.SetArrayIndex(i)
 		as.SetString("filename", name)
 	}
 	as.EndArray()
+
+	as.BeginWriteArray("ambiguousNames", len(settings.ambiguousNames))
+	for i, name := range settings.ambiguousNames {
+		as.SetArrayIndex(i)
+		as.SetString("name", name)
+	}
+	as.EndArray()
+
 	as.Sync()
 }
