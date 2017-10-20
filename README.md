@@ -1,15 +1,15 @@
-## Codeplug editor for the MD-380 DMR Radio
+## Codeplug editor for the MD380/MD390/MD40 DMR Radios
 
 ## Introduction
-This program is similar in purpose to the [MD-380 CPS program](
+This program is similar in purpose to the [MD380 CPS program](
 http://www.tyt888.com/?mod=download) provided by TYT Electronics
 Technology Co., LTD.  It provides several features that CPS lacks,
 while not implementing all features of CPS.
 I wrote `editcp` because I wanted to be able to edit codeplugs in Linux.
 
-** The MD-390 model uses the same codeplug format as the MD-380, so this editor
-should also work for it. Support for additional radio models is possible,
-but not scheduled at this time.
+This codeplug editor works for the Tytera MD380 and MD390 as well as the
+Alinco DJ-MD40 radios.  Support for additional radio models is likely,
+but is not scheduled at this time.
 
 ### Features
 * `Editcp` permits the editing of General Settings, Channels, Contacts, Zones,
