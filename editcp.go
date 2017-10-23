@@ -339,14 +339,14 @@ func newEditor(app *ui.App, filename string) {
 	}
 
 	cp := edt.codeplug
-	if cp != nil {
-		mw.SetCodeplug(cp)
-	}
-
 	title := "md-380 Codeplug Editor"
 	if cp != nil {
+		mw.SetCodeplug(cp)
 		title = filename + edt.titleSuffix()
+		settings.codeplugDirectory = filepath.Dir(filename)
+		saveSettings()
 	}
+
 	mw.SetTitle(title)
 
 	mw.ConnectClose(func() bool {
@@ -400,9 +400,6 @@ func newEditor(app *ui.App, filename string) {
 		if filename == "" {
 			return
 		}
-		settings.codeplugDirectory = filepath.Dir(filename)
-		saveSettings()
-
 		newEditor(edt.app, filename)
 	})
 	recentMenu := menu.AddMenu("Open Recent...")
