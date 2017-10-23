@@ -24,7 +24,6 @@
 package main
 
 import (
-	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
@@ -45,46 +44,54 @@ func (edt *editor) preferences() {
 	form.AddRow("Auto Save interval (minutes):", spinbox)
 	row.AddFiller()
 
-	text := "Select the action to be taken when the codeplug type " +
-		"is ambiguous\n" +
-		"  Ask: ask each time a codplug file is opened.\n" +
-		"  Type: the file is opened as that type of codeplug."
+	text := "Select the default model when the codeplug model is unknown.\n"
 	column.AddLabel(text)
 
-	nameMap := make(map[string]bool)
-	for _, name := range settings.ambiguousNames {
-		nameMap[name] = true
+	cp := edt.codeplug
+
+	models, variantsMap, _ := cp.ModelsVariantsFiles()
+	var variants []string
+
+	row = column.AddHbox()
+	column.AddSpace(3)
+	row2 := column.AddHbox()
+	options := append([]string{"Ask"}, models...)
+	for i, model := range options {
+		b := row.AddRadioButton(model)
+		if i == 0 || model == settings.model {
+			row2.SetEnabled(i != 0)
+			b.SetChecked(true)
+		}
+		b.ConnectClicked(func(bo bool) {
+			text := b.Text()
+			row2.SetEnabled(text != "Ask")
+			variants = variantsMap[text]
+			addVariants(row2, variants)
+			settings.model = b.Text()
+		})
 	}
 
-	ambigs := codeplug.AmbiguousCodeplugNames()
-	buttons := make([]*ui.RadioButton, 0)
-	for _, names := range ambigs {
-		row := column.AddHbox()
-		b := row.AddRadioButton("Ask")
-		b.SetChecked(true)
-		for _, name := range names {
-			b := row.AddRadioButton(name)
-			if nameMap[name] {
-				b.SetChecked(true)
-			}
-			buttons = append(buttons, b)
-		}
-		column.AddSpace(3)
-	}
+	addVariants(row2, variants)
 
 	w.ConnectClose(func() bool {
-		names := make([]string, 0)
-		for _, b := range buttons {
-			if b.IsChecked() {
-				names = append(names, b.Text())
-			}
-		}
-		settings.ambiguousNames = names
 		saveSettings()
-
 		w.DeleteLater()
 		return true
 	})
 
 	w.Show()
+}
+
+func addVariants(row *ui.HBox, variants []string) {
+	row.Clear()
+	options := append([]string{"Ask"}, variants...)
+	for i, variant := range options {
+		b := row.AddRadioButton(variant)
+		if i == 0 || variant == settings.variant {
+			b.SetChecked(true)
+		}
+		b.ConnectClicked(func(bo bool) {
+			settings.variant = b.Text()
+		})
+	}
 }

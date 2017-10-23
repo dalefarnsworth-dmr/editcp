@@ -48,7 +48,8 @@ type editorSettings struct {
 	codeplugDirectory     string
 	autosaveInterval      int
 	recentFiles           []string
-	ambiguousNames        []string
+	model                 string
+	variant               string
 }
 
 var appSettings *ui.AppSettings
@@ -75,12 +76,12 @@ func checkAutosave(filename string) {
 		return
 	}
 
-	fieldInfo, err := os.Stat(filename)
+	fileInfo, err := os.Stat(filename)
 	if err != nil {
 		return
 	}
 
-	if fieldInfo.ModTime().After(asInfo.ModTime()) {
+	if fileInfo.ModTime().After(asInfo.ModTime()) {
 		os.Remove(asFilename)
 		return
 	}
@@ -248,18 +249,20 @@ func (edt *editor) openCodeplugFile(filename string) {
 		filename = absPath
 	}
 
-	fieldInfo, err := os.Stat(filename)
-	if err != nil {
-		ui.ErrorPopup(filename, err.Error())
-		removeRecentFile(filename)
-		return
-	}
+	if filename != "." {
+		fileInfo, err := os.Stat(filename)
+		if err != nil {
+			ui.ErrorPopup(filename, err.Error())
+			removeRecentFile(filename)
+			return
+		}
 
-	for _, cp := range codeplug.Codeplugs() {
-		xfieldInfo, err := os.Stat(cp.Filename())
-		if err == nil && os.SameFile(xfieldInfo, fieldInfo) {
-			edt.codeplug = cp
-			break
+		for _, cp := range codeplug.Codeplugs() {
+			xfileInfo, err := os.Stat(cp.Filename())
+			if err == nil && os.SameFile(xfileInfo, fileInfo) {
+				edt.codeplug = cp
+				break
+			}
 		}
 	}
 
@@ -272,45 +275,23 @@ func (edt *editor) openCodeplugFile(filename string) {
 			return
 		}
 
-		names := cp.Names()
-	outerLoop:
-		for _, name := range names {
-			for _, amName := range settings.ambiguousNames {
-				if name == amName {
-					names = []string{name}
-					break outerLoop
-				}
-			}
-		}
+		model, variant, filename := modelVariantFile(cp,
+			"<select model>", "<select frequency range>")
 
-		name := names[0]
-		if len(names) > 1 {
-			title := "Select codeplug type"
-			msg := "Without the RDT file header, the type of " +
-				"codeplug is ambiguous.\n" +
-				"(If you always use only one of these types, " +
-				"you can disable\n" +
-				"the others in File->Preferences.)\n\n" +
-				fmt.Sprintf("File: %s\n\n", filename) +
-				"Please select the correct codeplug type:"
-
-			name = ui.RadioPopup(title, msg, "", names...)
-		}
-
-		if name == "" {
+		if model == "" {
 			return
 		}
 
 		var warning error
 		ignoreWarning := false
-		warning, err = cp.Load(name, ignoreWarning)
+		warning, err = cp.Load(model, variant, filename, ignoreWarning)
 		if warning != nil {
 			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
 			if rv != ui.PopupIgnore {
 				return
 			}
 			ignoreWarning = true
-			_, err = cp.Load(name, ignoreWarning)
+			_, err = cp.Load(model, variant, filename, ignoreWarning)
 		}
 
 		if err != nil {
@@ -324,7 +305,9 @@ func (edt *editor) openCodeplugFile(filename string) {
 		edt.setAutosaveInterval(settings.autosaveInterval)
 	}
 
-	addRecentFile(filename)
+	if filename != "." {
+		addRecentFile(filename)
+	}
 
 	highCount := 0
 	cp := edt.codeplug
@@ -334,6 +317,49 @@ func (edt *editor) openCodeplugFile(filename string) {
 		}
 	}
 	edt.codeplugCount = highCount + 1
+}
+
+func modelVariantFile(cp *codeplug.Codeplug, disableModel string, disableVariant string) (model string, variant string, file string) {
+	models, variantsMap, filesMap := cp.ModelsVariantsFiles()
+
+	for _, model := range models {
+		if model == settings.model {
+			models = []string{model}
+			variants := variantsMap[model]
+			files := filesMap[model]
+
+			for i, variant := range variants {
+				if variant == settings.variant {
+					variants = []string{variant}
+					files = []string{files[i]}
+					break
+				}
+			}
+			variantsMap = make(map[string][]string)
+			variantsMap[model] = variants
+			filesMap = make(map[string][]string)
+			filesMap[model] = files
+			break
+		}
+	}
+
+	model = models[0]
+	variant = variantsMap[model][0]
+	if len(models) > 1 || len(variantsMap[model]) > 1 {
+		title := "Select codeplug type"
+		msg := "Please select the codeplug model and frequency range."
+		model, variant = ui.TwoListPopup(title, msg,
+			disableModel, disableVariant, models, variantsMap)
+	}
+
+	for i, v := range variantsMap[model] {
+		if v == variant {
+			file = filesMap[model][i]
+			break
+		}
+	}
+
+	return model, variant, file
 }
 
 func newEditor(app *ui.App, filename string) {
@@ -362,8 +388,9 @@ func newEditor(app *ui.App, filename string) {
 	}
 
 	cp := edt.codeplug
-	title := "md-380 Codeplug Editor"
+	title := "Codeplug Editor"
 	if cp != nil {
+		filename = cp.Filename()
 		mw.SetCodeplug(cp)
 		title = filename + edt.titleSuffix()
 		settings.codeplugDirectory = filepath.Dir(filename)
@@ -417,6 +444,9 @@ func newEditor(app *ui.App, filename string) {
 	mb := mw.MenuBar()
 	mb.Clear()
 	menu := mb.AddMenu("File")
+	menu.AddAction("New...", func() {
+		newEditor(edt.app, ".")
+	})
 	menu.AddAction("Open...", func() {
 		dir := settings.codeplugDirectory
 		filename = ui.OpenFilename("Open codeplug file", dir)
@@ -432,23 +462,23 @@ func newEditor(app *ui.App, filename string) {
 
 	menu.AddAction("Revert", func() {
 		edt.revertFile()
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Export to text file...", func() {
 		edt.exportText()
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Import from text file...", func() {
 		edt.importText()
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Save", func() {
 		edt.save()
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Save As...", func() {
 		edt.saveAs("")
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Preferences...", func() {
 		edt.preferences()
@@ -469,37 +499,37 @@ func newEditor(app *ui.App, filename string) {
 	menu = mb.AddMenu("Edit")
 	menu.AddAction("General Settings", func() {
 		generalSettings(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Channel Information", func() {
 		channelInformation(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Digital Contacts", func() {
 		digitalContacts(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Digital Rx Group Lists", func() {
 		groupLists(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Scan Lists", func() {
 		scanLists(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Zone Information", func() {
 		zoneInformation(edt)
-	}).SetDisabled(cp == nil)
+	}).SetEnabled(cp != nil)
 
 	edt.undoAction = menu.AddAction("Undo", func() {
 		edt.codeplug.UndoChange()
 	})
-	edt.undoAction.SetDisabled(true)
+	edt.undoAction.SetEnabled(false)
 
 	edt.redoAction = menu.AddAction("Redo", func() {
 		edt.codeplug.RedoChange()
 	})
-	edt.redoAction.SetDisabled(true)
+	edt.redoAction.SetEnabled(false)
 
 	windowsMenu := mb.AddMenu("Windows")
 	windowsMenu.ConnectAboutToShow(func() {
@@ -515,27 +545,27 @@ func newEditor(app *ui.App, filename string) {
 	column := row.AddVbox()
 
 	gsButton := column.AddButton("General Settings")
-	gsButton.SetDisabled(cp == nil)
+	gsButton.SetEnabled(cp != nil)
 	gsButton.ConnectClicked(func() { generalSettings(edt) })
 
 	ciButton := column.AddButton("Channel Information")
-	ciButton.SetDisabled(cp == nil)
+	ciButton.SetEnabled(cp != nil)
 	ciButton.ConnectClicked(func() { channelInformation(edt) })
 
 	dcButton := column.AddButton("Digital Contacts")
-	dcButton.SetDisabled(cp == nil)
+	dcButton.SetEnabled(cp != nil)
 	dcButton.ConnectClicked(func() { digitalContacts(edt) })
 
 	glButton := column.AddButton("Digital Rx Group Lists")
-	glButton.SetDisabled(cp == nil)
+	glButton.SetEnabled(cp != nil)
 	glButton.ConnectClicked(func() { groupLists(edt) })
 
 	slButton := column.AddButton("Scan Lists")
-	slButton.SetDisabled(cp == nil)
+	slButton.SetEnabled(cp != nil)
 	slButton.ConnectClicked(func() { scanLists(edt) })
 
 	ziButton := column.AddButton("Zone Information")
-	ziButton.SetDisabled(cp == nil)
+	ziButton.SetEnabled(cp != nil)
 	ziButton.ConnectClicked(func() { zoneInformation(edt) })
 
 	column.AddFiller()
@@ -544,13 +574,13 @@ func newEditor(app *ui.App, filename string) {
 	column = row.AddVbox()
 
 	edt.undoButton = column.AddButton("Undo")
-	edt.undoButton.SetDisabled(true)
+	edt.undoButton.SetEnabled(false)
 	edt.undoButton.ConnectClicked(func() {
 		edt.codeplug.UndoChange()
 	})
 
 	edt.redoButton = column.AddButton("Redo")
-	edt.redoButton.SetDisabled(true)
+	edt.redoButton.SetEnabled(false)
 	edt.redoButton.ConnectClicked(func() {
 		edt.codeplug.RedoChange()
 	})
@@ -721,17 +751,17 @@ https://github.com/dalefarnsworth/codeplug
 func updateUndoActions(edt *editor) {
 	text := edt.codeplug.UndoString()
 	edt.undoAction.SetText("Undo: " + text)
-	edt.undoAction.SetDisabled(text == "")
+	edt.undoAction.SetEnabled(text != "")
 
 	edt.undoButton.SetText("Undo: " + edt.codeplug.UndoString())
-	edt.undoButton.SetDisabled(text == "")
+	edt.undoButton.SetEnabled(text != "")
 
 	text = edt.codeplug.RedoString()
 	edt.redoAction.SetText("Redo: " + edt.codeplug.RedoString())
-	edt.redoAction.SetDisabled(text == "")
+	edt.redoAction.SetEnabled(text != "")
 
 	edt.redoButton.SetText("Redo: " + edt.codeplug.RedoString())
-	edt.redoButton.SetDisabled(text == "")
+	edt.redoButton.SetEnabled(text != "")
 }
 
 type fillRecord func(*editor, *ui.HBox)
@@ -877,20 +907,14 @@ func loadSettings() {
 	settings.sortAvailableContacts = as.Bool("sortAvailableContacts", false)
 	settings.codeplugDirectory = as.String("codeplugDirectory", "")
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
+	settings.model = as.String("model", "")
+	settings.variant = as.String("variant", "")
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
 	for i := 0; i < size; i++ {
 		as.SetArrayIndex(i)
 		settings.recentFiles[i] = as.String("filename", "")
-	}
-	as.EndArray()
-
-	size = as.BeginReadArray("ambiguousNames")
-	settings.ambiguousNames = make([]string, size)
-	for i := 0; i < size; i++ {
-		as.SetArrayIndex(i)
-		settings.ambiguousNames[i] = as.String("name", "")
 	}
 	as.EndArray()
 }
@@ -901,18 +925,13 @@ func saveSettings() {
 	as.SetBool("sortAvailableContacts", settings.sortAvailableContacts)
 	as.SetString("codeplugDirectory", settings.codeplugDirectory)
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
+	as.SetString("model", settings.model)
+	as.SetString("variant", settings.variant)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
 		as.SetArrayIndex(i)
 		as.SetString("filename", name)
-	}
-	as.EndArray()
-
-	as.BeginWriteArray("ambiguousNames", len(settings.ambiguousNames))
-	for i, name := range settings.ambiguousNames {
-		as.SetArrayIndex(i)
-		as.SetString("name", name)
 	}
 	as.EndArray()
 
