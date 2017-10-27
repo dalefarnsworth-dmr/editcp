@@ -112,9 +112,10 @@ func (edt *editor) revertFile() error {
 		msg += "Are you sure you want to discard the changes?"
 		switch ui.YesNoPopup(title, msg) {
 		case ui.PopupYes:
-			err := edt.codeplug.Revert()
+			ignoreWarning := true
+			err := edt.codeplug.Revert(ignoreWarning)
 			if err != nil {
-				ui.WarningPopup("Revert Failed", err.Error())
+				ui.ErrorPopup("Revert Failed", err.Error())
 			}
 			ui.ResetWindows(cp)
 
@@ -142,10 +143,20 @@ func (edt *editor) saveAs(filename string) {
 		settings.codeplugDirectory = filepath.Dir(filename)
 		saveSettings()
 	}
-	err := edt.codeplug.SaveAs(filename)
+	ignoreWarning := false
+	warning, err := edt.codeplug.SaveAs(filename, ignoreWarning)
+	if warning != nil {
+		title := fmt.Sprintf("%s: save warning", filename)
+		rv := ui.WarningPopup(title, warning.Error())
+		if rv == ui.PopupIgnore {
+			return
+		}
+		ignoreWarning := true
+		_, err = edt.codeplug.SaveAs(filename, ignoreWarning)
+	}
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
-		ui.WarningPopup(title, err.Error())
+		ui.ErrorPopup(title, err.Error())
 		return
 	}
 
@@ -176,7 +187,8 @@ func (edt *editor) autosave() {
 	}
 	edt.codeplugHash = hash
 
-	err := cp.SaveToFile(filename)
+	ignoreWarnings := true
+	_, err := cp.SaveToFile(filename, ignoreWarnings)
 	if err != nil {
 		os.Remove(filename)
 	}
@@ -238,7 +250,7 @@ func (edt *editor) openCodeplugFile(filename string) {
 
 	fieldInfo, err := os.Stat(filename)
 	if err != nil {
-		ui.WarningPopup(filename, err.Error())
+		ui.ErrorPopup(filename, err.Error())
 		removeRecentFile(filename)
 		return
 	}
@@ -256,7 +268,7 @@ func (edt *editor) openCodeplugFile(filename string) {
 
 		cp, err := codeplug.NewCodeplug(filename)
 		if err != nil {
-			ui.WarningPopup("Codeplug Error", err.Error())
+			ui.ErrorPopup("Codeplug Error", err.Error())
 			return
 		}
 
@@ -289,9 +301,20 @@ func (edt *editor) openCodeplugFile(filename string) {
 			return
 		}
 
-		err = cp.Load(name)
+		var warning error
+		ignoreWarning := false
+		warning, err = cp.Load(name, ignoreWarning)
+		if warning != nil {
+			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
+			if rv != ui.PopupIgnore {
+				return
+			}
+			ignoreWarning = true
+			_, err = cp.Load(name, ignoreWarning)
+		}
+
 		if err != nil {
-			ui.WarningPopup("Codeplug Load Error", err.Error())
+			ui.ErrorPopup("Codeplug Load Warning", err.Error())
 			return
 		}
 
@@ -623,7 +646,7 @@ func (edt *editor) exportText() {
 	err := edt.codeplug.ExportTo(filename)
 	if err != nil {
 		title := fmt.Sprintf("Export to %s", filename)
-		ui.WarningPopup(title, err.Error())
+		ui.ErrorPopup(title, err.Error())
 		return
 	}
 }
@@ -654,7 +677,7 @@ func (edt *editor) importText() {
 	_, err := os.Stat(filename)
 	if err != nil {
 		title := fmt.Sprintf("Import from %s", filename)
-		ui.WarningPopup(title, err.Error())
+		ui.ErrorPopup(title, err.Error())
 		return
 	}
 
@@ -667,7 +690,7 @@ func (edt *editor) importText() {
 	if err != nil {
 		title := fmt.Sprintf("Import from %s failed", filename)
 		msg := err.Error()
-		ui.WarningPopup(title, msg)
+		ui.ErrorPopup(title, msg)
 		return
 	}
 
@@ -815,7 +838,7 @@ func addRecordSelector(box *ui.VBox) {
 	add.ConnectClicked(func() {
 		err := rl.AddSelected()
 		if err != nil {
-			ui.WarningPopup("Add Record", err.Error())
+			ui.ErrorPopup("Add Record", err.Error())
 			return
 		}
 	})
@@ -823,7 +846,7 @@ func addRecordSelector(box *ui.VBox) {
 	delete.ConnectClicked(func() {
 		err := rl.RemoveSelected()
 		if err != nil {
-			ui.WarningPopup("Delete Record", err.Error())
+			ui.ErrorPopup("Delete Record", err.Error())
 			return
 		}
 	})
