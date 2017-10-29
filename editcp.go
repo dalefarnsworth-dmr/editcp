@@ -30,6 +30,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
@@ -129,15 +130,31 @@ func (edt *editor) revertFile() error {
 }
 
 func (edt *editor) save() {
+	cp := edt.codeplug
+	if cp.Filename() == "." || cp.FileType() != codeplug.FileTypeRdt {
+		edt.saveAs("")
+		return
+	}
 	edt.saveAs(edt.codeplug.Filename())
 }
 
-func (edt *editor) saveAs(filename string) {
-	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
+func baseFilename(filename string) string {
+	base := filepath.Base(filename)
+	ext := filepath.Ext(base)
+	if ext != "" {
+		base = strings.TrimSuffix(base, ext)
+	}
 
+	return base
+}
+
+func (edt *editor) saveAs(filename string) {
 	if filename == "" {
 		dir := settings.codeplugDirectory
-		filename = ui.SaveFilename("Save codeplug file", dir)
+		base := baseFilename(edt.codeplug.Filename())
+		ext := edt.codeplug.Ext()
+		dir = filepath.Join(dir, base+"."+ext)
+		filename = ui.SaveFilename("Save codeplug file", dir, ext)
 		if filename == "" {
 			return
 		}
@@ -161,6 +178,9 @@ func (edt *editor) saveAs(filename string) {
 		return
 	}
 
+	edt.updateFilename()
+
+	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
 	os.Remove(autosaveFilename)
 }
 
@@ -245,11 +265,10 @@ func deleteString(strs *[]string, i int) {
 }
 
 func (edt *editor) openCodeplugFile(filename string) {
-	if absPath, err := filepath.Abs(filename); err == nil {
-		filename = absPath
-	}
-
 	if filename != "." {
+		if absPath, err := filepath.Abs(filename); err == nil {
+			filename = absPath
+		}
 		fileInfo, err := os.Stat(filename)
 		if err != nil {
 			ui.ErrorPopup(filename, err.Error())
@@ -388,16 +407,10 @@ func newEditor(app *ui.App, filename string) {
 	}
 
 	cp := edt.codeplug
-	title := "Codeplug Editor"
 	if cp != nil {
-		filename = cp.Filename()
 		mw.SetCodeplug(cp)
-		title = filename + edt.titleSuffix()
-		settings.codeplugDirectory = filepath.Dir(filename)
-		saveSettings()
 	}
-
-	mw.SetTitle(title)
+	edt.updateFilename()
 
 	mw.ConnectClose(func() bool {
 		if cp != nil {
@@ -449,11 +462,13 @@ func newEditor(app *ui.App, filename string) {
 	})
 	menu.AddAction("Open...", func() {
 		dir := settings.codeplugDirectory
-		filename = ui.OpenFilename("Open codeplug file", dir)
-		if filename == "" {
-			return
+		exts := edt.codeplug.AllExts()
+		filenames := ui.OpenFilenames("Open codeplug file", dir, exts)
+		for _, filename := range filenames {
+			if filename != "" {
+				newEditor(edt.app, filename)
+			}
 		}
-		newEditor(edt.app, filename)
 	})
 	recentMenu := menu.AddMenu("Open Recent...")
 	recentMenu.ConnectAboutToShow(func() {
@@ -594,6 +609,20 @@ func newEditor(app *ui.App, filename string) {
 	editorOpened = true
 }
 
+func (edt *editor) updateFilename() {
+	title := "Codeplug Editor"
+	cp := edt.codeplug
+	if cp != nil {
+		filename := cp.Filename()
+		title = filename + edt.titleSuffix()
+		settings.codeplugDirectory = filepath.Dir(filename)
+		saveSettings()
+		addRecentFile(filename)
+	}
+
+	edt.mainWindow.SetTitle(title)
+}
+
 func (edt *editor) updateWindowsMenu(menu *ui.Menu) {
 	menu.Clear()
 
@@ -666,7 +695,10 @@ func removeRecentFile(name string) {
 
 func (edt *editor) exportText() {
 	dir := settings.codeplugDirectory
-	filename := ui.SaveFilename("Export to text file", dir)
+	base := baseFilename(edt.codeplug.Filename())
+	ext := "txt"
+	dir = filepath.Join(dir, base+"."+ext)
+	filename := ui.SaveFilename("Export to text file", dir, ext)
 	if filename == "" {
 		return
 	}
@@ -697,7 +729,8 @@ func (edt *editor) importText() {
 	}
 
 	dir := settings.codeplugDirectory
-	filename := ui.OpenFilename("Import from text file", dir)
+	exts := []string{"txt"}
+	filename := ui.OpenFilename("Import from text file", dir, exts)
 	if filename == "" {
 		return
 	}
