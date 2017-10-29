@@ -29,7 +29,7 @@ import (
 )
 
 func generalSettings(edt *editor) {
-	edt.recordWindow(codeplug.RtGeneralSettings, gsRecord)
+	edt.recordWindow(codeplug.RecordType("GeneralSettings"), gsRecord)
 }
 
 func gsRecord(edt *editor, recordBox *ui.HBox) {
@@ -78,46 +78,25 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsPowerOnPassword,
 	)
 
-	var fieldTypes []codeplug.FieldType
-
-	switch edt.codeplug.Type() {
-	case "md380":
-		fieldTypes = []codeplug.FieldType{
-			codeplug.FtGsRadioName,
-			codeplug.FtGsRadioID,
-			codeplug.FtGsMonitorType,
-			codeplug.FtGsVoxSensitivity,
-			codeplug.FtGsTxPreambleDuration,
-			codeplug.FtGsRxLowBatteryInterval,
-			codeplug.FtGsPcProgPw,
-			codeplug.FtGsRadioProgPw,
-			codeplug.FtGsBacklightTime,
-			codeplug.FtGsSetKeypadLockTime,
-			codeplug.FtGsDisableAllLeds,
-		}
-
-	case "md40":
-		fieldTypes = []codeplug.FieldType{
-			codeplug.FtGsRadioName,
-			codeplug.FtGsRadioID,
-			codeplug.FtGsMonitorType,
-			codeplug.FtGsVoxSensitivity,
-			codeplug.FtGsTxPreambleDuration,
-			codeplug.FtGsRxLowBatteryInterval,
-			codeplug.FtGsBacklightColor,
-			codeplug.FtGsFreqChannelMode,
-			codeplug.FtGsModeSelect,
-			codeplug.FtGsLockUnlock,
-			codeplug.FtGsPcProgPw,
-			codeplug.FtGsRadioProgPw,
-			codeplug.FtGsSetKeypadLockTime,
-			codeplug.FtGsDisableAllLeds,
-		}
-	}
-
 	column = row.AddVbox()
 	form = column.AddForm()
-	form.AddFieldRows(r, fieldTypes...)
+	form.AddFieldRows(r,
+		codeplug.FtGsRadioName,
+		codeplug.FtGsRadioID,
+		codeplug.FtGsMonitorType,
+		codeplug.FtGsVoxSensitivity,
+		codeplug.FtGsTxPreambleDuration,
+		codeplug.FtGsRxLowBatteryInterval,
+		codeplug.FtGsBacklightColor,
+		codeplug.FtGsFreqChannelMode,
+		codeplug.FtGsModeSelect,
+		codeplug.FtGsLockUnlock,
+		codeplug.FtGsPcProgPw,
+		codeplug.FtGsRadioProgPw,
+		codeplug.FtGsBacklightTime,
+		codeplug.FtGsSetKeypadLockTime,
+		codeplug.FtGsDisableAllLeds,
+	)
 
 	groupBox = column.AddGroupbox("Talkaround")
 	form = groupBox.AddForm()
