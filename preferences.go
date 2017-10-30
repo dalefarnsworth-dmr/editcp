@@ -29,51 +29,10 @@ import (
 
 func (edt *editor) preferences() {
 	w := edt.mainWindow.NewWindow()
+	w.SetTitle(edt.mainWindow.Title() + " - " + "Preferences")
 
 	column := w.AddVbox()
-	row := column.AddHbox()
-	groupBox := row.AddGroupbox("AutoSave")
-	form := groupBox.AddForm()
-
-	loadSettings()
-
-	spinbox := ui.NewSpinbox(settings.autosaveInterval, 0, 60, func(i int) {
-		edt.setAutosaveInterval(i)
-		settings.autosaveInterval = i
-	})
-	form.AddRow("Auto Save interval (minutes):", spinbox)
-	row.AddFiller()
-
-	/* Not ready yet
-	text := "Select the default model when the codeplug model is unknown.\n"
-	column.AddLabel(text)
-
-	cp := edt.codeplug
-
-	models, variantsMap, _ := cp.ModelsVariantsFiles()
-	var variants []string
-
-	row = column.AddHbox()
-	column.AddSpace(3)
-	row2 := column.AddHbox()
-	options := append([]string{"Ask"}, models...)
-	for i, model := range options {
-		b := row.AddRadioButton(model)
-		if i == 0 || model == settings.model {
-			row2.SetEnabled(i != 0)
-			b.SetChecked(true)
-		}
-		b.ConnectClicked(func(bo bool) {
-			text := b.Text()
-			row2.SetEnabled(text != "Ask")
-			variants = variantsMap[text]
-			addVariants(row2, variants)
-			settings.model = b.Text()
-		})
-	}
-
-	addVariants(row2, variants)
-	*/
+	edt.AddAutoSavePrefs(column)
 
 	w.ConnectClose(func() bool {
 		saveSettings()
@@ -84,16 +43,17 @@ func (edt *editor) preferences() {
 	w.Show()
 }
 
-func addVariants(row *ui.HBox, variants []string) {
-	row.Clear()
-	options := append([]string{"Ask"}, variants...)
-	for i, variant := range options {
-		b := row.AddRadioButton(variant)
-		if i == 0 || variant == settings.variant {
-			b.SetChecked(true)
-		}
-		b.ConnectClicked(func(bo bool) {
-			settings.variant = b.Text()
-		})
-	}
+func (edt *editor) AddAutoSavePrefs(column *ui.VBox) {
+	row := column.AddHbox()
+	groupBox := row.AddGroupbox("AutoSave")
+	form := groupBox.AddForm()
+
+	loadSettings()
+
+	spinbox := ui.NewSpinboxWidget(settings.autosaveInterval, 0, 60, func(i int) {
+		edt.setAutosaveInterval(i)
+		settings.autosaveInterval = i
+	})
+	form.AddRow("Auto Save interval (minutes):", spinbox)
+	row.AddFiller()
 }

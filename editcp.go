@@ -294,10 +294,9 @@ func (edt *editor) openCodeplugFile(filename string) {
 			return
 		}
 
-		model, variant, filename := modelVariantFile(cp,
-			"<select model>", "<select frequency range>")
+		model, variant, filename := modelVariantFile(cp)
 
-		if model == "" {
+		if model == "" || variant == "" {
 			return
 		}
 
@@ -338,47 +337,92 @@ func (edt *editor) openCodeplugFile(filename string) {
 	edt.codeplugCount = highCount + 1
 }
 
-func modelVariantFile(cp *codeplug.Codeplug, disableModel string, disableVariant string) (model string, variant string, file string) {
+func modelVariantFile(cp *codeplug.Codeplug) (model string, variant string, file string) {
 	models, variantsMap, filesMap := cp.ModelsVariantsFiles()
+	if len(models) == 1 {
+		model = models[0]
+		variants := variantsMap[model]
+		if len(variants) == 1 {
+			variant = variants[0]
+			file = filesMap[model][0]
+			return model, variant, file
+		}
+	}
 
-	for _, model := range models {
-		if model == settings.model {
-			models = []string{model}
-			variants := variantsMap[model]
-			files := filesMap[model]
+	model = settings.model
+	variant = settings.variant
 
-			for i, variant := range variants {
-				if variant == settings.variant {
-					variants = []string{variant}
-					files = []string{files[i]}
-					break
+	mOpts := append([]string{"<select model>"}, models...)
+
+	variants := variantsMap[model]
+	vOpts := append([]string{"<select frequency range>"}, variants...)
+
+	dialog := ui.NewDialog("Select codeplug type")
+
+	cancelButton := ui.NewButtonWidget("Cancel", func() {
+		dialog.Reject()
+	})
+	okButton := ui.NewButtonWidget("Ok", func() {
+		dialog.Accept()
+	})
+	okButton.SetEnabled(containsString(variant, vOpts[1:]))
+
+	vCb := ui.NewComboboxWidget(variant, vOpts, func(s string) {
+		variant = s
+		okButton.SetEnabled(containsString(variant, vOpts[1:]))
+	})
+	vCb.SetEnabled(containsString(model, mOpts[1:]))
+
+	mCb := ui.NewComboboxWidget(model, mOpts, func(s string) {
+		vCb.SetEnabled(containsString(s, mOpts[1:]))
+		vOpts = append(vOpts[:1], variantsMap[s]...)
+		ui.UpdateComboboxWidget(vCb, vOpts[0], vOpts)
+		model = s
+	})
+
+	dialog.AddLabel("Select the codeplug model and frequency range.")
+	form := dialog.AddForm()
+	form.AddRow("", mCb)
+	form.AddRow("", vCb)
+	row := dialog.AddHbox()
+	row.AddWidget(cancelButton)
+	row.AddWidget(okButton)
+
+	if dialog.Exec() {
+		if containsString(model, models) {
+			settings.model = model
+			if containsString(variant, variantsMap[model]) {
+				settings.variant = variant
+				for i, v := range variantsMap[model] {
+					if v == variant {
+						file = filesMap[model][i]
+						break
+					}
 				}
+			} else {
+				variant = ""
 			}
-			variantsMap = make(map[string][]string)
-			variantsMap[model] = variants
-			filesMap = make(map[string][]string)
-			filesMap[model] = files
-			break
+		} else {
+			model = ""
+			variant = ""
 		}
-	}
-
-	model = models[0]
-	variant = variantsMap[model][0]
-	if len(models) > 1 || len(variantsMap[model]) > 1 {
-		title := "Select codeplug type"
-		msg := "Please select the codeplug model and frequency range."
-		model, variant = ui.TwoListPopup(title, msg,
-			disableModel, disableVariant, models, variantsMap)
-	}
-
-	for i, v := range variantsMap[model] {
-		if v == variant {
-			file = filesMap[model][i]
-			break
-		}
+		saveSettings()
+	} else {
+		model = ""
+		variant = ""
 	}
 
 	return model, variant, file
+}
+
+func containsString(str string, strs []string) bool {
+	found := false
+	for _, s := range strs {
+		if s == str {
+			found = true
+		}
+	}
+	return found
 }
 
 func newEditor(app *ui.App, filename string) {
