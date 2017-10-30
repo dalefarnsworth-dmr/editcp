@@ -44,6 +44,7 @@ func (edt *editor) preferences() {
 	form.AddRow("Auto Save interval (minutes):", spinbox)
 	row.AddFiller()
 
+	/* Not ready yet
 	text := "Select the default model when the codeplug model is unknown.\n"
 	column.AddLabel(text)
 
@@ -72,6 +73,7 @@ func (edt *editor) preferences() {
 	}
 
 	addVariants(row2, variants)
+	*/
 
 	w.ConnectClose(func() bool {
 		saveSettings()
