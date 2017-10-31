@@ -2,7 +2,7 @@
 dirname=
 appname=editcp
 
-if [ ! -f "$dirname/$appname" -o ! -d "$dirname/qml" ]; then
+if [ ! -f "$dirname/$appname" ]; then
 	echo "$dirname/$appname not found." 1>&2
 	echo "cd to the $appname installation directory and run ./install"
 	exit 1

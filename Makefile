@@ -14,6 +14,7 @@ linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install
 
 deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
+	rm -rf deploy/linux/qml
 
 .PHONY: deploy/linux/editcp.sh	# Force, in case it's overwritten by install
 deploy/linux/editcp.sh: editcp.sh
@@ -22,7 +23,7 @@ deploy/linux/editcp.sh: editcp.sh
 deploy/linux/install: install.sh deploy/linux/editcp
 	cp install.sh deploy/linux/install
 
-editcp-$(VERSION).tar.xz: deploy/linux/editcp.sh
+editcp-$(VERSION).tar.xz: linux
 	rm -rf editcp-$(VERSION)
 	mkdir -p editcp-$(VERSION)
 	cp -al deploy/linux/* editcp-$(VERSION)
