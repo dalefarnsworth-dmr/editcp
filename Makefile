@@ -34,7 +34,7 @@ install: linux
 
 windows: editcp-$(VERSION)-installer.exe
 
-editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe deploy/win64/editcp.exe editcp.nsi
+editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe
 	makensis -DVERSION=$(VERSION) editcp.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
@@ -42,15 +42,10 @@ deploy/win32/editcp.exe: $(SOURCES)
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
 
-deploy/win64/editcp.exe: $(SOURCES)
-	qtdeploy -docker build windows_64_static
-	mkdir -p deploy/win64
-	cp deploy/windows/editcp.exe deploy/win64
-
 clean:
 
 clobber: clean
-	rm -rf deploy
+	rm -rf deploy/* editcp-*.tar.xz editcp-*.exe
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 

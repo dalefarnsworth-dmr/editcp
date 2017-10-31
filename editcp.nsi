@@ -13,13 +13,9 @@ Name "editcp"
 OutFile "editcp-${VERSION}-installer.exe"
 
 !include "LogicLib.nsh"
-!include "x64.nsh"
 
 Function .onInit
   StrCpy $INSTDIR $PROGRAMFILES32\editcp
-  ${If} ${RunningX64}
-    StrCpy $INSTDIR $PROGRAMFILES64\editcp
-  ${EndIf}
 ; Check for previous (ill-installed) versions
   IfFileExists "$PROGRAMFILES32\Dale Farnsworth\editcp 0.4\*.*" 0 CheckV5
     MessageBox MB_OK "editcp 0.4 is still installed.$\n\
@@ -52,11 +48,7 @@ FunctionEnd
 
 Section
 Setoutpath $INSTDIR
-${If} ${RunningX64}
-  File deploy\win64\editcp.exe
-${Else}
   File deploy\win32\editcp.exe
-${EndIf}
 SectionEnd
 
 ; The default installation directory
