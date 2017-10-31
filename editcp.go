@@ -797,6 +797,11 @@ func (edt *editor) importText() {
 	if err != nil {
 		title := fmt.Sprintf("Import from %s failed", filename)
 		msg := err.Error()
+		posErr, ok := err.(codeplug.PositionError)
+		if ok {
+			msg = fmt.Sprintf("%s:%d:%d %s", filename,
+				posErr.Line(), posErr.Column(), posErr.Error())
+		}
 		ui.ErrorPopup(title, msg)
 		return
 	}
