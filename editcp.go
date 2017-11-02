@@ -507,7 +507,7 @@ func newEditor(app *ui.App, filename string) {
 	menu.AddAction("Open...", func() {
 		dir := settings.codeplugDirectory
 		exts := edt.codeplug.AllExts()
-		filenames := ui.OpenFilenames("Open codeplug file", dir, exts)
+		filenames := ui.OpenCPFilenames("Open codeplug file", dir, exts)
 		for _, filename := range filenames {
 			if filename != "" {
 				newEditor(edt.app, filename)
@@ -773,8 +773,7 @@ func (edt *editor) importText() {
 	}
 
 	dir := settings.codeplugDirectory
-	exts := []string{"txt"}
-	filename := ui.OpenFilename("Import from text file", dir, exts)
+	filename := ui.OpenTextFilename("Import from text file", dir)
 	if filename == "" {
 		return
 	}
