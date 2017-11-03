@@ -29,27 +29,12 @@ import (
 )
 
 func zoneInformation(edt *editor) {
-	var rType codeplug.RecordType
-
-	switch edt.codeplug.Type() {
-	case "md380":
-		rType = codeplug.RtZoneInformation_md380
-	case "md40":
-		rType = codeplug.RtZoneInformation_md40
-	}
-
+	rType := codeplug.RecordType("ZoneInformation")
 	edt.recordWindow(rType, ziRecord)
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
-	var fType codeplug.FieldType
-
-	switch edt.codeplug.Type() {
-	case "md380":
-		fType = codeplug.FtZiChannelMember_md380
-	case "md40":
-		fType = codeplug.FtZiChannelMember_md40
-	}
+	fType := codeplug.FieldType("ChannelMember")
 
 	column := recordBox.AddVbox()
 	addFieldMembers(column, &settings.sortAvailableChannels,
