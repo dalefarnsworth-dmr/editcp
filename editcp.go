@@ -232,7 +232,7 @@ func main() {
 	}
 
 	for _, filename := range filenames {
-		newEditor(app, filename)
+		newEditor(app, filename, "")
 	}
 
 	if len(editors) == 0 {
@@ -264,7 +264,7 @@ func deleteString(strs *[]string, i int) {
 	*strs = (*strs)[:len(*strs)-1]
 }
 
-func (edt *editor) openCodeplugFile(filename string) {
+func (edt *editor) openCodeplugFile(filename string, importFilename string) {
 	if filename != "." {
 		if absPath, err := filepath.Abs(filename); err == nil {
 			filename = absPath
@@ -294,27 +294,42 @@ func (edt *editor) openCodeplugFile(filename string) {
 			return
 		}
 
-		model, variant, filename := modelVariantFile(cp)
-
-		if model == "" || variant == "" {
-			return
-		}
-
-		var warning error
-		ignoreWarning := false
-		warning, err = cp.Load(model, variant, filename, ignoreWarning)
-		if warning != nil {
-			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
-			if rv != ui.PopupIgnore {
+		if importFilename != "" {
+			err = cp.ImportFrom(importFilename)
+			if err != nil {
+				title := fmt.Sprintf("Import from %s failed", filename)
+				msg := err.Error()
+				posErr, ok := err.(codeplug.PositionError)
+				if ok {
+					msg = fmt.Sprintf("%s:%d:%d %s", filename,
+						posErr.Line(), posErr.Column(), posErr.Error())
+				}
+				ui.ErrorPopup(title, msg)
 				return
 			}
-			ignoreWarning = true
-			_, err = cp.Load(model, variant, filename, ignoreWarning)
-		}
+		} else {
+			model, variant, filename := modelVariantFile(cp)
 
-		if err != nil {
-			ui.ErrorPopup("Codeplug Load Warning", err.Error())
-			return
+			if model == "" || variant == "" {
+				return
+			}
+
+			var warning error
+			ignoreWarning := false
+			warning, err = cp.Load(model, filename, ignoreWarning)
+			if warning != nil {
+				rv := ui.WarningPopup("Codeplug Warning", warning.Error())
+				if rv != ui.PopupIgnore {
+					return
+				}
+				ignoreWarning = true
+				_, err = cp.Load(model, filename, ignoreWarning)
+			}
+
+			if err != nil {
+				ui.ErrorPopup("Codeplug Load Warning", err.Error())
+				return
+			}
 		}
 
 		edt.codeplug = cp
@@ -425,7 +440,7 @@ func containsString(str string, strs []string) bool {
 	return found
 }
 
-func newEditor(app *ui.App, filename string) {
+func newEditor(app *ui.App, filename string, importFilename string) *editor {
 	var edt *editor
 	for _, ed := range editors {
 		if ed.codeplug == nil {
@@ -447,7 +462,7 @@ func newEditor(app *ui.App, filename string) {
 	}
 
 	if filename != "" {
-		edt.openCodeplugFile(filename)
+		edt.openCodeplugFile(filename, importFilename)
 	}
 
 	cp := edt.codeplug
@@ -502,7 +517,7 @@ func newEditor(app *ui.App, filename string) {
 	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("New...", func() {
-		newEditor(edt.app, ".")
+		newEditor(edt.app, ".", "")
 	})
 	menu.AddAction("Open...", func() {
 		dir := settings.codeplugDirectory
@@ -510,7 +525,7 @@ func newEditor(app *ui.App, filename string) {
 		filenames := ui.OpenCPFilenames("Open codeplug file", dir, exts)
 		for _, filename := range filenames {
 			if filename != "" {
-				newEditor(edt.app, filename)
+				newEditor(edt.app, filename, "")
 			}
 		}
 	})
@@ -529,7 +544,7 @@ func newEditor(app *ui.App, filename string) {
 
 	menu.AddAction("Import from text file...", func() {
 		edt.importText()
-	}).SetEnabled(cp != nil)
+	})
 
 	menu.AddAction("Save", func() {
 		edt.save()
@@ -651,6 +666,7 @@ func newEditor(app *ui.App, filename string) {
 	mw.Show()
 
 	editorOpened = true
+	return edt
 }
 
 func (edt *editor) updateFilename() {
@@ -703,7 +719,7 @@ func (edt *editor) updateRecentMenu(menu *ui.Menu) {
 	for i := range settings.recentFiles {
 		filename := settings.recentFiles[i]
 		menu.AddAction(filename, func() {
-			newEditor(edt.app, filename)
+			newEditor(edt.app, filename, "")
 		})
 	}
 	menu.SetEnabled(len(settings.recentFiles) != 0)
@@ -758,20 +774,6 @@ func (edt *editor) exportText() {
 }
 
 func (edt *editor) importText() {
-	cp := edt.codeplug
-	if cp.Changed() {
-		title := fmt.Sprintf("Import from text file")
-		msg := cp.Filename() + " has been modified.\n"
-		msg += "Are you sure you want to discard the changes?"
-		switch ui.YesNoPopup(title, msg) {
-		case ui.PopupYes:
-			break
-
-		default:
-			return
-		}
-	}
-
 	dir := settings.codeplugDirectory
 	filename := ui.OpenTextFilename("Import from text file", dir)
 	if filename == "" {
@@ -787,25 +789,7 @@ func (edt *editor) importText() {
 		return
 	}
 
-	windows := edt.mainWindow.RecordWindows()
-	for _, w := range windows {
-		w.Close()
-	}
-
-	err = edt.codeplug.ImportFrom(filename)
-	if err != nil {
-		title := fmt.Sprintf("Import from %s failed", filename)
-		msg := err.Error()
-		posErr, ok := err.(codeplug.PositionError)
-		if ok {
-			msg = fmt.Sprintf("%s:%d:%d %s", filename,
-				posErr.Line(), posErr.Column(), posErr.Error())
-		}
-		ui.ErrorPopup(title, msg)
-		return
-	}
-
-	ui.ResetWindows(edt.codeplug)
+	edt = newEditor(edt.app, ".", filename)
 }
 
 func about() {
