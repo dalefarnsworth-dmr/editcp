@@ -162,15 +162,15 @@ func (edt *editor) saveAs(filename string) {
 		saveSettings()
 	}
 	ignoreWarning := false
-	warning, err := edt.codeplug.SaveAs(filename, ignoreWarning)
-	if warning != nil {
+	err := edt.codeplug.SaveAs(filename, ignoreWarning)
+	if warning, ok := err.(codeplug.Warning); ok {
 		title := fmt.Sprintf("%s: save warning", filename)
 		rv := ui.WarningPopup(title, warning.Error())
 		if rv == ui.PopupIgnore {
 			return
 		}
 		ignoreWarning := true
-		_, err = edt.codeplug.SaveAs(filename, ignoreWarning)
+		err = edt.codeplug.SaveAs(filename, ignoreWarning)
 	}
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
@@ -209,7 +209,7 @@ func (edt *editor) autosave() {
 	edt.codeplugHash = hash
 
 	ignoreWarnings := true
-	_, err := cp.SaveToFile(filename, ignoreWarnings)
+	err := cp.SaveToFile(filename, ignoreWarnings)
 	if err != nil {
 		os.Remove(filename)
 	}
@@ -314,22 +314,21 @@ func (edt *editor) openCodeplugFile(filename string, importFilename string) {
 				return
 			}
 
-			var warning error
 			ignoreWarning := false
-			warning, err = cp.Load(model, filename, ignoreWarning)
-			if warning != nil {
+			err = cp.Load(model, filename, ignoreWarning)
+			if warning, ok := err.(codeplug.Warning); ok {
 				rv := ui.WarningPopup("Codeplug Warning", warning.Error())
 				if rv != ui.PopupIgnore {
 					return
 				}
 				ignoreWarning = true
-				_, err = cp.Load(model, filename, ignoreWarning)
+				err = cp.Load(model, filename, ignoreWarning)
 			}
-
 			if err != nil {
-				ui.ErrorPopup("Codeplug Load Warning", err.Error())
+				ui.ErrorPopup("Codeplug Load Error", err.Error())
 				return
 			}
+
 		}
 
 		edt.codeplug = cp
