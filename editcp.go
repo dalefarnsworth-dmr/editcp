@@ -504,17 +504,17 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 		edt.updateRecentMenu(recentMenu)
 	})
 
-	menu.AddAction("Revert", func() {
-		edt.revertFile()
-	}).SetEnabled(cp != nil)
+	menu.AddAction("Import from text file...", func() {
+		edt.importText()
+	})
 
 	menu.AddAction("Export to text file...", func() {
 		edt.exportText()
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Import from text file...", func() {
-		edt.importText()
-	})
+	menu.AddAction("Revert", func() {
+		edt.revertFile()
+	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Save", func() {
 		edt.save()
