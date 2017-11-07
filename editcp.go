@@ -129,13 +129,12 @@ func (edt *editor) revertFile() error {
 	return err
 }
 
-func (edt *editor) save() {
+func (edt *editor) save() string {
 	cp := edt.codeplug
 	if cp.Filename() == "." || cp.FileType() != codeplug.FileTypeRdt {
-		edt.saveAs("")
-		return
+		return edt.saveAs("")
 	}
-	edt.saveAs(edt.codeplug.Filename())
+	return edt.saveAs(edt.codeplug.Filename())
 }
 
 func baseFilename(filename string) string {
@@ -148,7 +147,7 @@ func baseFilename(filename string) string {
 	return base
 }
 
-func (edt *editor) saveAs(filename string) {
+func (edt *editor) saveAs(filename string) string {
 	if filename == "" {
 		dir := settings.codeplugDirectory
 		base := baseFilename(edt.codeplug.Filename())
@@ -156,7 +155,7 @@ func (edt *editor) saveAs(filename string) {
 		dir = filepath.Join(dir, base+"."+ext)
 		filename = ui.SaveFilename("Save codeplug file", dir, ext)
 		if filename == "" {
-			return
+			return ""
 		}
 		settings.codeplugDirectory = filepath.Dir(filename)
 		saveSettings()
@@ -167,7 +166,7 @@ func (edt *editor) saveAs(filename string) {
 		title := fmt.Sprintf("%s: save warning", filename)
 		rv := ui.WarningPopup(title, warning.Error())
 		if rv == ui.PopupIgnore {
-			return
+			return ""
 		}
 		ignoreWarning := true
 		err = edt.codeplug.SaveAs(filename, ignoreWarning)
@@ -175,13 +174,14 @@ func (edt *editor) saveAs(filename string) {
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
 		ui.ErrorPopup(title, err.Error())
-		return
+		return ""
 	}
 
 	edt.updateFilename()
 
 	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
 	os.Remove(autosaveFilename)
+	return filename
 }
 
 func (edt *editor) setAutosaveInterval(seconds int) {
@@ -456,7 +456,9 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 				msg += "Do you want to save the changes?"
 				switch ui.SavePopup(title, msg) {
 				case ui.PopupSave:
-					edt.save()
+					if edt.save() == "" {
+						return false
+					}
 
 				case ui.PopupDiscard:
 					break
