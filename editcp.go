@@ -200,6 +200,10 @@ func (edt *editor) setAutosaveInterval(seconds int) {
 
 func (edt *editor) autosave() {
 	cp := edt.codeplug
+	if cp == nil {
+		return
+	}
+
 	filename := cp.Filename() + autosaveSuffix
 
 	hash := cp.CurrentHash()
