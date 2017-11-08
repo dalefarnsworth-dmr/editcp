@@ -505,6 +505,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	recentMenu.ConnectAboutToShow(func() {
 		edt.updateRecentMenu(recentMenu)
 	})
+	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
 	menu.AddAction("Import from text file...", func() {
 		edt.importText()
