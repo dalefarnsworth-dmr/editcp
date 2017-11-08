@@ -50,7 +50,7 @@ type editorSettings struct {
 	autosaveInterval      int
 	recentFiles           []string
 	model                 string
-	variant               string
+	frequencyRange        string
 }
 
 var appSettings *ui.AppSettings
@@ -298,21 +298,21 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		model, variant := modelVariant(cp)
+		model, frequencyRange := modelFrequencyRange(cp)
 
-		if model == "" || variant == "" {
+		if model == "" || frequencyRange == "" {
 			return
 		}
 
 		ignoreWarning := false
-		err = cp.Load(model, variant, ignoreWarning)
+		err = cp.Load(model, frequencyRange, ignoreWarning)
 		if warning, ok := err.(codeplug.Warning); ok {
 			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
 			if rv != ui.PopupIgnore {
 				return
 			}
 			ignoreWarning = true
-			err = cp.Load(model, variant, ignoreWarning)
+			err = cp.Load(model, frequencyRange, ignoreWarning)
 		}
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
@@ -339,24 +339,24 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 	edt.codeplugCount = highCount + 1
 }
 
-func modelVariant(cp *codeplug.Codeplug) (model string, variant string) {
-	models, variantsMap := cp.ModelsVariants()
+func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange string) {
+	models, frequencyRangesMap := cp.ModelsFrequencyRanges()
 	if len(models) == 1 {
 		model = models[0]
-		variants := variantsMap[model]
-		if len(variants) == 1 {
-			variant = variants[0]
-			return model, variant
+		frequencyRanges := frequencyRangesMap[model]
+		if len(frequencyRanges) == 1 {
+			frequencyRange = frequencyRanges[0]
+			return model, frequencyRange
 		}
 	}
 
 	model = settings.model
-	variant = settings.variant
+	frequencyRange = settings.frequencyRange
 
 	mOpts := append([]string{"<select model>"}, models...)
 
-	variants := variantsMap[model]
-	vOpts := append([]string{"<select frequency range>"}, variants...)
+	frequencyRanges := frequencyRangesMap[model]
+	vOpts := append([]string{"<select frequency range>"}, frequencyRanges...)
 
 	dialog := ui.NewDialog("Select codeplug type")
 
@@ -366,17 +366,17 @@ func modelVariant(cp *codeplug.Codeplug) (model string, variant string) {
 	okButton := ui.NewButtonWidget("Ok", func() {
 		dialog.Accept()
 	})
-	okButton.SetEnabled(containsString(variant, vOpts[1:]))
+	okButton.SetEnabled(containsString(frequencyRange, vOpts[1:]))
 
-	vCb := ui.NewComboboxWidget(variant, vOpts, func(s string) {
-		variant = s
-		okButton.SetEnabled(containsString(variant, vOpts[1:]))
+	vCb := ui.NewComboboxWidget(frequencyRange, vOpts, func(s string) {
+		frequencyRange = s
+		okButton.SetEnabled(containsString(frequencyRange, vOpts[1:]))
 	})
 	vCb.SetEnabled(containsString(model, mOpts[1:]))
 
 	mCb := ui.NewComboboxWidget(model, mOpts, func(s string) {
 		vCb.SetEnabled(containsString(s, mOpts[1:]))
-		vOpts = append(vOpts[:1], variantsMap[s]...)
+		vOpts = append(vOpts[:1], frequencyRangesMap[s]...)
 		ui.UpdateComboboxWidget(vCb, vOpts[0], vOpts)
 		model = s
 	})
@@ -395,13 +395,13 @@ func modelVariant(cp *codeplug.Codeplug) (model string, variant string) {
 
 	if containsString(model, models) {
 		settings.model = model
-		if containsString(variant, variantsMap[model]) {
-			settings.variant = variant
+		if containsString(frequencyRange, frequencyRangesMap[model]) {
+			settings.frequencyRange = frequencyRange
 		}
 	}
 	saveSettings()
 
-	return model, variant
+	return model, frequencyRange
 }
 
 func containsString(str string, strs []string) bool {
@@ -956,7 +956,7 @@ func loadSettings() {
 	settings.codeplugDirectory = as.String("codeplugDirectory", "")
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	settings.model = as.String("model", "")
-	settings.variant = as.String("variant", "")
+	settings.frequencyRange = as.String("frequencyRange", "")
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -974,7 +974,7 @@ func saveSettings() {
 	as.SetString("codeplugDirectory", settings.codeplugDirectory)
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.SetString("model", settings.model)
-	as.SetString("variant", settings.variant)
+	as.SetString("frequencyRange", settings.frequencyRange)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
