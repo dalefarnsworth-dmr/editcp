@@ -446,8 +446,8 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	cp := edt.codeplug
 	if cp != nil {
 		mw.SetCodeplug(cp)
+		edt.updateFilename()
 	}
-	edt.updateFilename()
 
 	mw.ConnectClose(func() bool {
 		if cp != nil {
@@ -720,13 +720,15 @@ func (edt *editor) updateRecentMenu(menu *ui.Menu) {
 }
 
 func addRecentFile(name string) {
+	if _, err := os.Stat(name); err != nil {
+		return
+	}
+
 	if len(settings.recentFiles) > 0 {
 		if name == settings.recentFiles[0] {
 			return
 		}
 	}
-
-	removeRecentFile(name)
 
 	settings.recentFiles = append([]string{name}, settings.recentFiles...)
 
