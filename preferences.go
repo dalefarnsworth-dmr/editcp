@@ -28,32 +28,42 @@ import (
 )
 
 func (edt *editor) preferences() {
-	w := edt.mainWindow.NewWindow()
-	w.SetTitle(edt.mainWindow.Title() + " - " + "Preferences")
+	dialog := ui.NewDialog("Preferences")
 
-	column := w.AddVbox()
-	edt.AddAutoSavePrefs(column)
-
-	w.ConnectClose(func() bool {
-		saveSettings()
-		w.DeleteLater()
-		return true
-	})
-
-	w.Show()
-}
-
-func (edt *editor) AddAutoSavePrefs(column *ui.VBox) {
-	row := column.AddHbox()
+	row := dialog.AddHbox()
 	groupBox := row.AddGroupbox("AutoSave")
 	form := groupBox.AddForm()
 
 	loadSettings()
 
+	var autoSaveInterval int
+
 	spinbox := ui.NewSpinboxWidget(settings.autosaveInterval, 0, 60, func(i int) {
-		edt.setAutosaveInterval(i)
-		settings.autosaveInterval = i
+		autoSaveInterval = i
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
 	row.AddFiller()
+
+	dialog.AddSpace(3)
+	row = dialog.AddHbox()
+
+	cancelButton := ui.NewButtonWidget("Cancel", func() {
+		dialog.Reject()
+	})
+	row.AddWidget(cancelButton)
+
+	okButton := ui.NewButtonWidget("Ok", func() {
+		dialog.Accept()
+	})
+	row.AddWidget(okButton)
+
+	dialog.AddFiller()
+
+	if !dialog.Exec() {
+		return
+	}
+
+	edt.setAutosaveInterval(autoSaveInterval)
+	settings.autosaveInterval = autoSaveInterval
+	saveSettings()
 }
