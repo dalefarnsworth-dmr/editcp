@@ -548,6 +548,10 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	})
 
 	menu = mb.AddMenu("Edit")
+	menu.AddAction("Basic Information", func() {
+		basicInformation(edt)
+	}).SetEnabled(cp != nil)
+
 	menu.AddAction("General Settings", func() {
 		generalSettings(edt)
 	}).SetEnabled(cp != nil)
@@ -594,6 +598,10 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 
 	row := mw.AddHbox()
 	column := row.AddVbox()
+
+	biButton := column.AddButton("Basic Information")
+	biButton.SetEnabled(cp != nil)
+	biButton.ConnectClicked(func() { basicInformation(edt) })
 
 	gsButton := column.AddButton("General Settings")
 	gsButton.SetEnabled(cp != nil)
