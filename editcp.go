@@ -374,6 +374,10 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange st
 	})
 	vCb.SetEnabled(containsString(model, mOpts[1:]))
 
+	if len(models) == 1 {
+		mOpts = models
+	}
+
 	mCb := ui.NewComboboxWidget(model, mOpts, func(s string) {
 		vCb.SetEnabled(containsString(s, mOpts[1:]))
 		vOpts = append(vOpts[:1], frequencyRangesMap[s]...)
