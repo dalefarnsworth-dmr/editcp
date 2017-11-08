@@ -40,7 +40,7 @@ func biRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddReadOnlyFieldRows(r,
 		codeplug.FtBiModel,
 		codeplug.FieldType("FrequencyRange"),
-		codeplug.FtBiTimeStamp,
+		codeplug.FtBiLastProgrammedTime,
 	)
 
 	column.AddFiller()
