@@ -256,10 +256,10 @@ func (edt *editor) titleSuffix() string {
 	return suffix
 }
 
-func deleteEditor(editors *[]*editor, i int) {
-	copy((*editors)[i:], (*editors)[i+1:])
-	(*editors)[len(*editors)-1] = nil
-	*editors = (*editors)[:len(*editors)-1]
+func deleteEditor(i int) {
+	copy(editors[i:], editors[i+1:])
+	editors[len(editors)-1] = nil
+	editors = editors[:len(editors)-1]
 }
 
 func deleteString(strs *[]string, i int) {
@@ -337,6 +337,22 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 		}
 	}
 	edt.codeplugCount = highCount + 1
+}
+
+func (edt *editor) FreeCodeplug() {
+	if edt.codeplug == nil {
+		return
+	}
+	edt.codeplug.Free()
+	if len(editors) > 1 {
+		edt.mainWindow.Close()
+		return
+	}
+	edt.codeplug = nil
+	edt.codeplugCount--
+	edt.updateFilename()
+	edt.updateMenuBar()
+	edt.updateButtons()
 }
 
 func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange string) {
@@ -479,7 +495,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 
 		for i, editor := range editors {
 			if editor == edt {
-				deleteEditor(&editors, i)
+				deleteEditor(i)
 				break
 			}
 		}
@@ -493,7 +509,24 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 		updateUndoActions(edt)
 	})
 
-	mb := mw.MenuBar()
+	edt.updateMenuBar()
+
+	edt.updateButtons()
+
+	mw.Show()
+
+	if len(editors) > 1 && cp == nil {
+		mw.Close()
+		return nil
+	}
+
+	editorOpened = true
+	return edt
+}
+
+func (edt *editor) updateMenuBar() {
+	cp := edt.codeplug
+	mb := edt.mainWindow.MenuBar()
 	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("New...", func() {
@@ -526,6 +559,72 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	menu.AddAction("Revert", func() {
 		edt.revertFile()
 	}).SetEnabled(cp != nil)
+
+	menu.AddSeparator()
+
+	menu.AddAction("Read codeplug from radio", func() {
+		err := codeplug.RadioExists()
+		if err != nil {
+			title := fmt.Sprintf("Read codeplug from radio failed")
+			ui.ErrorPopup(title, err.Error())
+			return
+		}
+
+		edt := newEditor(edt.app, codeplug.FileTypeNew, "")
+		if edt == nil || edt.codeplug == nil {
+			return
+		}
+
+		pd := ui.NewProgressDialog("Connecting to Radio...")
+		err = edt.codeplug.ReadRadio(func(min int, max int, val int) bool {
+			if val == min {
+				pd.SetLabelText("Reading Codeplug from radio...")
+			}
+
+			pd.SetRange(min, max)
+			pd.SetValue(val)
+			if pd.WasCanceled() {
+				return false
+			}
+			return true
+		})
+		if err != nil {
+			pd.Close()
+			title := fmt.Sprintf("Read codeplug from radio failed")
+			ui.ErrorPopup(title, err.Error())
+			edt.FreeCodeplug()
+		}
+	})
+
+	menu.AddAction("Write codeplug to radio", func() {
+		title := "Write codeplug to radio"
+		model := cp.Model()
+		freq := cp.FrequencyRange()
+		msg := fmt.Sprintf("Write %s %s codeplug to radio?\n", model, freq)
+		if ui.YesNoPopup(title, msg) != ui.PopupYes {
+			return
+		}
+
+		pd := ui.NewProgressDialog("Connecting to Radio...")
+		err := cp.WriteRadio(func(min int, max int, val int) bool {
+			if val == min {
+				pd.SetLabelText("Writing Codeplug to radio...")
+			}
+			pd.SetRange(min, max)
+			pd.SetValue(val)
+			if pd.WasCanceled() {
+				return false
+			}
+			return true
+		})
+		if err != nil {
+			pd.Close()
+			title := fmt.Sprintf("Write codeplug to radio failed: %s", err.Error())
+			ui.ErrorPopup(title, err.Error())
+		}
+	}).SetEnabled(cp != nil && cp.Loaded())
+
+	menu.AddSeparator()
 
 	menu.AddAction("Save", func() {
 		edt.save()
@@ -599,8 +698,13 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	menu.AddAction("About...", func() {
 		about()
 	})
+}
 
-	row := mw.AddHbox()
+func (edt *editor) updateButtons() {
+	cp := edt.codeplug
+
+	row := edt.mainWindow.AddHbox()
+	row.Clear()
 	column := row.AddVbox()
 
 	biButton := column.AddButton("Basic Information")
@@ -651,16 +755,6 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	column.AddFiller()
 
 	row.AddFiller()
-
-	mw.Show()
-
-	if len(editors) > 1 && cp == nil {
-		mw.Close()
-		return nil
-	}
-
-	editorOpened = true
-	return edt
 }
 
 func (edt *editor) updateFilename() {
@@ -778,7 +872,7 @@ func (edt *editor) importText() {
 	settings.codeplugDirectory = filepath.Dir(filename)
 	saveSettings()
 
-	edt = newEditor(edt.app, codeplug.FileTypeText, filename)
+	newEditor(edt.app, codeplug.FileTypeText, filename)
 }
 
 func about() {

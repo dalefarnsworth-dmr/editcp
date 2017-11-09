@@ -1,11 +1,12 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber upload install tag
+.PHONY: default linux windows clean clobber upload install docker-usb tag
 
 EDITCP_SOURCES = *.go
 UI_SOURCES = ../ui/*.go
 CODEPLUG_SOURCES = ../codeplug/*.go
-SOURCES = $(EDITCP_SOURCES) $(UI_SOURCES) $(CODEPLUG_SOURCES)
+DFU_SOURCES = ../dfu/*.go
+SOURCES = $(EDITCP_SOURCES) $(UI_SOURCES) $(CODEPLUG_SOURCES) $(DFU_SOURCES)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux
@@ -42,6 +43,14 @@ deploy/win32/editcp.exe: $(SOURCES)
 	qtdeploy -docker build windows_32_static
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
+
+docker-usb:
+	docker rmi -f therecipe/qt:windows_32_static
+	cd ../docker/windows32-with-usb && \
+		docker build -t therecipe/qt:windows_32_static .
+	docker rmi -f therecipe/qt:linux
+	cd ../docker/linux-with-usb && \
+		docker build -t therecipe/qt:linux .
 
 clean:
 
