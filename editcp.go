@@ -484,7 +484,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 			}
 		}
 
-		asFilename := filename + autosaveSuffix
+		asFilename := cp.Filename() + autosaveSuffix
 		os.Remove(asFilename)
 		return true
 	})
