@@ -855,7 +855,7 @@ func (edt *editor) exportText() {
 	settings.codeplugDirectory = filepath.Dir(filename)
 	saveSettings()
 
-	err := edt.codeplug.ExportTo(filename)
+	err := edt.codeplug.ExportText(filename)
 	if err != nil {
 		title := fmt.Sprintf("Export to %s", filename)
 		ui.ErrorPopup(title, err.Error())
