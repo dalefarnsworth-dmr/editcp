@@ -462,8 +462,8 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	cp := edt.codeplug
 	if cp != nil {
 		mw.SetCodeplug(cp)
-		edt.updateFilename()
 	}
+	edt.updateFilename()
 
 	mw.ConnectClose(func() bool {
 		if cp != nil {
