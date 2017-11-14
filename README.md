@@ -53,12 +53,21 @@ $ go get github.com/dalefarnsworth/codeplug/...
 $ cd $GOPATH/src/github.com/dalefarnsworth/codeplug/editcp
 ```
 
-6. Build `editcp`:
+6. `Editcp` uses the libusb-1.0-0-dev package. You'll need to install it.
+If you're using the qt *Minimal Installation*, you'll need to install
+libusb-1.0-0-dev in the docker images it uses. This can be done by running
+```bash
+$ docker tag therecipe/qt:windows_32_static therecipe/qt:windows_32_static-orig
+$ docker tag therecipe/qt:linux therecipe/qt:linux-orig
+$ make docker-usb
+```
+
+7. Build `editcp`:
 ```bash
 $ make
 ```
 
-7. Install `editcp`:
+8. Install `editcp`:
 ```bash
 $ make install
 ```
@@ -66,7 +75,7 @@ You will be prompted for a directory name where a symbolic link to
 the `editcp` executable will be placed. If you don't have write permissions
 for that directory, you will need to run this command as root.
 
-8. You man now run `editcp`, optionally passing the name of a codeplug file.
+9. You man now run `editcp`, optionally passing the name of a codeplug file.
 ```bash
 $ editcp
 ```
