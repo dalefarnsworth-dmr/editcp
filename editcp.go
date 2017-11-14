@@ -550,13 +550,25 @@ func (edt *editor) updateMenuBar() {
 	})
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
-	menu.AddAction("Import from text file...", func() {
+	importMenu := menu.AddMenu("Import...")
+	importMenu.AddAction("Import from text file...", func() {
 		edt.importText()
 	})
 
-	menu.AddAction("Export to text file...", func() {
+	importMenu.AddAction("Import from JSON file...", func() {
+		edt.importJSON()
+	})
+
+	exportMenu := menu.AddMenu("Export...")
+	exportMenu.SetEnabled(cp != nil)
+
+	exportMenu.AddAction("Export to text file...", func() {
 		edt.exportText()
-	}).SetEnabled(cp != nil)
+	})
+
+	exportMenu.AddAction("Export to JSON file...", func() {
+		edt.exportJSON()
+	})
 
 	menu.AddAction("Revert", func() {
 		edt.revertFile()
@@ -875,6 +887,38 @@ func (edt *editor) importText() {
 	saveSettings()
 
 	newEditor(edt.app, codeplug.FileTypeText, filename)
+}
+
+func (edt *editor) importJSON() {
+	dir := settings.codeplugDirectory
+	filename := ui.OpenJSONFilename("Import from JSON file", dir)
+	if filename == "" {
+		return
+	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
+
+	newEditor(edt.app, codeplug.FileTypeJSON, filename)
+}
+
+func (edt *editor) exportJSON() {
+	dir := settings.codeplugDirectory
+	base := baseFilename(edt.codeplug.Filename())
+	ext := "json"
+	dir = filepath.Join(dir, base+"."+ext)
+	filename := ui.SaveFilename("Export to text file", dir, ext)
+	if filename == "" {
+		return
+	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
+
+	err := edt.codeplug.ExportJSON(filename)
+	if err != nil {
+		title := fmt.Sprintf("Export to %s", filename)
+		ui.ErrorPopup(title, err.Error())
+		return
+	}
 }
 
 func about() {
