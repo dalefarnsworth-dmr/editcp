@@ -500,8 +500,10 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 			}
 		}
 
-		asFilename := cp.Filename() + autosaveSuffix
-		os.Remove(asFilename)
+		if cp != nil {
+			asFilename := cp.Filename() + autosaveSuffix
+			os.Remove(asFilename)
+		}
 		return true
 	})
 
