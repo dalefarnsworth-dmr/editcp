@@ -29,7 +29,7 @@ import (
 )
 
 func basicInformation(edt *editor) {
-	edt.recordWindow(codeplug.RecordType("BasicInformation"), biRecord)
+	edt.recordWindow(codeplug.RtBasicInformation_md380, biRecord)
 }
 
 func biRecord(edt *editor, recordBox *ui.HBox) {
@@ -39,7 +39,7 @@ func biRecord(edt *editor, recordBox *ui.HBox) {
 	form := column.AddForm()
 	form.AddReadOnlyFieldRows(r,
 		codeplug.FtBiModel,
-		codeplug.FieldType("FrequencyRange"),
+		codeplug.FtBiFrequencyRange_md380,
 		codeplug.FtBiLastProgrammedTime,
 	)
 

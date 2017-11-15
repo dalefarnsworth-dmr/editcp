@@ -28,8 +28,8 @@ import (
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
-func channelInformation(edt *editor) {
-	edt.recordWindow(codeplug.RtChannelInformation, ciRecord)
+func channels(edt *editor) {
+	edt.recordWindow(codeplug.RtChannels, ciRecord)
 }
 
 func ciRecord(edt *editor, recordBox *ui.HBox) {

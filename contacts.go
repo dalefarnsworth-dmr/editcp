@@ -28,8 +28,8 @@ import (
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
-func digitalContacts(edt *editor) {
-	edt.recordWindow(codeplug.RtDigitalContacts, dcRecord)
+func contacts(edt *editor) {
+	edt.recordWindow(codeplug.RtContacts, dcRecord)
 }
 
 func dcRecord(edt *editor, recordBox *ui.HBox) {

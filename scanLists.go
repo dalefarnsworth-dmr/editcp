@@ -29,14 +29,14 @@ import (
 )
 
 func scanLists(edt *editor) {
-	edt.recordWindow(codeplug.RtScanList, slRecord)
+	edt.recordWindow(codeplug.RtScanLists, slRecord)
 }
 
 func slRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	column.SetContentsMargins(0, 0, 0, 0)
 	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtSlName, codeplug.FtSlChannelMember, "Channels")
+		codeplug.FtSlName, codeplug.FtSlChannelMembers, "Channels")
 
 	row := column.AddHbox()
 	row.SetContentsMargins(0, 0, 0, 0)

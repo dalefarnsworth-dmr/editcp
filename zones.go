@@ -28,13 +28,13 @@ import (
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
-func zoneInformation(edt *editor) {
-	rType := codeplug.RecordType("ZoneInformation")
+func zones(edt *editor) {
+	rType := codeplug.RtZones_md380
 	edt.recordWindow(rType, ziRecord)
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
-	fType := codeplug.FieldType("ChannelMember")
+	fType := codeplug.FtZiChannelMembers_md380
 
 	column := recordBox.AddVbox()
 	addFieldMembers(column, &settings.sortAvailableChannels,

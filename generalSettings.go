@@ -29,7 +29,7 @@ import (
 )
 
 func generalSettings(edt *editor) {
-	edt.recordWindow(codeplug.RecordType("GeneralSettings"), gsRecord)
+	edt.recordWindow(codeplug.RtGeneralSettings_md380, gsRecord)
 }
 
 func gsRecord(edt *editor, recordBox *ui.HBox) {

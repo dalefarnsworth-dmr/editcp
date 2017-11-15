@@ -659,15 +659,15 @@ func (edt *editor) updateMenuBar() {
 		generalSettings(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Channel Information", func() {
-		channelInformation(edt)
+	menu.AddAction("Channels", func() {
+		channels(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Digital Contacts", func() {
-		digitalContacts(edt)
+	menu.AddAction("Contacts", func() {
+		contacts(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Digital Rx Group Lists", func() {
+	menu.AddAction("Group Lists", func() {
 		groupLists(edt)
 	}).SetEnabled(cp != nil)
 
@@ -675,8 +675,8 @@ func (edt *editor) updateMenuBar() {
 		scanLists(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Zone Information", func() {
-		zoneInformation(edt)
+	menu.AddAction("Zones", func() {
+		zones(edt)
 	}).SetEnabled(cp != nil)
 
 	edt.undoAction = menu.AddAction("Undo", func() {
@@ -715,15 +715,15 @@ func (edt *editor) updateButtons() {
 	gsButton.SetEnabled(cp != nil)
 	gsButton.ConnectClicked(func() { generalSettings(edt) })
 
-	ciButton := column.AddButton("Channel Information")
+	ciButton := column.AddButton("Channels")
 	ciButton.SetEnabled(cp != nil)
-	ciButton.ConnectClicked(func() { channelInformation(edt) })
+	ciButton.ConnectClicked(func() { channels(edt) })
 
-	dcButton := column.AddButton("Digital Contacts")
+	dcButton := column.AddButton("Contacts")
 	dcButton.SetEnabled(cp != nil)
-	dcButton.ConnectClicked(func() { digitalContacts(edt) })
+	dcButton.ConnectClicked(func() { contacts(edt) })
 
-	glButton := column.AddButton("Digital Rx Group Lists")
+	glButton := column.AddButton("Group Lists")
 	glButton.SetEnabled(cp != nil)
 	glButton.ConnectClicked(func() { groupLists(edt) })
 
@@ -731,9 +731,9 @@ func (edt *editor) updateButtons() {
 	slButton.SetEnabled(cp != nil)
 	slButton.ConnectClicked(func() { scanLists(edt) })
 
-	ziButton := column.AddButton("Zone Information")
+	ziButton := column.AddButton("Zones")
 	ziButton.SetEnabled(cp != nil)
-	ziButton.ConnectClicked(func() { zoneInformation(edt) })
+	ziButton.ConnectClicked(func() { zones(edt) })
 
 	column.AddFiller()
 	row.AddSeparator()
