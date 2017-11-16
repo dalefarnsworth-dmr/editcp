@@ -551,22 +551,30 @@ func (edt *editor) updateMenuBar() {
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
 	importMenu := menu.AddMenu("Import...")
-	importMenu.AddAction("Import from text file...", func() {
+	importMenu.AddAction("Import from text...", func() {
 		edt.importText()
 	})
 
-	importMenu.AddAction("Import from JSON file...", func() {
+	importMenu.AddAction("Import from Spreadsheet...", func() {
+		edt.importXLSX()
+	})
+
+	importMenu.AddAction("Import from JSON...", func() {
 		edt.importJSON()
 	})
 
 	exportMenu := menu.AddMenu("Export...")
 	exportMenu.SetEnabled(cp != nil)
 
-	exportMenu.AddAction("Export to text file...", func() {
+	exportMenu.AddAction("Export to text...", func() {
 		edt.exportText()
 	})
 
-	exportMenu.AddAction("Export to JSON file...", func() {
+	exportMenu.AddAction("Export to Spreadsheet...", func() {
+		edt.exportXLSX()
+	})
+
+	exportMenu.AddAction("Export to JSON...", func() {
 		edt.exportJSON()
 	})
 
@@ -889,6 +897,38 @@ func (edt *editor) importText() {
 	newEditor(edt.app, codeplug.FileTypeText, filename)
 }
 
+func (edt *editor) importXLSX() {
+	dir := settings.codeplugDirectory
+	filename := ui.OpenXLSXFilename("Import from Spreadsheet file", dir)
+	if filename == "" {
+		return
+	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
+
+	newEditor(edt.app, codeplug.FileTypeXLSX, filename)
+}
+
+func (edt *editor) exportXLSX() {
+	dir := settings.codeplugDirectory
+	base := baseFilename(edt.codeplug.Filename())
+	ext := "xlsx"
+	dir = filepath.Join(dir, base+"."+ext)
+	filename := ui.SaveFilename("Export to Spreadsheet file", dir, ext)
+	if filename == "" {
+		return
+	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
+
+	err := edt.codeplug.ExportXLSX(filename)
+	if err != nil {
+		title := fmt.Sprintf("Export to %s", filename)
+		ui.ErrorPopup(title, err.Error())
+		return
+	}
+}
+
 func (edt *editor) importJSON() {
 	dir := settings.codeplugDirectory
 	filename := ui.OpenJSONFilename("Import from JSON file", dir)
@@ -906,7 +946,7 @@ func (edt *editor) exportJSON() {
 	base := baseFilename(edt.codeplug.Filename())
 	ext := "json"
 	dir = filepath.Join(dir, base+"."+ext)
-	filename := ui.SaveFilename("Export to text file", dir, ext)
+	filename := ui.SaveFilename("Export to JSON file", dir, ext)
 	if filename == "" {
 		return
 	}
