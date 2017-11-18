@@ -551,15 +551,15 @@ func (edt *editor) updateMenuBar() {
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
 	importMenu := menu.AddMenu("Import...")
-	importMenu.AddAction("Import from text...", func() {
+	importMenu.AddAction("Import text file...", func() {
 		edt.importText()
 	})
 
-	importMenu.AddAction("Import from Spreadsheet...", func() {
+	importMenu.AddAction("Import Spreadsheet file...", func() {
 		edt.importXLSX()
 	})
 
-	importMenu.AddAction("Import from JSON...", func() {
+	importMenu.AddAction("Import JSON file...", func() {
 		edt.importJSON()
 	})
 
@@ -887,7 +887,7 @@ func (edt *editor) exportText() {
 
 func (edt *editor) importText() {
 	dir := settings.codeplugDirectory
-	filename := ui.OpenTextFilename("Import from text file", dir)
+	filename := ui.OpenTextFilename("Import text file", dir)
 	if filename == "" {
 		return
 	}
@@ -899,7 +899,7 @@ func (edt *editor) importText() {
 
 func (edt *editor) importXLSX() {
 	dir := settings.codeplugDirectory
-	filename := ui.OpenXLSXFilename("Import from Spreadsheet file", dir)
+	filename := ui.OpenXLSXFilename("Import Spreadsheet file", dir)
 	if filename == "" {
 		return
 	}
@@ -931,7 +931,7 @@ func (edt *editor) exportXLSX() {
 
 func (edt *editor) importJSON() {
 	dir := settings.codeplugDirectory
-	filename := ui.OpenJSONFilename("Import from JSON file", dir)
+	filename := ui.OpenJSONFilename("Import JSON file", dir)
 	if filename == "" {
 		return
 	}
