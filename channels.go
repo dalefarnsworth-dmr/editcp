@@ -59,7 +59,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	form = column.AddForm()
 
 	form.AddFieldRows(r,
-		codeplug.FtCiChannelName,
+		codeplug.FtCiName,
 		codeplug.FtCiRxFrequency,
 		codeplug.FtCiTxFrequency,
 		codeplug.FtCiAdmitCriteria,
