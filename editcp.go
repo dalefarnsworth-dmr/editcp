@@ -840,11 +840,11 @@ func addRecentFile(name string) {
 		return
 	}
 
-	if len(settings.recentFiles) > 0 {
-		if name == settings.recentFiles[0] {
-			return
-		}
+	if len(settings.recentFiles) > 0 && name == settings.recentFiles[0] {
+		return
 	}
+
+	removeRecentFile(name)
 
 	settings.recentFiles = append([]string{name}, settings.recentFiles...)
 
