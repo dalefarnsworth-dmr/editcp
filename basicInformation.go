@@ -42,6 +42,4 @@ func biRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtBiFrequencyRange_md380,
 		codeplug.FtBiLastProgrammedTime,
 	)
-
-	column.AddFiller()
 }

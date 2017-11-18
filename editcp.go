@@ -757,25 +757,25 @@ func (edt *editor) updateButtons() {
 	ziButton.SetEnabled(cp != nil)
 	ziButton.ConnectClicked(func() { zones(edt) })
 
-	column.AddFiller()
 	row.AddSeparator()
 
 	column = row.AddVbox()
 
 	edt.undoButton = column.AddButton("Undo")
+	edt.undoButton.SetFixedHeight()
 	edt.undoButton.SetEnabled(false)
 	edt.undoButton.ConnectClicked(func() {
 		edt.codeplug.UndoChange()
 	})
 
 	edt.redoButton = column.AddButton("Redo")
+	edt.redoButton.SetFixedHeight()
 	edt.redoButton.SetEnabled(false)
 	edt.redoButton.ConnectClicked(func() {
 		edt.codeplug.RedoChange()
 	})
 
 	column.AddFiller()
-
 	row.AddFiller()
 }
 
@@ -1059,6 +1059,7 @@ func addRecordSelector(box *ui.VBox) {
 	rl := w.RecordList()
 	rType := w.RecordType()
 	row := box.AddHbox()
+	row.SetFixedHeight()
 
 	decrement := row.AddButton("<")
 	rIndex := rl.Current()
@@ -1070,7 +1071,6 @@ func addRecordSelector(box *ui.VBox) {
 	row.AddSpace(3)
 	delete := row.AddButton("Delete")
 	row.AddFiller()
-	box.AddFiller()
 
 	decrement.ConnectClicked(func() {
 		rIndex := rl.Current()

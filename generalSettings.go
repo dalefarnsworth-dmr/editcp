@@ -112,6 +112,4 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsIntroScreenLine1,
 		codeplug.FtGsIntroScreenLine2,
 	)
-
-	mainBox.AddFiller()
 }

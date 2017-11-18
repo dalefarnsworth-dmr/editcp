@@ -42,8 +42,6 @@ func (edt *editor) preferences() {
 		autoSaveInterval = i
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
-	row.AddFiller()
-
 	dialog.AddSpace(3)
 	row = dialog.AddHbox()
 
@@ -56,8 +54,6 @@ func (edt *editor) preferences() {
 		dialog.Accept()
 	})
 	row.AddWidget(okButton)
-
-	dialog.AddFiller()
 
 	if !dialog.Exec() {
 		return

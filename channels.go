@@ -122,6 +122,4 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiDecode6,
 		codeplug.FtCiDecode7,
 		codeplug.FtCiDecode8)
-
-	mainBox.AddFiller()
 }
