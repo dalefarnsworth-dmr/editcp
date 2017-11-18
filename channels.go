@@ -34,7 +34,6 @@ func channels(edt *editor) {
 
 func ciRecord(edt *editor, recordBox *ui.HBox) {
 	mainBox := recordBox.AddVbox()
-	mainBox.SetContentsMargins(0, 0, 0, 0)
 	row := mainBox.AddHbox()
 	column := row.AddVbox()
 

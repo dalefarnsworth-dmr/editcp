@@ -34,17 +34,14 @@ func scanLists(edt *editor) {
 
 func slRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
-	column.SetContentsMargins(0, 0, 0, 0)
 	addFieldMembers(column, &settings.sortAvailableChannels,
 		codeplug.FtSlName, codeplug.FtSlChannelMembers, "Channels")
 
 	row := column.AddHbox()
-	row.SetContentsMargins(0, 0, 0, 0)
 
 	r := currentRecord(recordBox.Window())
 
 	column = row.AddVbox()
-	column.SetContentsMargins(0, 0, 0, 0)
 	form := column.AddForm()
 	form.AddFieldRows(r,
 		codeplug.FtSlPriorityChannel1,
@@ -52,7 +49,6 @@ func slRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtSlTxDesignatedChannel)
 
 	column = row.AddVbox()
-	column.SetContentsMargins(0, 0, 0, 0)
 	form = column.AddForm()
 	form.AddFieldRows(r,
 		codeplug.FtSlSignallingHoldTime,

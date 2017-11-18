@@ -1021,17 +1021,14 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord
 	w.SetTitle(cp.Filename() + edt.titleSuffix() + " " + r.TypeName())
 
 	windowBox := w.AddHbox()
-	windowBox.SetContentsMargins(0, 0, 0, 0)
 	var rl *ui.RecordList
 	var recordFunc func()
 
 	if cp.MaxRecords(rType) == 1 {
 		selectorBox := windowBox.AddVbox()
-		selectorBox.SetContentsMargins(0, 0, 0, 0)
 		recordFunc = func() {
 			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
-			recordBox.SetContentsMargins(0, 0, 0, 0)
 			fillRecord(edt, recordBox)
 			w.EnableWidgets()
 		}
@@ -1041,11 +1038,9 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord
 			rl.SetCurrent(0)
 		}
 		selectorBox := windowBox.AddVbox()
-		selectorBox.SetContentsMargins(0, 0, 0, 0)
 		recordFunc = func() {
 			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
-			recordBox.SetContentsMargins(0, 0, 0, 0)
 			fillRecord(edt, recordBox)
 			addRecordSelector(selectorBox)
 			w.EnableWidgets()
@@ -1064,7 +1059,6 @@ func addRecordSelector(box *ui.VBox) {
 	rl := w.RecordList()
 	rType := w.RecordType()
 	row := box.AddHbox()
-	row.SetContentsMargins(0, 0, 0, 0)
 
 	decrement := row.AddButton("<")
 	rIndex := rl.Current()
