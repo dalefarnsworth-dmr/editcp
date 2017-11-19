@@ -785,8 +785,10 @@ func (edt *editor) updateFilename() {
 	if cp != nil {
 		filename := cp.Filename()
 		title = filename + edt.titleSuffix()
-		settings.codeplugDirectory = filepath.Dir(filename)
-		saveSettings()
+		if _, err := os.Stat(filename); err == nil {
+			settings.codeplugDirectory = filepath.Dir(filename)
+			saveSettings()
+		}
 		addRecentFile(filename)
 	}
 
