@@ -35,7 +35,7 @@ func scanLists(edt *editor) {
 func slRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtSlName, codeplug.FtSlChannelMembers, "Channels")
+		codeplug.FtSlName, codeplug.FtSlChannel, "Channels")
 
 	row := column.AddHbox()
 

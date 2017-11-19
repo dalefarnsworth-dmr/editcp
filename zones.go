@@ -34,9 +34,7 @@ func zones(edt *editor) {
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
-	fType := codeplug.FtZiChannelMembers_md380
-
 	column := recordBox.AddVbox()
 	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtZiName, fType, "Channels")
+		codeplug.FtZiName, codeplug.FtZiChannel_md380, "Channels")
 }
