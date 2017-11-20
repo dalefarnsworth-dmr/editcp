@@ -29,7 +29,8 @@ import (
 )
 
 func basicInformation(edt *editor) {
-	edt.recordWindow(codeplug.RtBasicInformation_md380, biRecord)
+	writable := false
+	edt.recordWindow(codeplug.RtBasicInformation_md380, writable, biRecord)
 }
 
 func biRecord(edt *editor, recordBox *ui.HBox) {

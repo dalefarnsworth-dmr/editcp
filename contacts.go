@@ -29,7 +29,8 @@ import (
 )
 
 func contacts(edt *editor) {
-	edt.recordWindow(codeplug.RtContacts, dcRecord)
+	writable := true
+	edt.recordWindow(codeplug.RtContacts, writable, dcRecord)
 }
 
 func dcRecord(edt *editor, recordBox *ui.HBox) {

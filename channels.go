@@ -29,7 +29,8 @@ import (
 )
 
 func channels(edt *editor) {
-	edt.recordWindow(codeplug.RtChannels, ciRecord)
+	writable := true
+	edt.recordWindow(codeplug.RtChannels_md380, writable, ciRecord)
 }
 
 func ciRecord(edt *editor, recordBox *ui.HBox) {
@@ -46,7 +47,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddFieldRows(r,
 		codeplug.FtCiChannelMode,
 		codeplug.FtCiBandwidth,
-		codeplug.FtCiScanList,
+		codeplug.FtCiScanList_md380,
 		codeplug.FtCiSquelch,
 		codeplug.FtCiRxRefFrequency,
 		codeplug.FtCiTxRefFrequency,
@@ -68,6 +69,12 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiVox,
 		codeplug.FtCiAllowTalkaround)
 
+	if settings.displayGPS {
+		form.AddFieldRows(r,
+			codeplug.FtCiSendGPSInfo,
+			codeplug.FtCiReceiveGPSInfo)
+	}
+
 	column = row.AddVbox()
 	groupBox = column.AddGroupbox("Digital Data")
 	column = groupBox.AddVbox()
@@ -84,6 +91,10 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiRepeaterSlot,
 		codeplug.FtCiPrivacy,
 		codeplug.FtCiPrivacyNumber)
+
+	if settings.displayGPS {
+		form.AddFieldRows(r, codeplug.FtCiGPSSystem)
+	}
 
 	row = mainBox.AddHbox()
 	groupBox = row.AddGroupbox("Analog Data")

@@ -29,7 +29,8 @@ import (
 )
 
 func generalSettings(edt *editor) {
-	edt.recordWindow(codeplug.RtGeneralSettings_md380, gsRecord)
+	writable := false
+	edt.recordWindow(codeplug.RtGeneralSettings_md380, writable, gsRecord)
 }
 
 func gsRecord(edt *editor, recordBox *ui.HBox) {

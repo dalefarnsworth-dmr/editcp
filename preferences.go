@@ -30,19 +30,33 @@ import (
 func (edt *editor) preferences() {
 	dialog := ui.NewDialog("Preferences")
 
-	row := dialog.AddHbox()
-	groupBox := row.AddGroupbox("AutoSave")
-	form := groupBox.AddForm()
-
 	loadSettings()
 
-	var autoSaveInterval int
+	row := dialog.AddHbox()
+	groupBox := row.AddGroupbox("Display Options")
+	form := groupBox.AddForm()
 
-	spinbox := ui.NewSpinboxWidget(settings.autosaveInterval, 0, 60, func(i int) {
-		autoSaveInterval = i
+	displayGPS := settings.displayGPS
+
+	checked := displayGPS
+	checkbox := ui.NewCheckboxWidget(checked, func(checked bool) {
+		displayGPS = checked
+	})
+	form.AddRow("Display GPS fields:", checkbox)
+	dialog.AddSpace(3)
+
+	row = dialog.AddHbox()
+	groupBox = row.AddGroupbox("AutoSave")
+	form = groupBox.AddForm()
+
+	autosaveInterval := settings.autosaveInterval
+
+	spinbox := ui.NewSpinboxWidget(autosaveInterval, 0, 60, func(i int) {
+		autosaveInterval = i
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
 	dialog.AddSpace(3)
+
 	row = dialog.AddHbox()
 
 	cancelButton := ui.NewButtonWidget("Cancel", func() {
@@ -59,7 +73,10 @@ func (edt *editor) preferences() {
 		return
 	}
 
-	edt.setAutosaveInterval(autoSaveInterval)
-	settings.autosaveInterval = autoSaveInterval
+	settings.displayGPS = displayGPS
+	edt.setDisplayGPS(displayGPS)
+
+	settings.autosaveInterval = autosaveInterval
+	edt.setAutosaveInterval(autosaveInterval)
 	saveSettings()
 }

@@ -51,6 +51,7 @@ type editorSettings struct {
 	recentFiles           []string
 	model                 string
 	frequencyRange        string
+	displayGPS            bool
 }
 
 var appSettings *ui.AppSettings
@@ -182,6 +183,14 @@ func (edt *editor) saveAs(filename string) string {
 	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
 	os.Remove(autosaveFilename)
 	return filename
+}
+
+func (edt *editor) setDisplayGPS(displayGPS bool) {
+	edt.updateButtons()
+	w := edt.mainWindow.RecordWindows()[codeplug.RtChannels_md380]
+	if w != nil {
+		w.RecordFunc()()
+	}
 }
 
 func (edt *editor) setAutosaveInterval(seconds int) {
@@ -701,6 +710,10 @@ func (edt *editor) updateMenuBar() {
 		zones(edt)
 	}).SetEnabled(cp != nil)
 
+	menu.AddAction("GPS Systems", func() {
+		gpsSystems(edt)
+	}).SetEnabled(cp != nil && settings.displayGPS)
+
 	edt.undoAction = menu.AddAction("Undo", func() {
 		edt.codeplug.UndoChange()
 	})
@@ -756,6 +769,10 @@ func (edt *editor) updateButtons() {
 	ziButton := column.AddButton("Zones")
 	ziButton.SetEnabled(cp != nil)
 	ziButton.ConnectClicked(func() { zones(edt) })
+
+	gpButton := column.AddButton("GPS Systems")
+	gpButton.SetEnabled(cp != nil && settings.displayGPS)
+	gpButton.ConnectClicked(func() { gpsSystems(edt) })
 
 	row.AddSeparator()
 
@@ -1002,7 +1019,7 @@ func updateUndoActions(edt *editor) {
 
 type fillRecord func(*editor, *ui.HBox)
 
-func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord) {
+func (edt *editor) recordWindow(rType codeplug.RecordType, writable bool, fillRecord fillRecord) {
 	windows := edt.mainWindow.RecordWindows()
 	w := windows[rType]
 	if w != nil {
@@ -1010,7 +1027,7 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord
 		return
 	}
 
-	w = edt.mainWindow.NewRecordWindow(rType)
+	w = edt.mainWindow.NewRecordWindow(rType, writable)
 	windows[rType] = w
 
 	w.ConnectClose(func() bool {
@@ -1044,7 +1061,7 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord
 			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
-			addRecordSelector(selectorBox)
+			addRecordSelector(selectorBox, writable)
 			w.EnableWidgets()
 		}
 	}
@@ -1055,7 +1072,7 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, fillRecord fillRecord
 	w.Show()
 }
 
-func addRecordSelector(box *ui.VBox) {
+func addRecordSelector(box *ui.VBox, writable bool) {
 	w := box.Window()
 	cp := w.MainWindow().Codeplug()
 	rl := w.RecordList()
@@ -1064,16 +1081,6 @@ func addRecordSelector(box *ui.VBox) {
 	row.SetFixedHeight()
 
 	decrement := row.AddButton("<")
-	rIndex := rl.Current()
-	records := cp.Records(rType)
-	row.AddButton(fmt.Sprintf("%d of %d", rIndex+1, len(records)))
-	increment := row.AddButton(">")
-	row.AddSpace(3)
-	add := row.AddButton("Add")
-	row.AddSpace(3)
-	delete := row.AddButton("Delete")
-	row.AddFiller()
-
 	decrement.ConnectClicked(func() {
 		rIndex := rl.Current()
 		if rIndex <= 0 {
@@ -1084,6 +1091,10 @@ func addRecordSelector(box *ui.VBox) {
 		rl.SetCurrent(rIndex)
 	})
 
+	rIndex := rl.Current()
+	records := cp.Records(rType)
+	row.AddButton(fmt.Sprintf("%d of %d", rIndex+1, len(records)))
+	increment := row.AddButton(">")
 	increment.ConnectClicked(func() {
 		rIndex := rl.Current()
 		records := cp.Records(rType)
@@ -1095,21 +1106,29 @@ func addRecordSelector(box *ui.VBox) {
 		rl.SetCurrent(rIndex)
 	})
 
-	add.ConnectClicked(func() {
-		err := rl.AddSelected()
-		if err != nil {
-			ui.ErrorPopup("Add Record", err.Error())
-			return
-		}
-	})
+	if writable {
+		row.AddSpace(3)
+		add := row.AddButton("Add")
+		add.ConnectClicked(func() {
+			err := rl.AddSelected()
+			if err != nil {
+				ui.ErrorPopup("Add Record", err.Error())
+				return
+			}
+		})
 
-	delete.ConnectClicked(func() {
-		err := rl.RemoveSelected()
-		if err != nil {
-			ui.ErrorPopup("Delete Record", err.Error())
-			return
-		}
-	})
+		row.AddSpace(3)
+		delete := row.AddButton("Delete")
+		delete.ConnectClicked(func() {
+			err := rl.RemoveSelected()
+			if err != nil {
+				ui.ErrorPopup("Delete Record", err.Error())
+				return
+			}
+		})
+	}
+
+	row.AddFiller()
 }
 
 func currentRecord(w *ui.Window) *codeplug.Record {
@@ -1139,6 +1158,7 @@ func loadSettings() {
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	settings.model = as.String("model", "")
 	settings.frequencyRange = as.String("frequencyRange", "")
+	settings.displayGPS = as.Bool("displayGPS", true)
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -1157,6 +1177,7 @@ func saveSettings() {
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.frequencyRange)
+	as.SetBool("displayGPS", settings.displayGPS)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {

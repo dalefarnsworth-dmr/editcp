@@ -29,7 +29,8 @@ import (
 )
 
 func groupLists(edt *editor) {
-	edt.recordWindow(codeplug.RtGroupLists, glRecord)
+	writable := true
+	edt.recordWindow(codeplug.RtGroupLists, writable, glRecord)
 }
 
 func glRecord(edt *editor, recordBox *ui.HBox) {
