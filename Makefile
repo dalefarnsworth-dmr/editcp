@@ -55,7 +55,7 @@ docker-usb:
 clean:
 
 clobber: clean
-	rm -rf deploy/* editcp-*.tar.xz editcp-*.exe
+	rm -rf editcp-*.tar.xz editcp-*.exe deploy/*
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
