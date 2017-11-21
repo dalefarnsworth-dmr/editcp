@@ -46,6 +46,8 @@ this page: https://github.com/therecipe/qt/wiki/Installation.
 4. Get the source code:
 ```bash
 $ go get github.com/dalefarnsworth/codeplug/...
+$ go get github.com/google/gousb
+$ go get github.com/tealeg/xlsx
 ```
 
 5. Change to the `editcp` source directory:
