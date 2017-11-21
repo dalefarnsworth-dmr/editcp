@@ -95,13 +95,13 @@ SectionEnd
 Section "Start Menu Shortcut"
   CreateDirectory "$SMPROGRAMS\editcp"
   SetOutPath $DESKTOP
-  CreateShortCut "$SMPROGRAMS\editcp\editcp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
+  CreateShortCut "$SMPROGRAMS\editcp\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
 SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section /o "Desktop Shortcut"
   SetOutPath $DESKTOP
-  CreateShortCut "$DESKTOP\editcp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
+  CreateShortCut "$DESKTOP\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
 SectionEnd
 
 ;--------------------------------
@@ -117,8 +117,8 @@ Section "Uninstall"
   Delete "$INSTDIR\uninstall.exe"
 
   ; Remove shortcuts, if any
-  Delete "$SMPROGRAMS\editcp\editcp.lnk"
-  Delete "$DESKTOP\editcp.lnk"
+  Delete "$SMPROGRAMS\editcp\EditCp.lnk"
+  Delete "$DESKTOP\EditCp.lnk"
 
   ; Remove directories used
   RMDir "$SMPROGRAMS\editcp"

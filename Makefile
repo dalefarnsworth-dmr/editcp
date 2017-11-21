@@ -36,7 +36,7 @@ install: linux
 
 windows: editcp-$(VERSION)-installer.exe
 
-editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe
+editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi
 	makensis -DVERSION=$(VERSION) editcp.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
