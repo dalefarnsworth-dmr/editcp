@@ -559,6 +559,12 @@ func (edt *editor) updateMenuBar() {
 	})
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
+	menu.AddAction("Revert", func() {
+		edt.revertFile()
+	}).SetEnabled(cp != nil)
+
+	menu.AddSeparator()
+
 	importMenu := menu.AddMenu("Import...")
 	importMenu.AddAction("Import text file...", func() {
 		edt.importText()
@@ -586,10 +592,6 @@ func (edt *editor) updateMenuBar() {
 	exportMenu.AddAction("Export to JSON...", func() {
 		edt.exportJSON()
 	})
-
-	menu.AddAction("Revert", func() {
-		edt.revertFile()
-	}).SetEnabled(cp != nil)
 
 	menu.AddSeparator()
 
