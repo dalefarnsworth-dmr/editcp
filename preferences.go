@@ -64,7 +64,7 @@ func (edt *editor) preferences() {
 	})
 	row.AddWidget(cancelButton)
 
-	okButton := ui.NewButtonWidget("Ok", func() {
+	okButton := ui.NewButtonWidget("Save", func() {
 		dialog.Accept()
 	})
 	row.AddWidget(okButton)
