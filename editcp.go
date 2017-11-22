@@ -593,6 +593,75 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
+	menu.AddAction("Save", func() {
+		edt.save()
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Save As...", func() {
+		edt.saveAs("")
+	}).SetEnabled(cp != nil)
+
+	menu.AddSeparator()
+
+	menu.AddAction("Close", func() {
+		edt.mainWindow.Close()
+	})
+
+	menu.AddAction("Quit", func() {
+		for i := len(editors) - 1; i >= 0; i-- {
+			editors[i].mainWindow.Close()
+		}
+	})
+
+	menu = mb.AddMenu("Edit")
+	menu.AddAction("Basic Information", func() {
+		basicInformation(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("General Settings", func() {
+		generalSettings(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Channels", func() {
+		channels(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Contacts", func() {
+		contacts(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Group Lists", func() {
+		groupLists(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Scan Lists", func() {
+		scanLists(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("Zones", func() {
+		zones(edt)
+	}).SetEnabled(cp != nil)
+
+	menu.AddAction("GPS Systems", func() {
+		gpsSystems(edt)
+	}).SetEnabled(cp != nil && settings.displayGPS)
+
+	edt.undoAction = menu.AddAction("Undo", func() {
+		edt.codeplug.UndoChange()
+	})
+	edt.undoAction.SetEnabled(false)
+
+	edt.redoAction = menu.AddAction("Redo", func() {
+		edt.codeplug.RedoChange()
+	})
+	edt.redoAction.SetEnabled(false)
+
+	menu.AddAction("Preferences...", func() {
+		edt.preferences()
+	})
+
+	menu = mb.AddMenu("Radio")
+
 	menu.AddAction("Read codeplug from radio", func() {
 		err := codeplug.RadioExists()
 		if err != nil {
@@ -654,75 +723,6 @@ func (edt *editor) updateMenuBar() {
 			ui.ErrorPopup(title, err.Error())
 		}
 	}).SetEnabled(cp != nil && cp.Loaded())
-
-	menu.AddSeparator()
-
-	menu.AddAction("Save", func() {
-		edt.save()
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Save As...", func() {
-		edt.saveAs("")
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Preferences...", func() {
-		edt.preferences()
-	})
-
-	menu.AddSeparator()
-
-	menu.AddAction("Close", func() {
-		edt.mainWindow.Close()
-	})
-
-	menu.AddAction("Quit", func() {
-		for i := len(editors) - 1; i >= 0; i-- {
-			editors[i].mainWindow.Close()
-		}
-	})
-
-	menu = mb.AddMenu("Edit")
-	menu.AddAction("Basic Information", func() {
-		basicInformation(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("General Settings", func() {
-		generalSettings(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Channels", func() {
-		channels(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Contacts", func() {
-		contacts(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Group Lists", func() {
-		groupLists(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Scan Lists", func() {
-		scanLists(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Zones", func() {
-		zones(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("GPS Systems", func() {
-		gpsSystems(edt)
-	}).SetEnabled(cp != nil && settings.displayGPS)
-
-	edt.undoAction = menu.AddAction("Undo", func() {
-		edt.codeplug.UndoChange()
-	})
-	edt.undoAction.SetEnabled(false)
-
-	edt.redoAction = menu.AddAction("Redo", func() {
-		edt.codeplug.RedoChange()
-	})
-	edt.redoAction.SetEnabled(false)
 
 	windowsMenu := mb.AddMenu("Windows")
 	windowsMenu.ConnectAboutToShow(func() {
