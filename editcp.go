@@ -677,14 +677,20 @@ func (edt *editor) updateMenuBar() {
 			return
 		}
 
-		pd := ui.NewProgressDialog("Connecting to Radio...")
-		err = edt.codeplug.ReadRadio(func(min int, max int, val int) bool {
-			if val == min {
-				pd.SetLabelText("Reading Codeplug from radio...")
+		msgs := []string{
+			"Preparing to read codeplug from radio...",
+			"Reading codeplug from radio...",
+		}
+		msgIndex := 0
+		pd := ui.NewProgressDialog(msgs[msgIndex])
+		err = edt.codeplug.ReadRadio(func(cur int) bool {
+			if cur == codeplug.MinProgress {
+				pd.SetLabelText(msgs[msgIndex])
+				msgIndex++
 			}
 
-			pd.SetRange(min, max)
-			pd.SetValue(val)
+			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
+			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return false
 			}
@@ -707,13 +713,20 @@ func (edt *editor) updateMenuBar() {
 			return
 		}
 
-		pd := ui.NewProgressDialog("Connecting to Radio...")
-		err := cp.WriteRadio(func(min int, max int, val int) bool {
-			if val == min {
-				pd.SetLabelText("Writing Codeplug to radio...")
+		msgs := []string{
+			"Preparing to write codeplug to radio...",
+			"Writing codeplug to radio...",
+		}
+		msgIndex := 0
+
+		pd := ui.NewProgressDialog(msgs[msgIndex])
+		err := cp.WriteRadio(func(cur int) bool {
+			if cur == codeplug.MinProgress {
+				pd.SetLabelText(msgs[msgIndex])
+				msgIndex++
 			}
-			pd.SetRange(min, max)
-			pd.SetValue(val)
+			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
+			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return false
 			}
