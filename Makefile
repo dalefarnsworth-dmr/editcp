@@ -2,11 +2,12 @@ SHELL = /bin/sh
 
 .PHONY: default linux windows clean clobber upload install docker-usb tag
 
-EDITCP_SOURCES = *.go
-UI_SOURCES = ../ui/*.go
-CODEPLUG_SOURCES = ../codeplug/*.go
-DFU_SOURCES = ../dfu/*.go
-SOURCES = $(EDITCP_SOURCES) $(UI_SOURCES) $(CODEPLUG_SOURCES) $(DFU_SOURCES)
+EDITCP_SRC = *.go
+UI_SRC = ../ui/*.go
+CODEPLUG_SRC = ../codeplug/*.go
+DFU_SRC = ../dfu/*.go
+USERDB_SRC = ../userdb/*.go
+SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(USERDB_SRC)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux

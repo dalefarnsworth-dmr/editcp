@@ -31,9 +31,12 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/dalefarnsworth/codeplug/codeplug"
+	"github.com/dalefarnsworth/codeplug/dfu"
 	"github.com/dalefarnsworth/codeplug/ui"
+	"github.com/dalefarnsworth/codeplug/userdb"
 	"github.com/therecipe/qt/core"
 )
 
@@ -52,6 +55,7 @@ type editorSettings struct {
 	model                 string
 	frequencyRange        string
 	displayGPS            bool
+	europeanDB            bool
 }
 
 var appSettings *ui.AppSettings
@@ -739,6 +743,81 @@ func (edt *editor) updateMenuBar() {
 		}
 	}).SetEnabled(cp != nil && cp.Loaded())
 
+	md380toolsMenu := menu.AddMenu("md380tools...")
+
+	md380toolsMenu.AddAction("Write user database to radio...", func() {
+		title := "Write user database to radio"
+		cancel, download, euro := userdbDialog(title)
+		if cancel {
+			return
+		}
+
+		locType := core.QStandardPaths__CacheLocation
+		cacheDir := core.QStandardPaths_WritableLocation(locType)
+		tmpFilename := filepath.Join(cacheDir, "users.tmp")
+
+		msgs := []string{
+			"Downloading user database from web sites...",
+			"Erasing the radio's flash memory for user database...",
+			"Writing user database to radio...",
+		}
+		msgIndex := 0
+		if !download {
+			msgIndex = 1
+		}
+
+		filename := userdbFilename(euro)
+		os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
+
+		pd := ui.NewProgressDialog(msgs[msgIndex])
+
+		if download {
+			err := userdb.WriteMD380ToolsFile(tmpFilename, euro, func(cur int) bool {
+				if cur == userdb.MinProgress {
+					pd.SetLabelText(msgs[msgIndex])
+					msgIndex++
+				}
+				pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
+				pd.SetValue(cur)
+				if pd.WasCanceled() {
+					return false
+				}
+				return true
+			})
+			if err != nil {
+				os.Remove(tmpFilename)
+				pd.Close()
+				title := fmt.Sprintf("download of user database failed: %s", err.Error())
+				ui.ErrorPopup(title, err.Error())
+				return
+			}
+
+			os.Rename(tmpFilename, filename)
+		}
+		dfu, err := dfu.NewDFU(func(cur int) bool {
+			if cur == dfu.MinProgress {
+				pd.SetLabelText(msgs[msgIndex])
+				msgIndex++
+			}
+			pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
+			pd.SetValue(cur)
+			if pd.WasCanceled() {
+				return false
+			}
+			return true
+
+		})
+		if err == nil {
+			defer dfu.Close()
+			err = dfu.WriteUsers(filename)
+		}
+		if err != nil {
+			pd.Close()
+			title := fmt.Sprintf("write of user database failed: %s", err.Error())
+			ui.ErrorPopup(title, err.Error())
+		}
+	})
+
 	windowsMenu := mb.AddMenu("Windows")
 	windowsMenu.ConnectAboutToShow(func() {
 		edt.updateWindowsMenu(windowsMenu)
@@ -748,6 +827,95 @@ func (edt *editor) updateMenuBar() {
 	menu.AddAction("About...", func() {
 		about()
 	})
+}
+
+func userdbFilename(euro bool) string {
+	locType := core.QStandardPaths__CacheLocation
+	cacheDir := core.QStandardPaths_WritableLocation(locType)
+
+	name := "usersDB.bin"
+	if euro {
+		name = "euroUsersDB.bin"
+	}
+
+	return filepath.Join(cacheDir, name)
+}
+
+func userdbDialog(title string) (canceled, download, euro bool) {
+	loadSettings()
+
+	euro = settings.europeanDB
+	usersFilename := userdbFilename(euro)
+
+	download = true
+	if fileYounger(usersFilename, 1*time.Hour) {
+		download = false
+	}
+
+	downloadChecked := false
+	downloadCheckbox := ui.NewCheckboxWidget(download, func(checked bool) {
+		download = checked
+		downloadChecked = true
+	})
+	downloadCheckbox.SetEnabled(fileExists(usersFilename))
+
+	euroCheckbox := ui.NewCheckboxWidget(euro, func(checked bool) {
+		euro = checked
+		usersFilename := userdbFilename(euro)
+		if !downloadChecked {
+			if fileYounger(usersFilename, 1*time.Hour) {
+				download = false
+			}
+		}
+		if !fileExists(usersFilename) {
+			download = true
+		}
+
+		downloadCheckbox.SetEnabled(fileExists(usersFilename))
+	})
+
+	dialog := ui.NewDialog(title)
+
+	labelText := `
+The users database contains DMR ID numbers and callsigns of all registered
+users. It can only be be written to radios that have been updated with the
+md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
+To comply with privacy laws, the European version contains no personal names.`
+
+	dialog.AddLabel(labelText[1:])
+
+	form := dialog.AddForm()
+	form.AddRow("Download new users database file", downloadCheckbox)
+	form.AddRow("Select European users database", euroCheckbox)
+
+	row := dialog.AddHbox()
+
+	cancelButton := ui.NewButtonWidget("Cancel", func() {
+		dialog.Reject()
+	})
+	row.AddWidget(cancelButton)
+
+	saveButton := ui.NewButtonWidget("Write", func() {
+		dialog.Accept()
+	})
+	row.AddWidget(saveButton)
+
+	save := dialog.Exec()
+	if save {
+		settings.europeanDB = euro
+		saveSettings()
+	}
+	return !save, download, euro
+}
+
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	return err == nil
+}
+
+func fileYounger(filename string, duration time.Duration) bool {
+	fileInfo, err := os.Stat(filename)
+	return err == nil && time.Since(fileInfo.ModTime()) < duration
 }
 
 func (edt *editor) updateButtons() {
@@ -1174,6 +1342,7 @@ func loadSettings() {
 	settings.model = as.String("model", "")
 	settings.frequencyRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
+	settings.europeanDB = as.Bool("europeanDB", true)
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -1193,6 +1362,7 @@ func saveSettings() {
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.frequencyRange)
 	as.SetBool("displayGPS", settings.displayGPS)
+	as.SetBool("europeanDB", settings.europeanDB)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
