@@ -176,7 +176,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 			os.Rename(tmpFilename, filename)
 		}
-		dfu, err := dfu.NewDFU(func(cur int) bool {
+		dfu, err := dfu.New(func(cur int) bool {
 			if cur == dfu.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -279,7 +279,7 @@ func writeFirmware(url string, msgs []string) {
 	msgIndex := 0
 	pd := ui.NewProgressDialog(msgs[msgIndex])
 
-	df, err := dfu.NewDFU(func(cur int) bool {
+	df, err := dfu.New(func(cur int) bool {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++

@@ -49,6 +49,8 @@ FunctionEnd
 Section
 Setoutpath $INSTDIR
   File deploy\win32\editcp.exe
+  File dll\STDFU.dll
+  File dll\STTubeDevice30.dll
 SectionEnd
 
 ; The default installation directory
@@ -114,6 +116,8 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete "$INSTDIR\editcp.exe"
+  Delete "$INSTDIR\STDFU.dll"
+  Delete "$INSTDIR\STTubeDevice30.dll"
   Delete "$INSTDIR\uninstall.exe"
 
   ; Remove shortcuts, if any
