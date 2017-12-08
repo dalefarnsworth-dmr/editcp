@@ -72,3 +72,21 @@ func dprint(v ...interface{}) {
 
 	display("Debug Messsage", v...)
 }
+
+func logFatalf(s string, v ...interface{}) {
+	display("Fatal error", fmt.Sprintf(s, v...))
+	os.Exit(1)
+}
+
+func logFatal(v ...interface{}) {
+	display("Fatal error", fmt.Sprint(v...))
+	os.Exit(1)
+}
+
+func logPrintf(s string, v ...interface{}) {
+	display("Information", fmt.Sprintf(s, v...))
+}
+
+func logPrint(v ...interface{}) {
+	display("Information", fmt.Sprint(v...))
+}

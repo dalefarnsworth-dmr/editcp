@@ -25,6 +25,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -53,4 +54,20 @@ func printStack() {
 	fmt.Fprintln(os.Stderr, "start stack trace")
 	debug.PrintStack()
 	fmt.Fprintln(os.Stderr)
+}
+
+func logFatalf(s string, v ...interface{}) {
+	log.Fatalf(s, v...)
+}
+
+func logFatal(v ...interface{}) {
+	log.Fatal(v...)
+}
+
+func logPrintf(s string, v ...interface{}) {
+	log.Printf(s, v...)
+}
+
+func logPrint(v ...interface{}) {
+	log.Print(v...)
 }
