@@ -546,12 +546,15 @@ func download(url, filename string, progress func(cur int) bool) error {
 	return d.download()
 }
 
-func (d *downloader) download() error {
+func (d *downloader) download() (err error) {
 	file, err := os.Create(d.filename)
 	if err != nil {
 		return wrapError("download", err)
 	}
-	defer file.Close()
+	defer func() {
+		err = file.Close()
+		return
+	}()
 
 	resp, err := client.Get(d.url)
 	if err != nil {
