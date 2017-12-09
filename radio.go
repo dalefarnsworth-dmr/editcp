@@ -373,6 +373,7 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 			download = true
 		}
 
+		downloadCheckbox.SetChecked(download)
 		downloadCheckbox.SetEnabled(fileExists(usersFilename))
 	})
 
