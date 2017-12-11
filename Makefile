@@ -6,8 +6,9 @@ EDITCP_SRC = *.go
 UI_SRC = ../ui/*.go
 CODEPLUG_SRC = ../codeplug/*.go
 DFU_SRC = ../dfu/*.go
+STDFU_SRC = ../stdfu/*.go
 USERDB_SRC = ../userdb/*.go
-SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(USERDB_SRC)
+SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux
