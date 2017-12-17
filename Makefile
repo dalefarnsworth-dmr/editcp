@@ -13,7 +13,7 @@ VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux
 
-linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install
+linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
 
 deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
@@ -23,8 +23,11 @@ deploy/linux/editcp: $(SOURCES)
 deploy/linux/editcp.sh: editcp.sh
 	cp editcp.sh deploy/linux/editcp.sh
 
-deploy/linux/install: install.sh deploy/linux/editcp
+deploy/linux/install: install.sh deploy/linux/editcp 99-md380.rules
 	cp install.sh deploy/linux/install
+
+deploy/linux/99-md380.rules: 99-md380.rules
+	cp 99-md380.rules deploy/linux/
 
 editcp-$(VERSION).tar.xz: linux
 	rm -rf editcp-$(VERSION)

@@ -5,12 +5,12 @@ install() {
 	if [ $# -gt 0 ]; then
 		dir="$1"
 		if [ "$dir" == . ]; then
-			exit 0
+			return
 		fi
 
 		echo "+ ln -sf" "$dirname/$appname.sh" "$dir/$appname"
 		ln -sf "$dirname/$appname.sh" "$dir/$appname"
-		exit $?
+		return
 	fi
 
 	i=0
@@ -48,7 +48,7 @@ install() {
 				break;;
 
 			$((${#dirs[@]}+2)))
-				exit;;
+				return;;
 
 			*)
 				if [ -z "$installdir" ]; then
@@ -69,10 +69,17 @@ install() {
 
 if [ ! -f "./$appname.sh" ]; then
 	echo "./$appname.sh is not correctly installed." 1>&2
-	echo "cd to the $appname installation directory and run ./$appname.sh --install" 1>&2
+	echo "cd to the $appname installation directory and run: ./$appname.sh --install" 1>&2
 	exit 1
 fi
 
 dirname="$(pwd)"
 sed --in-place -e "/^dirname=/cdirname=$dirname" $appname.sh
 install "$@"
+
+if ! grep --silent '"0483".*"df11"' /etc/udev/rules.d/*; then
+	echo "No udev rules found to enable non-root-user access to the md380 usb device." 1>&2
+	echo "To enable non-root-user access," 1>&2
+	echo "cd to the $appname installation directory and run:" 1>&2
+	echo -e "\tsudo cp 99-md380.rules /etc/udev/rules.d/" 1>&2
+fi
