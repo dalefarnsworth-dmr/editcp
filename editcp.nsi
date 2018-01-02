@@ -49,6 +49,7 @@ FunctionEnd
 Section
 Setoutpath $INSTDIR
   File deploy\win32\editcp.exe
+  File editcp.ico
   File dll\STDFU.dll
   File dll\STTubeDevice30.dll
 SectionEnd
@@ -97,13 +98,13 @@ SectionEnd
 Section "Start Menu Shortcut"
   CreateDirectory "$SMPROGRAMS\editcp"
   SetOutPath $DESKTOP
-  CreateShortCut "$SMPROGRAMS\editcp\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
+  CreateShortCut "$SMPROGRAMS\editcp\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.ico" 0
 SectionEnd
 
 ; Optional section (can be disabled by the user)
 Section /o "Desktop Shortcut"
   SetOutPath $DESKTOP
-  CreateShortCut "$DESKTOP\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.exe" 0
+  CreateShortCut "$DESKTOP\EditCp.lnk" "$INSTDIR\editcp.exe" "" "$INSTDIR\editcp.ico" 0
 SectionEnd
 
 ;--------------------------------
@@ -116,6 +117,7 @@ Section "Uninstall"
 
   ; Remove files and uninstaller
   Delete "$INSTDIR\editcp.exe"
+  Delete "$INSTDIR\editcp.ico"
   Delete "$INSTDIR\STDFU.dll"
   Delete "$INSTDIR\STTubeDevice30.dll"
   Delete "$INSTDIR\uninstall.exe"
