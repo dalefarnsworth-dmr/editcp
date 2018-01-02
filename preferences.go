@@ -43,7 +43,20 @@ func (edt *editor) preferences() {
 		displayGPS = checked
 	})
 	form.AddRow("Display GPS fields:", checkbox)
-	dialog.AddSpace(3)
+	dialog.AddSpace(2)
+
+	row = dialog.AddHbox()
+	groupBox = row.AddGroupbox("Warnings")
+	form = groupBox.AddForm()
+
+	suppressWarnings := settings.suppressWarnings
+
+	checked = suppressWarnings
+	checkbox = ui.NewCheckboxWidget(checked, func(checked bool) {
+		suppressWarnings = checked
+	})
+	form.AddRow("Suppress invalid field warning messages:", checkbox)
+	dialog.AddSpace(2)
 
 	row = dialog.AddHbox()
 	groupBox = row.AddGroupbox("AutoSave")
@@ -55,7 +68,7 @@ func (edt *editor) preferences() {
 		autosaveInterval = i
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
-	dialog.AddSpace(3)
+	dialog.AddSpace(2)
 
 	row = dialog.AddHbox()
 
@@ -75,6 +88,8 @@ func (edt *editor) preferences() {
 
 	settings.displayGPS = displayGPS
 	edt.setDisplayGPS(displayGPS)
+
+	settings.suppressWarnings = suppressWarnings
 
 	settings.autosaveInterval = autosaveInterval
 	edt.setAutosaveInterval(autosaveInterval)

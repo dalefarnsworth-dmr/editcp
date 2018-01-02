@@ -52,6 +52,7 @@ type editorSettings struct {
 	frequencyRange        string
 	displayGPS            bool
 	europeanDB            bool
+	suppressWarnings      bool
 }
 
 var appSettings *ui.AppSettings
@@ -115,8 +116,8 @@ func (edt *editor) revertFile() error {
 		msg += "Are you sure you want to discard the changes?"
 		switch ui.YesNoPopup(title, msg) {
 		case ui.PopupYes:
-			ignoreWarning := true
-			err := edt.codeplug.Revert(ignoreWarning)
+			ignoreWarnings := true
+			err := edt.codeplug.Revert(ignoreWarnings)
 			if err != nil {
 				ui.ErrorPopup("Revert Failed", err.Error())
 			}
@@ -161,16 +162,16 @@ func (edt *editor) saveAs(filename string) string {
 		settings.codeplugDirectory = filepath.Dir(filename)
 		saveSettings()
 	}
-	ignoreWarning := false
-	err := edt.codeplug.SaveAs(filename, ignoreWarning)
+	ignoreWarnings := settings.suppressWarnings
+	err := edt.codeplug.SaveAs(filename, ignoreWarnings)
 	if warning, ok := err.(codeplug.Warning); ok {
 		title := fmt.Sprintf("%s: save warning", filename)
 		rv := ui.WarningPopup(title, warning.Error())
 		if rv != ui.PopupIgnore {
 			return ""
 		}
-		ignoreWarning := true
-		err = edt.codeplug.SaveAs(filename, ignoreWarning)
+		ignoreWarnings := true
+		err = edt.codeplug.SaveAs(filename, ignoreWarnings)
 	}
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
@@ -319,15 +320,15 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		ignoreWarning := false
-		err = cp.Load(model, frequencyRange, ignoreWarning)
+		ignoreWarnings := settings.suppressWarnings
+		err = cp.Load(model, frequencyRange, ignoreWarnings)
 		if warning, ok := err.(codeplug.Warning); ok {
 			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
 			if rv != ui.PopupIgnore {
 				return
 			}
-			ignoreWarning = true
-			err = cp.Load(model, frequencyRange, ignoreWarning)
+			ignoreWarnings = true
+			err = cp.Load(model, frequencyRange, ignoreWarnings)
 		}
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
@@ -1106,6 +1107,7 @@ func loadSettings() {
 	settings.frequencyRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
 	settings.europeanDB = as.Bool("europeanDB", true)
+	settings.suppressWarnings = as.Bool("suppressWarnings", false)
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -1126,6 +1128,7 @@ func saveSettings() {
 	as.SetString("frequencyRange", settings.frequencyRange)
 	as.SetBool("displayGPS", settings.displayGPS)
 	as.SetBool("europeanDB", settings.europeanDB)
+	as.SetBool("suppressWarnings", settings.suppressWarnings)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
