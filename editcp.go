@@ -166,7 +166,7 @@ func (edt *editor) saveAs(filename string) string {
 	if warning, ok := err.(codeplug.Warning); ok {
 		title := fmt.Sprintf("%s: save warning", filename)
 		rv := ui.WarningPopup(title, warning.Error())
-		if rv == ui.PopupIgnore {
+		if rv != ui.PopupIgnore {
 			return ""
 		}
 		ignoreWarning := true
