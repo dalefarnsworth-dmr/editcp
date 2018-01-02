@@ -680,6 +680,9 @@ func (edt *editor) updateMenuBar() {
 	menu.AddAction("About...", func() {
 		about()
 	})
+	menu.AddAction("Thanks...", func() {
+		thanks()
+	})
 }
 
 func (edt *editor) updateButtons() {
@@ -946,6 +949,27 @@ The source code for editcp may be found at
 https://github.com/dalefarnsworth/codeplug
 `
 	ui.InfoPopup("About editcp", msg)
+}
+
+func thanks() {
+	msgs := []string{
+		"A big thank you to:",
+		"  José Melo, CT4TX, for creating the nice logo",
+		"  Ron McMurdy, W5QLD, for reporting bugs",
+		"  Markus Lenggenhager, HB9BRJ, for reporting bugs",
+		"  Roy G. Jackson, KW4G, for reporting bugs",
+		"  Kevin Ott, N8VNR, for reporting bugs",
+		"  Andreas Krüger, DJ3EI, for reporting bugs",
+		"  Martin Jones, KI0KO, for reporting bugs",
+		"  Marco Carrara, IW2KWD, for suggesting improvements",
+		"  Bob Finch, W9YA, for reporting bugs",
+		"",
+		"Please let me know of errors or omissions in the above list.",
+		"Dale Farnsworth, NO7K, dale@farnsworth.org",
+	}
+
+	msg := strings.Join(msgs, "\n")
+	ui.InfoPopup("Thanks", msg)
 }
 
 func updateUndoActions(edt *editor) {
