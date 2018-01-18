@@ -958,7 +958,7 @@ func thanks() {
 		"  Ron McMurdy, W5QLD, for reporting bugs",
 		"  Markus Lenggenhager, HB9BRJ, for reporting bugs",
 		"  Roy G. Jackson, KW4G, for reporting bugs",
-		"  Kevin Ott, N8VNR, for reporting bugs",
+		"  Kevin Otte, N8VNR, for reporting bugs",
 		"  Andreas Krüger, DJ3EI, for reporting bugs",
 		"  Martin Jones, KI0KO, for reporting bugs",
 		"  Marco Carrara, IW2KWD, for suggesting improvements",
