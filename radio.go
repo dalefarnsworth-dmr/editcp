@@ -361,9 +361,14 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 	})
 	downloadCheckbox.SetEnabled(fileExists(usersFilename))
 
+	dialog := ui.NewDialog(title)
+
+	filenameBox := ui.NewHbox()
+	filenameBox.AddLabel("   " + usersFilename)
+
 	euroCheckbox := ui.NewCheckboxWidget(euro, func(checked bool) {
 		euro = checked
-		usersFilename := userdbFilename(euro)
+		usersFilename = userdbFilename(euro)
 		if !downloadChecked {
 			if fileYounger(usersFilename, 1*time.Hour) {
 				download = false
@@ -375,9 +380,10 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 
 		downloadCheckbox.SetChecked(download)
 		downloadCheckbox.SetEnabled(fileExists(usersFilename))
-	})
 
-	dialog := ui.NewDialog(title)
+		filenameBox.Clear()
+		filenameBox.AddLabel("   " + usersFilename)
+	})
 
 	labelText := `
 The users database contains DMR ID numbers and callsigns of all registered
@@ -391,8 +397,10 @@ To comply with privacy laws, the European version contains no personal names.`
 	form.AddRow("Download new users database file", downloadCheckbox)
 	form.AddRow("Select European users database", euroCheckbox)
 
-	row := dialog.AddHbox()
+	dialog.AddLabel("File to be written:")
+	dialog.AddExistingHbox(filenameBox)
 
+	row := dialog.AddHbox()
 	cancelButton := ui.NewButtonWidget("Cancel", func() {
 		dialog.Reject()
 	})
