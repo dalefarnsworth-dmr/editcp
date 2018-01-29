@@ -169,7 +169,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			if err != nil {
 				os.Remove(tmpFilename)
 				pd.Close()
-				title := fmt.Sprintf("download of user database failed: %s", err.Error())
+				title := fmt.Sprintf("Download of user database failed")
 				ui.ErrorPopup(title, err.Error())
 				return
 			}
@@ -553,7 +553,10 @@ func (d *downloader) download() (err error) {
 		return wrapError("download", err)
 	}
 	defer func() {
-		err = file.Close()
+		fErr := file.Close()
+		if err == nil {
+			err = fErr
+		}
 		return
 	}()
 
