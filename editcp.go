@@ -639,7 +639,7 @@ func (edt *editor) updateMenuBar() {
 		contacts(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("Group Lists", func() {
+	menu.AddAction("RX Group Lists", func() {
 		groupLists(edt)
 	}).SetEnabled(cp != nil)
 
@@ -708,7 +708,7 @@ func (edt *editor) updateButtons() {
 	dcButton.SetEnabled(cp != nil)
 	dcButton.ConnectClicked(func() { contacts(edt) })
 
-	glButton := column.AddButton("Group Lists")
+	glButton := column.AddButton("RX Group Lists")
 	glButton.SetEnabled(cp != nil)
 	glButton.ConnectClicked(func() { groupLists(edt) })
 
