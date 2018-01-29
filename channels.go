@@ -90,7 +90,8 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiColorCode,
 		codeplug.FtCiRepeaterSlot,
 		codeplug.FtCiPrivacy,
-		codeplug.FtCiPrivacyNumber)
+		codeplug.FtCiPrivacyNumber,
+		codeplug.FtCiInCallCriteria)
 
 	if settings.displayGPS {
 		form.AddFieldRows(r, codeplug.FtCiGPSSystem)
