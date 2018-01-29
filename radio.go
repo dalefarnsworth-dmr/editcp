@@ -389,7 +389,9 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 The users database contains DMR ID numbers and callsigns of all registered
 users. It can only be be written to radios that have been upgraded to the
 md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
-To comply with privacy laws, the European version contains no personal names.`
+
+Personal names are removed from the European version, apparently to comply
+with privacy laws.`
 
 	dialog.AddLabel(labelText[1:])
 
