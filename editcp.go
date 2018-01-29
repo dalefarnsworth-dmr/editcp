@@ -1,4 +1,4 @@
-// Copyright 2017 Dale Farnsworth. All rights reserved.
+// Copyright 2017-2018 Dale Farnsworth. All rights reserved.
 
 // Dale Farnsworth
 // 1007 W Mendoza Ave
@@ -936,7 +936,7 @@ func about() {
 editcp is free software licensed
 under version 3 of the GPL.
 
-Copyright 2017 Dale Farnsworth
+Copyright 2017-2018 Dale Farnsworth
 
 Dale Farnsworth
 1007 W Mendoza Ave
