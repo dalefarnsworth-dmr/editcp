@@ -413,12 +413,12 @@ with privacy laws.`
 	})
 	row.AddWidget(saveButton)
 
-	save := dialog.Exec()
-	if save {
+	saved := dialog.Exec()
+	if saved {
 		settings.europeanDB = euro
 		saveSettings()
 	}
-	return !save, download, euro
+	return !saved, download, euro
 }
 
 func firmwareDialog(title string, modelUrls []modelUrl, upgrade bool) (canceled bool, model, url string) {
@@ -428,8 +428,7 @@ func firmwareDialog(title string, modelUrls []modelUrl, upgrade bool) (canceled 
 		models[i] = modelUrl.model
 	}
 
-	model = models[0]
-	modelCombobox := ui.NewComboboxWidget(model, models, func(selected string) {
+	modelCombobox := ui.NewComboboxWidget(models[0], models, func(selected string) {
 		model = selected
 	})
 
@@ -476,6 +475,8 @@ md380 variant.`
 	})
 	row.AddWidget(saveButton)
 
+	saved := dialog.Exec()
+
 	for _, modelUrl := range modelUrls {
 		if modelUrl.model == model {
 			url = modelUrl.url
@@ -483,7 +484,7 @@ md380 variant.`
 		}
 	}
 
-	return !dialog.Exec(), model, url
+	return !saved, model, url
 }
 
 var timeoutSeconds = 20
