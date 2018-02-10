@@ -428,7 +428,8 @@ func firmwareDialog(title string, modelUrls []modelUrl, upgrade bool) (canceled 
 		models[i] = modelUrl.model
 	}
 
-	modelCombobox := ui.NewComboboxWidget(models[0], models, func(selected string) {
+	model = models[0]
+	modelCombobox := ui.NewComboboxWidget(model, models, func(selected string) {
 		model = selected
 	})
 
