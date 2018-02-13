@@ -631,6 +631,10 @@ func (edt *editor) updateMenuBar() {
 		generalSettings(edt)
 	}).SetEnabled(cp != nil)
 
+	menu.AddAction("Menu Items", func() {
+		menuItems(edt)
+	}).SetEnabled(cp != nil)
+
 	menu.AddAction("Channels", func() {
 		channels(edt)
 	}).SetEnabled(cp != nil)
@@ -699,6 +703,10 @@ func (edt *editor) updateButtons() {
 	gsButton := column.AddButton("General Settings")
 	gsButton.SetEnabled(cp != nil)
 	gsButton.ConnectClicked(func() { generalSettings(edt) })
+
+	miButton := column.AddButton("Menu Items")
+	miButton.SetEnabled(cp != nil)
+	miButton.ConnectClicked(func() { menuItems(edt) })
 
 	ciButton := column.AddButton("Channels")
 	ciButton.SetEnabled(cp != nil)
