@@ -350,7 +350,7 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 	usersFilename := userdbFilename(euro)
 
 	download = true
-	if fileYounger(usersFilename, 1*time.Hour) {
+	if fileYounger(usersFilename, 12*time.Hour) {
 		download = false
 	}
 
