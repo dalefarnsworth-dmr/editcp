@@ -64,9 +64,9 @@ clobber: clean
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
-upload: editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe
+upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
 
 tag:
-	git tag -s -m "editcp v$(VERSION)" v$(VERSION)
+	git tag -f -s -m "editcp v$(VERSION)" v$(VERSION)
