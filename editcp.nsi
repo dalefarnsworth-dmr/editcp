@@ -42,7 +42,7 @@ CheckUninstall:
 ;Run the uninstaller
 uninst:
   ClearErrors
-  Exec $R0
+  ExecWait "$R0 /S"
 FinishedUninstallChecks:
 FunctionEnd
 
