@@ -129,7 +129,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 	md380toolsMenu.AddAction("Write user database to radio...", func() {
 		title := "Write user database to radio"
-		cancel, download, euro := userdbDialog(title)
+		cancel, download := userdbDialog(title)
 		if cancel {
 			return
 		}
@@ -148,13 +148,13 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			msgIndex = 1
 		}
 
-		filename := userdbFilename(euro)
+		filename := userdbFilename()
 		os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
 
 		pd := ui.NewProgressDialog(msgs[msgIndex])
 
 		if download {
-			err := userdb.WriteMD380ToolsFile(tmpFilename, euro, func(cur int) bool {
+			err := userdb.WriteMD380ToolsFile(tmpFilename, func(cur int) bool {
 				if cur == userdb.MinProgress {
 					pd.SetLabelText(msgs[msgIndex])
 					msgIndex++
@@ -331,23 +331,19 @@ func writeFirmware(url string, msgs []string) {
 	ui.InfoPopup("Firmware write complete", msg)
 }
 
-func userdbFilename(euro bool) string {
+func userdbFilename() string {
 	locType := core.QStandardPaths__CacheLocation
 	cacheDir := core.QStandardPaths_WritableLocation(locType)
 
 	name := "usersDB.bin"
-	if euro {
-		name = "euroUsersDB.bin"
-	}
 
 	return filepath.Join(cacheDir, name)
 }
 
-func userdbDialog(title string) (canceled, download, euro bool) {
+func userdbDialog(title string) (canceled, download bool) {
 	loadSettings()
 
-	euro = settings.europeanDB
-	usersFilename := userdbFilename(euro)
+	usersFilename := userdbFilename()
 
 	download = true
 	if fileYounger(usersFilename, 12*time.Hour) {
@@ -366,40 +362,17 @@ func userdbDialog(title string) (canceled, download, euro bool) {
 	filenameBox := ui.NewHbox()
 	filenameBox.AddLabel("   " + usersFilename)
 
-	euroCheckbox := ui.NewCheckboxWidget(euro, func(checked bool) {
-		euro = checked
-		usersFilename = userdbFilename(euro)
-		if !downloadChecked {
-			if fileYounger(usersFilename, 1*time.Hour) {
-				download = false
-			}
-		}
-		if !fileExists(usersFilename) {
-			download = true
-		}
-
-		downloadCheckbox.SetChecked(download)
-		downloadCheckbox.SetEnabled(fileExists(usersFilename))
-
-		filenameBox.Clear()
-		filenameBox.AddLabel("   " + usersFilename)
-	})
-
 	labelText := `
 The users database contains DMR ID numbers and callsigns of all registered
 users. It can only be be written to radios that have been upgraded to the
-md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
-
-Personal names are removed from the European version, apparently to comply
-with privacy laws.`
+md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
 
 	dialog.AddLabel(labelText[1:])
 
 	form := dialog.AddForm()
 	form.AddRow("Download new users database file", downloadCheckbox)
-	form.AddRow("Select European users database", euroCheckbox)
 
-	dialog.AddLabel("File to be written:")
+	dialog.AddLabel("Filename:")
 	dialog.AddExistingHbox(filenameBox)
 
 	row := dialog.AddHbox()
@@ -414,11 +387,7 @@ with privacy laws.`
 	row.AddWidget(saveButton)
 
 	saved := dialog.Exec()
-	if saved {
-		settings.europeanDB = euro
-		saveSettings()
-	}
-	return !saved, download, euro
+	return !saved, download
 }
 
 func firmwareDialog(title string, modelUrls []modelUrl, upgrade bool) (canceled bool, model, url string) {

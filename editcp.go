@@ -51,7 +51,6 @@ type editorSettings struct {
 	model                 string
 	frequencyRange        string
 	displayGPS            bool
-	europeanDB            bool
 	suppressWarnings      bool
 }
 
@@ -1138,7 +1137,6 @@ func loadSettings() {
 	settings.model = as.String("model", "")
 	settings.frequencyRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
-	settings.europeanDB = as.Bool("europeanDB", true)
 	settings.suppressWarnings = as.Bool("suppressWarnings", false)
 
 	size := as.BeginReadArray("recentFiles")
@@ -1159,7 +1157,6 @@ func saveSettings() {
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.frequencyRange)
 	as.SetBool("displayGPS", settings.displayGPS)
-	as.SetBool("europeanDB", settings.europeanDB)
 	as.SetBool("suppressWarnings", settings.suppressWarnings)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
