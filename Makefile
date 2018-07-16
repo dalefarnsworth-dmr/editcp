@@ -67,6 +67,7 @@ clobber: clean
 upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
+	git push
 
 tag:
 	git tag -f -s -m "editcp v$(VERSION)" v$(VERSION)
