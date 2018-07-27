@@ -352,10 +352,8 @@ func userdbDialog(title string) (canceled, download bool) {
 		download = false
 	}
 
-	downloadChecked := false
 	downloadCheckbox := ui.NewCheckboxWidget(download, func(checked bool) {
 		download = checked
-		downloadChecked = true
 	})
 	downloadCheckbox.SetEnabled(fileExists(usersFilename))
 
