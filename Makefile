@@ -1,17 +1,19 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber upload install docker-usb tag
+.PHONY: default linux windows clean clobber upload install docker-usb tag dmrRadio
 
 EDITCP_SRC = *.go
+RADIO_SRC = ../dmrRadio/*.go
 UI_SRC = ../ui/*.go
 CODEPLUG_SRC = ../codeplug/*.go
 DFU_SRC = ../dfu/*.go
 STDFU_SRC = ../stdfu/*.go
 USERDB_SRC = ../userdb/*.go
 SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
+RADIO_SRCS =  $(RADIO_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
-default: linux
+default: linux dmrRadio
 
 linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
 
@@ -57,17 +59,35 @@ docker-usb:
 	cd ../docker/linux-with-usb && \
 		docker build -t therecipe/qt:linux .
 
+dmrRadio: ../dmrRadio/dmrRadio
+
+../dmrRadio/dmrRadio: $(RADIO_SRCS)
+	cd ../dmrRadio && go build
+
+dmrRadio: dmrRadio-$(VERSION).tar.xz
+
+dmrRadio-$(VERSION).tar.xz: ../dmrRadio/dmrRadio
+	cd ../dmrRadio && go build
+	rm -rf dmrRadio-$(VERSION)
+	mkdir -p dmrRadio-$(VERSION)
+	cp -al ../dmrRadio/dmrRadio dmrRadio-$(VERSION)
+	tar cJf dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)
+	rm -rf dmrRadio-$(VERSION)
+
 clean:
+	rm -rf ../dmrRadio/dmrRadio
 
 clobber: clean
-	rm -rf editcp-*.tar.xz editcp-*.exe deploy/*
+	rm -rf editcp-* deploy/* dmrRadio-*
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
-upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe
+upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION).tar.xz
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
+	rsync dmrRadio-$(VERSION).tar.xz farnsworth.org:
 	git push
+	git push --tags
 
 tag:
 	git tag -f -s -m "editcp v$(VERSION)" v$(VERSION)
