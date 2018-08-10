@@ -90,4 +90,5 @@ upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(
 	git push --tags
 
 tag:
+	git log --no-decorate -1 --oneline | grep -q -i "update.*version"
 	git tag -f -s -m "editcp v$(VERSION)" v$(VERSION)
