@@ -40,7 +40,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-type modelUrl struct {
+type modelURL struct {
 	model string
 	url   string
 }
@@ -69,7 +69,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		}
 		msgIndex := 0
 		pd := ui.NewProgressDialog(msgs[msgIndex])
-		err = edt.codeplug.ReadRadio(func(cur int) bool {
+		err = edt.codeplug.ReadRadio(func(cur int) error {
 			if cur == codeplug.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -78,9 +78,9 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
-				return false
+				return errors.New("cancelled")
 			}
-			return true
+			return nil
 		})
 		if err != nil {
 			pd.Close()
@@ -106,7 +106,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		msgIndex := 0
 
 		pd := ui.NewProgressDialog(msgs[msgIndex])
-		err := cp.WriteRadio(func(cur int) bool {
+		err := cp.WriteRadio(func(cur int) error {
 			if cur == codeplug.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -114,9 +114,9 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
-				return false
+				return errors.New("cancelled")
 			}
-			return true
+			return nil
 		})
 		if err != nil {
 			pd.Close()
@@ -154,7 +154,8 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		pd := ui.NewProgressDialog(msgs[msgIndex])
 
 		if download {
-			err := userdb.WriteMD380ToolsFile(tmpFilename, func(cur int) bool {
+			db := userdb.New()
+			err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
 				if cur == userdb.MinProgress {
 					pd.SetLabelText(msgs[msgIndex])
 					msgIndex++
@@ -162,9 +163,9 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 				pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 				pd.SetValue(cur)
 				if pd.WasCanceled() {
-					return false
+					return errors.New("cancelled")
 				}
-				return true
+				return nil
 			})
 			if err != nil {
 				os.Remove(tmpFilename)
@@ -176,7 +177,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 			os.Rename(tmpFilename, filename)
 		}
-		dfu, err := dfu.New(func(cur int) bool {
+		dfu, err := dfu.New(func(cur int) error {
 			if cur == dfu.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -184,9 +185,9 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
-				return false
+				return errors.New("cancelled")
 			}
-			return true
+			return nil
 
 		})
 		if err == nil {
@@ -202,21 +203,21 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 	md380toolsMenu.AddAction("Write md380tools firmware to radio...", func() {
 		path := "https://farnsworth.org/dale/md380tools/"
-		nonGpsUrl := path + "firmware/D13.20.bin"
-		gpsUrl := path + "firmware/S13.20.bin"
+		nonGpsURL := path + "firmware/D13.20.bin"
+		gpsURL := path + "firmware/S13.20.bin"
 
-		modelUrls := []modelUrl{
-			modelUrl{"MD-380 (D13.20)", nonGpsUrl},
-			modelUrl{"MD-380G (S13.20)", gpsUrl},
-			modelUrl{"MD-390 (D13.20)", nonGpsUrl},
-			modelUrl{"MD-390G (S13.20)", gpsUrl},
-			modelUrl{"RT3 (D13.20)", nonGpsUrl},
-			modelUrl{"RT8 (S13.20)", gpsUrl},
+		modelURLs := []modelURL{
+			modelURL{"MD-380 (D13.20)", nonGpsURL},
+			modelURL{"MD-380G (S13.20)", gpsURL},
+			modelURL{"MD-390 (D13.20)", nonGpsURL},
+			modelURL{"MD-390G (S13.20)", gpsURL},
+			modelURL{"RT3 (D13.20)", nonGpsURL},
+			modelURL{"RT8 (S13.20)", gpsURL},
 		}
 
 		title := "Write md380tools firmware to radio..."
 		upgrade := true
-		canceled, model, url := firmwareDialog(title, modelUrls, upgrade)
+		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
 		if canceled {
 			return
 		}
@@ -232,27 +233,27 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 	md380toolsMenu.AddAction("Write original firmware to radio...", func() {
 		path := "https://farnsworth.org/dale/md380tools/"
-		d003Url := path + "original_firmware/D003.020.bin"
-		d013Url := path + "original_firmware/D013.020.bin"
-		d013_34Url := path + "original_firmware/D013.034.bin"
-		s013Url := path + "original_firmware/S013.020.bin"
-		d14_04Url := path + "original_firmware/D014.004.bin"
+		d003URL := path + "original_firmware/D003.020.bin"
+		d013URL := path + "original_firmware/D013.020.bin"
+		d013_34URL := path + "original_firmware/D013.034.bin"
+		s013URL := path + "original_firmware/S013.020.bin"
+		d14_04URL := path + "original_firmware/D014.004.bin"
 
-		modelUrls := []modelUrl{
-			modelUrl{"MD-380 old (D03.20)", d003Url},
-			modelUrl{"MD-380 (D13.20)", d013Url},
-			modelUrl{"MD-380 new (D13.34)", d013_34Url},
-			modelUrl{"MD-380 newest (D14.04", d14_04Url},
-			modelUrl{"MD-380G (S13.20)", s013Url},
-			modelUrl{"MD-390 (D13.20)", d013Url},
-			modelUrl{"MD-390G (S13.20)", s013Url},
-			modelUrl{"RT3 (D03.20)", d003Url},
-			modelUrl{"RT8 (S13.20)", s013Url},
+		modelURLs := []modelURL{
+			modelURL{"MD-380 old (D03.20)", d003URL},
+			modelURL{"MD-380 (D13.20)", d013URL},
+			modelURL{"MD-380 new (D13.34)", d013_34URL},
+			modelURL{"MD-380 newest (D14.04", d14_04URL},
+			modelURL{"MD-380G (S13.20)", s013URL},
+			modelURL{"MD-390 (D13.20)", d013URL},
+			modelURL{"MD-390G (S13.20)", s013URL},
+			modelURL{"RT3 (D03.20)", d003URL},
+			modelURL{"RT8 (S13.20)", s013URL},
 		}
 
 		title := "Write original firmware to radio..."
 		upgrade := false
-		canceled, model, url := firmwareDialog(title, modelUrls, upgrade)
+		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
 		if canceled {
 			return
 		}
@@ -281,7 +282,7 @@ func writeFirmware(url string, msgs []string) {
 	msgIndex := 0
 	pd := ui.NewProgressDialog(msgs[msgIndex])
 
-	df, err := dfu.New(func(cur int) bool {
+	df, err := dfu.New(func(cur int) error {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++
@@ -289,9 +290,9 @@ func writeFirmware(url string, msgs []string) {
 		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 		pd.SetValue(cur)
 		if pd.WasCanceled() {
-			return false
+			return errors.New("cancelled")
 		}
-		return true
+		return nil
 
 	})
 	if err != nil {
@@ -390,11 +391,11 @@ md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
 	return !saved, download
 }
 
-func firmwareDialog(title string, modelUrls []modelUrl, upgrade bool) (canceled bool, model, url string) {
+func firmwareDialog(title string, modelURLs []modelURL, upgrade bool) (canceled bool, model, url string) {
 
-	models := make([]string, len(modelUrls))
-	for i, modelUrl := range modelUrls {
-		models[i] = modelUrl.model
+	models := make([]string, len(modelURLs))
+	for i, modelURL := range modelURLs {
+		models[i] = modelURL.model
 	}
 
 	model = models[0]
@@ -447,9 +448,9 @@ md380 variant.`
 
 	saved := dialog.Exec()
 
-	for _, modelUrl := range modelUrls {
-		if modelUrl.model == model {
-			url = modelUrl.url
+	for _, modelURL := range modelURLs {
+		if modelURL.model == model {
+			url = modelURL.url
 			break
 		}
 	}
@@ -515,6 +516,7 @@ func (d *downloader) finalProgress() {
 	}
 }
 
+// Minimum and maximum progress values
 const (
 	MinProgress = 0
 	MaxProgress = 1000000
