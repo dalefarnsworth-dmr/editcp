@@ -51,6 +51,7 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	form = groupBox.AddForm()
 	form.AddFieldRows(r,
 		codeplug.FtGsDisableAllTones,
+		codeplug.FtGsKeypadTones,
 		codeplug.FtGsChFreeIndicationTone,
 		codeplug.FtGsTalkPermitTone,
 		codeplug.FtGsCallAlertToneDuration,
