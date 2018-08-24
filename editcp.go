@@ -634,6 +634,10 @@ func (edt *editor) updateMenuBar() {
 		menuItems(edt)
 	}).SetEnabled(cp != nil)
 
+	menu.AddAction("Privacy Settings", func() {
+		privacySettings(edt)
+	}).SetEnabled(cp != nil)
+
 	menu.AddAction("Channels", func() {
 		channels(edt)
 	}).SetEnabled(cp != nil)
@@ -706,6 +710,10 @@ func (edt *editor) updateButtons() {
 	miButton := column.AddButton("Menu Items")
 	miButton.SetEnabled(cp != nil)
 	miButton.ConnectClicked(func() { menuItems(edt) })
+
+	psButton := column.AddButton("Privacy Settings")
+	psButton.SetEnabled(cp != nil)
+	psButton.ConnectClicked(func() { privacySettings(edt) })
 
 	ciButton := column.AddButton("Channels")
 	ciButton.SetEnabled(cp != nil)
