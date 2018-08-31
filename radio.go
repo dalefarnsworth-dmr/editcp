@@ -94,7 +94,13 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		title := "Write codeplug to radio"
 		model := cp.Model()
 		freq := cp.FrequencyRange()
-		msg := fmt.Sprintf("Write %s %s codeplug to radio?\n", model, freq)
+		warn := `
+
+WARNING: Corruption may occur if a signal is received
+while writing to the radio.  The radio should be tuned
+to an unprogrammed (or at least quiet) channel while
+writing the new codeplug.`
+		msg := fmt.Sprintf("%s\n\nWrite %s %s codeplug to radio?\n", warn, model, freq)
 		if ui.YesNoPopup(title, msg) != ui.PopupYes {
 			return
 		}
@@ -366,7 +372,11 @@ func userdbDialog(title string) (canceled, download bool) {
 	labelText := `
 The users database contains DMR ID numbers and callsigns of all registered
 users. It can only be be written to radios that have been upgraded to the
-md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
+md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
+
+WARNING: Corruption may occur if a signal is received while writing to the
+radio.  The radio should be tuned to an unprogrammed (or at least quiet)
+channel while writing the new user database.`
 
 	dialog.AddLabel(labelText[1:])
 
