@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber upload install docker-usb tag dmrRadio
+.PHONY: default linux windows clean clobber upload install docker-usb tag
 
 EDITCP_SRC = *.go
 RADIO_SRC = ../dmrRadio/*.go
@@ -15,7 +15,7 @@ VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux dmrRadio
 
-linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
+linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules ../dmrRadio/dmrRadio
 
 deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
@@ -41,10 +41,13 @@ editcp-$(VERSION).tar.xz: linux
 install: linux
 	cd deploy/linux && ./install .
 
-windows: editcp-$(VERSION)-installer.exe
+windows: editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION)-installer.exe
 
 editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi dll/*.dll
 	makensis -DVERSION=$(VERSION) editcp.nsi
+
+dmrRadio-$(VERSION)-installer.exe: ../dmrRadio/dmrRadio.exe editcp.nsi dll/*.dll
+	makensis -DVERSION=$(VERSION) dmrRadio.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
 	qtdeploy -docker build windows_32_static
@@ -59,10 +62,11 @@ docker-usb:
 	cd ../docker/linux-with-usb && \
 		docker build -t therecipe/qt:linux .
 
-dmrRadio: ../dmrRadio/dmrRadio
-
 ../dmrRadio/dmrRadio: $(RADIO_SRCS)
 	cd ../dmrRadio && go build
+
+../dmrRadio/dmrRadio.exe: $(RADIO_SRCS)
+	cd ../dmrRadio && GOOS=windows GOARCH=386 go build
 
 dmrRadio: dmrRadio-$(VERSION).tar.xz
 
@@ -82,10 +86,11 @@ clobber: clean
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
-upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION).tar.xz
+upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)-installer.exe
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
 	rsync dmrRadio-$(VERSION).tar.xz farnsworth.org:
+	rsync dmrRadio-$(VERSION)-installer.exe farnsworth.org:
 	git push
 	git push --tags
 
