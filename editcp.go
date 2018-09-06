@@ -149,10 +149,11 @@ func baseFilename(filename string) string {
 }
 
 func (edt *editor) saveAs(filename string) string {
+	cp := edt.codeplug
 	if filename == "" {
 		dir := settings.codeplugDirectory
 		base := baseFilename(edt.codeplug.Filename())
-		ext := edt.codeplug.Ext()
+		ext := cp.Ext()
 		dir = filepath.Join(dir, base+"."+ext)
 		filename = ui.SaveFilename("Save codeplug file", dir, ext)
 		if filename == "" {
@@ -161,17 +162,24 @@ func (edt *editor) saveAs(filename string) string {
 		settings.codeplugDirectory = filepath.Dir(filename)
 		saveSettings()
 	}
-	ignoreWarnings := settings.suppressWarnings
-	err := edt.codeplug.SaveAs(filename, ignoreWarnings)
-	if warning, ok := err.(codeplug.Warning); ok {
+
+	if cp.ErrorCount() != 0 {
+		fmtStr := `
+%d invalid field values were found in the codeplug.
+
+Click on Cancel and then select "Menu->Edit->Show Invalid Fields" to view them.
+
+Or, click on Ignore to continue saving the file.`
+		msg := fmt.Sprintf(fmtStr, cp.ErrorCount())
 		title := fmt.Sprintf("%s: save warning", filename)
-		rv := ui.WarningPopup(title, warning.Error())
+		rv := ui.WarningPopup(title, msg)
 		if rv != ui.PopupIgnore {
 			return ""
 		}
-		ignoreWarnings := true
-		err = edt.codeplug.SaveAs(filename, ignoreWarnings)
 	}
+
+	ignoreWarnings := true
+	err := cp.SaveAs(filename, ignoreWarnings)
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
 		ui.ErrorPopup(title, err.Error())
@@ -180,7 +188,7 @@ func (edt *editor) saveAs(filename string) string {
 
 	edt.updateFilename()
 
-	autosaveFilename := edt.codeplug.Filename() + autosaveSuffix
+	autosaveFilename := cp.Filename() + autosaveSuffix
 	os.Remove(autosaveFilename)
 	return filename
 }
@@ -319,19 +327,19 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		ignoreWarnings := settings.suppressWarnings
+		ignoreWarnings := true
 		err = cp.Load(model, frequencyRange, ignoreWarnings)
-		if warning, ok := err.(codeplug.Warning); ok {
-			rv := ui.WarningPopup("Codeplug Warning", warning.Error())
-			if rv != ui.PopupIgnore {
-				return
-			}
-			ignoreWarnings = true
-			err = cp.Load(model, frequencyRange, ignoreWarnings)
-		}
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
+		}
+		if cp.ErrorCount() != 0 {
+			fmtStr := `
+%d invalid field values were found in the codeplug.
+
+Select "Menu->Edit->Show Invalid Fields" to view them.`
+			msg := fmt.Sprintf(fmtStr, cp.ErrorCount())
+			ui.InfoPopup("codeplug warning", msg)
 		}
 
 		edt.codeplug = cp
@@ -671,6 +679,14 @@ func (edt *editor) updateMenuBar() {
 		edt.codeplug.RedoChange()
 	})
 	edt.redoAction.SetEnabled(false)
+
+	menu.AddSeparator()
+
+	menu.AddAction("Show Invalid Fields", func() {
+		checkCodeplug(edt)
+	}).SetEnabled(cp != nil && cp.ErrorCount() != 0)
+
+	menu.AddSeparator()
 
 	menu.AddAction("Preferences...", func() {
 		edt.preferences()
