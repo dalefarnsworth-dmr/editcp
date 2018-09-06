@@ -43,7 +43,7 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 	row2 := column.AddHbox()
 	column2 := row2.AddVbox()
 	form := column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiHangTime,
 		codeplug.FtMiTextMessage,
 	)
@@ -53,7 +53,7 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 	groupBox := column.AddGroupbox("Contacts")
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiCallAlert,
 		codeplug.FtMiManualDial,
 		codeplug.FtMiRemoteMonitor,
@@ -62,7 +62,7 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiEdit,
 		codeplug.FtMiRadioCheck,
 		codeplug.FtMiProgramKey,
@@ -72,14 +72,14 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 	groupBox = column.AddGroupbox("Call Log")
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiMissed,
 		codeplug.FtMiOutgoingRadio,
 	)
 
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiAnswered,
 	)
 
@@ -87,7 +87,7 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 	groupBox = column.AddGroupbox("Utilities")
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiTalkaround,
 		codeplug.FtMiPower,
 		codeplug.FtMiIntroScreen,
@@ -99,7 +99,7 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiToneOrAlert,
 		codeplug.FtMiBacklight,
 		codeplug.FtMiKeyboardLock,
@@ -111,13 +111,13 @@ func miRecord(edt *editor, recordBox *ui.HBox) {
 	groupBox = column.AddGroupbox("Scan")
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiScan,
 	)
 
 	column2 = groupBox.AddVbox()
 	form = column2.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtMiEditList,
 	)
 }

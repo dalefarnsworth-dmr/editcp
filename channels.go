@@ -44,7 +44,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 
 	r := currentRecord(recordBox.Window())
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiChannelMode,
 		codeplug.FtCiBandwidth,
 		codeplug.FtCiScanList_md380,
@@ -58,7 +58,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = groupBox.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiName,
 		codeplug.FtCiRxFrequency,
 		codeplug.FtCiTxFrequency,
@@ -70,7 +70,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiAllowTalkaround)
 
 	if settings.displayGPS {
-		form.AddFieldRows(r,
+		form.AddFieldTypeRows(r,
 			codeplug.FtCiSendGPSInfo,
 			codeplug.FtCiReceiveGPSInfo)
 	}
@@ -80,7 +80,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = groupBox.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiPrivateCallConfirmed,
 		codeplug.FtCiEmergencyAlarmAck,
 		codeplug.FtCiDataCallConfirmed,
@@ -95,7 +95,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiInCallCriteria)
 
 	if settings.displayGPS {
-		form.AddFieldRows(r, codeplug.FtCiGPSSystem)
+		form.AddFieldTypeRows(r, codeplug.FtCiGPSSystem)
 	}
 
 	row = mainBox.AddHbox()
@@ -104,7 +104,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiCtcssDecode,
 		codeplug.FtCiQtReverse,
 		codeplug.FtCiRxSignallingSystem,
@@ -113,7 +113,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiCtcssEncode,
 		codeplug.FtCiTxSignallingSystem,
 		codeplug.FtCiReverseBurst)
@@ -121,7 +121,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiDecode1,
 		codeplug.FtCiDecode2,
 		codeplug.FtCiDecode3,
@@ -130,7 +130,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	column = row.AddVbox()
 	form = column.AddForm()
 
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtCiDecode5,
 		codeplug.FtCiDecode6,
 		codeplug.FtCiDecode7,

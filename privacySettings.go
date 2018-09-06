@@ -47,13 +47,13 @@ func psRecord(edt *editor, recordBox *ui.HBox) {
 	column := row.AddVbox()
 	groupBox := column.AddGroupbox("Key Value (Basic)")
 	form := groupBox.AddForm()
-	form.AddFieldListRows(r.Fields(codeplug.FtPsBasicKey), labelFunc)
+	form.AddFieldRows(labelFunc, r.Fields(codeplug.FtPsBasicKey)...)
 
 	row.AddSpace(3)
 
 	column = row.AddVbox()
 	groupBox = column.AddGroupbox("Key Value (Enhanced)")
 	form = groupBox.AddForm()
-	form.AddFieldListRows(r.Fields(codeplug.FtPsEnhancedKey), labelFunc)
+	form.AddFieldRows(labelFunc, r.Fields(codeplug.FtPsEnhancedKey)...)
 	column.AddFiller()
 }

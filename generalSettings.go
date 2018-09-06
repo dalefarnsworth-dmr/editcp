@@ -42,14 +42,14 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	column := row.AddVbox()
 	groupBox := column.AddGroupbox("Save")
 	form := groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsSavePreamble,
 		codeplug.FtGsSaveModeReceive,
 	)
 
 	groupBox = column.AddGroupbox("Alert Tone")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsDisableAllTones,
 		codeplug.FtGsKeypadTones,
 		codeplug.FtGsChFreeIndicationTone,
@@ -59,30 +59,30 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 
 	groupBox = column.AddGroupbox("Scan")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsScanDigitalHangTime,
 		codeplug.FtGsScanAnalogHangTime,
 	)
 
 	groupBox = column.AddGroupbox("Lone Worker")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsLoneWorkerResponseTime,
 		codeplug.FtGsLoneWorkerReminderTime,
 	)
 
 	groupBox = column.AddGroupbox("Power On Password")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsPwAndLockEnable,
 	)
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsPowerOnPassword,
 	)
 
 	column = row.AddVbox()
 	form = column.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsRadioName,
 		codeplug.FtGsRadioID,
 		codeplug.FtGsMonitorType,
@@ -102,14 +102,14 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 
 	groupBox = column.AddGroupbox("Talkaround")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsGroupCallHangTime,
 		codeplug.FtGsPrivateCallHangTime,
 	)
 
 	groupBox = column.AddGroupbox("Intro Screen")
 	form = groupBox.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsIntroScreen,
 		codeplug.FtGsIntroScreenLine1,
 		codeplug.FtGsIntroScreenLine2,

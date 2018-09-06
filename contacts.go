@@ -38,7 +38,7 @@ func dcRecord(edt *editor, recordBox *ui.HBox) {
 
 	column := recordBox.AddVbox()
 	form := column.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtDcName,
 		codeplug.FtDcCallID,
 		codeplug.FtDcCallType,

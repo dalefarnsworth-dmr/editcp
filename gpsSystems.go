@@ -38,7 +38,7 @@ func gpRecord(edt *editor, recordBox *ui.HBox) {
 
 	column := recordBox.AddVbox()
 	form := column.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtGpGPSRevertChannel,
 		codeplug.FtGpGPSDefaultReportInterval,
 		codeplug.FtGpDestinationID)

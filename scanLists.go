@@ -44,14 +44,14 @@ func slRecord(edt *editor, recordBox *ui.HBox) {
 
 	column = row.AddVbox()
 	form := column.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtSlPriorityChannel1_md380,
 		codeplug.FtSlPriorityChannel2_md380,
 		codeplug.FtSlTxDesignatedChannel_md380)
 
 	column = row.AddVbox()
 	form = column.AddForm()
-	form.AddFieldRows(r,
+	form.AddFieldTypeRows(r,
 		codeplug.FtSlSignallingHoldTime,
 		codeplug.FtSlPrioritySampleTime)
 }
