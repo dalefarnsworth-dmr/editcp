@@ -75,6 +75,7 @@ func (edt *editor) preferences() {
 
 	settings.displayGPS = displayGPS
 	edt.setDisplayGPS(displayGPS)
+	edt.updateMenuBar()
 
 	settings.autosaveInterval = autosaveInterval
 	edt.setAutosaveInterval(autosaveInterval)

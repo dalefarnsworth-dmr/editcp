@@ -665,6 +665,8 @@ func (edt *editor) updateMenuBar() {
 		gpsSystems(edt)
 	}).SetEnabled(cp != nil && settings.displayGPS)
 
+	menu.AddSeparator()
+
 	edt.undoAction = menu.AddAction("Undo", func() {
 		edt.codeplug.UndoChange()
 	})
