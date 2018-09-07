@@ -118,6 +118,7 @@ func (edt *editor) revertFile() error {
 			if err != nil {
 				ui.ErrorPopup("Revert Failed", err.Error())
 			}
+			edt.updateMenuBar()
 			ui.ResetWindows(cp)
 
 		default:
@@ -161,7 +162,9 @@ func (edt *editor) saveAs(filename string) string {
 		saveSettings()
 	}
 
-	if !cp.Valid() {
+	valid := cp.Valid()
+	edt.updateMenuBar()
+	if !valid {
 		fmtStr := `
 %d invalid field values were found in the codeplug.
 
@@ -336,6 +339,7 @@ Select "Menu->Edit->Show Invalid Fields" to view them.`
 			msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
 			ui.InfoPopup("codeplug warning", msg)
 		}
+		edt.updateMenuBar()
 
 		edt.codeplug = cp
 		edt.codeplugHash = edt.codeplug.CurrentHash()

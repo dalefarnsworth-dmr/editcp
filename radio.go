@@ -103,7 +103,9 @@ Select "Menu->Edit->Show Invalid Fields" to view them.`
 	})
 
 	menu.AddAction("Write codeplug to radio", func() {
-		if !cp.Valid() {
+		valid := cp.Valid()
+		edt.updateMenuBar()
+		if !valid {
 			fmtStr := `
 %d invalid field values were found in the codeplug.
 

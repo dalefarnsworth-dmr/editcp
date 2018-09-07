@@ -26,11 +26,11 @@ package main
 import (
 	"strings"
 
-	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
 )
 
-func errorText(cp *codeplug.Codeplug) string {
+func errorText(edt *editor) string {
+	cp := edt.codeplug
 	status := "No errors found"
 	errMsg := ""
 
@@ -38,6 +38,7 @@ func errorText(cp *codeplug.Codeplug) string {
 		status = "The following field values are invalid:"
 		errMsg = strings.Join(cp.Warnings(), "\n")
 	}
+	edt.updateMenuBar()
 
 	return status + "\n\n" + errMsg
 }
@@ -53,11 +54,11 @@ func checkCodeplug(edt *editor) {
 
 	b := windowBox.AddButton("Update")
 	b.ConnectClicked(func() {
-		t.SetPlainText(errorText(cp))
+		t.SetPlainText(errorText(edt))
 	})
 
 	t = windowBox.AddTextEdit()
-	t.SetPlainText(errorText(cp))
+	t.SetPlainText(errorText(edt))
 	t.SetReadOnly(true)
 
 	w.Show()
