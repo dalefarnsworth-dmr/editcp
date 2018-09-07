@@ -114,8 +114,7 @@ func (edt *editor) revertFile() error {
 		msg += "Are you sure you want to discard the changes?"
 		switch ui.YesNoPopup(title, msg) {
 		case ui.PopupYes:
-			ignoreWarnings := true
-			err := edt.codeplug.Revert(ignoreWarnings)
+			err := edt.codeplug.Revert()
 			if err != nil {
 				ui.ErrorPopup("Revert Failed", err.Error())
 			}
@@ -177,8 +176,7 @@ Or, click on Ignore to continue saving the file.`
 		}
 	}
 
-	ignoreWarnings := true
-	err := cp.SaveAs(filename, ignoreWarnings)
+	err := cp.SaveAs(filename)
 	if err != nil {
 		title := fmt.Sprintf("%s: save failed", filename)
 		ui.ErrorPopup(title, err.Error())
@@ -228,8 +226,7 @@ func (edt *editor) autosave() {
 	}
 	edt.codeplugHash = hash
 
-	ignoreWarnings := true
-	err := cp.SaveToFile(filename, ignoreWarnings)
+	err := cp.SaveToFile(filename)
 	if err != nil {
 		os.Remove(filename)
 	}
@@ -326,8 +323,7 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		ignoreWarnings := true
-		err = cp.Load(model, frequencyRange, ignoreWarnings)
+		err = cp.Load(model, frequencyRange)
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
