@@ -63,13 +63,15 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			return
 		}
 
+		cp := edt.codeplug
+
 		msgs := []string{
 			"Preparing to read codeplug from radio...",
 			"Reading codeplug from radio...",
 		}
 		msgIndex := 0
 		pd := ui.NewProgressDialog(msgs[msgIndex])
-		err = edt.codeplug.ReadRadio(func(cur int) error {
+		err = cp.ReadRadio(func(cur int) error {
 			if cur == codeplug.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -88,9 +90,34 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			ui.ErrorPopup(title, err.Error())
 			edt.FreeCodeplug()
 		}
+
+		if !cp.Valid() {
+			fmtStr := `
+%d invalid field values were found in the codeplug.
+
+Select "Menu->Edit->Show Invalid Fields" to view them.`
+			msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
+			ui.InfoPopup("codeplug warning", msg)
+		}
+		edt.updateMenuBar()
 	})
 
 	menu.AddAction("Write codeplug to radio", func() {
+		if !cp.Valid() {
+			fmtStr := `
+%d invalid field values were found in the codeplug.
+
+Click on Cancel and then select "Menu->Edit->Show Invalid Fields" to view them.
+
+Or, click on Ignore to continue writing to the radio.`
+			msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
+			title := "write warning"
+			rv := ui.WarningPopup(title, msg)
+			if rv != ui.PopupIgnore {
+				return
+			}
+		}
+
 		title := "Write codeplug to radio"
 		model := cp.Model()
 		freq := cp.FrequencyRange()

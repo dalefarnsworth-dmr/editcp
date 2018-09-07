@@ -161,7 +161,7 @@ func (edt *editor) saveAs(filename string) string {
 		saveSettings()
 	}
 
-	if len(cp.Warnings()) != 0 {
+	if !cp.Valid() {
 		fmtStr := `
 %d invalid field values were found in the codeplug.
 
@@ -328,7 +328,7 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
 		}
-		if len(cp.Warnings()) != 0 {
+		if !cp.Valid() {
 			fmtStr := `
 %d invalid field values were found in the codeplug.
 
