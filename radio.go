@@ -237,9 +237,9 @@ writing the new codeplug.`
 	})
 
 	md380toolsMenu.AddAction("Write md380tools firmware to radio...", func() {
-		path := "https://farnsworth.org/dale/md380tools/"
-		nonGpsURL := path + "firmware/D13.20.bin"
-		gpsURL := path + "firmware/S13.20.bin"
+		path := "https://farnsworth.org/dale/md380tools/firmware/"
+		nonGpsURL := path + "D13.20.bin"
+		gpsURL := path + "S13.20.bin"
 
 		modelURLs := []modelURL{
 			modelURL{"MD-380 (D13.20)", nonGpsURL},
@@ -261,6 +261,35 @@ writing the new codeplug.`
 			fmt.Sprintf("Downloading md380tools %s firmware...\n%s", model, url),
 			"Erasing the radio's firmware flash memory...",
 			fmt.Sprintf("Writing md380tools %s firmware to radio...", model),
+		}
+
+		writeFirmware(url, msgs)
+	})
+	md380toolsMenu.AddAction("Write KD4Z md380tools firmware to radio...", func() {
+		path := "https://farnsworth.org/dale/md380tools/kd4z/"
+		nonGpsURL := path + "firmware-noGPS.bin"
+		gpsURL := path + "firmware-GPS.bin"
+
+		modelURLs := []modelURL{
+			modelURL{"MD-380 (D13.20)", nonGpsURL},
+			modelURL{"MD-380G (S13.20)", gpsURL},
+			modelURL{"MD-390 (D13.20)", nonGpsURL},
+			modelURL{"MD-390G (S13.20)", gpsURL},
+			modelURL{"RT3 (D13.20)", nonGpsURL},
+			modelURL{"RT8 (S13.20)", gpsURL},
+		}
+
+		title := "Write KD4Z md380tools firmware to radio..."
+		upgrade := true
+		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
+		if canceled {
+			return
+		}
+
+		msgs := []string{
+			fmt.Sprintf("Downloading KD4Z md380tools %s firmware...\n%s", model, url),
+			"Erasing the radio's firmware flash memory...",
+			fmt.Sprintf("Writing KD4Z md380tools %s firmware to radio...", model),
 		}
 
 		writeFirmware(url, msgs)
