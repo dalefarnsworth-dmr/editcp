@@ -1120,6 +1120,15 @@ func addRecordSelector(box *ui.VBox, writable bool) {
 			}
 		})
 
+		dup := row.AddButton("Dup")
+		dup.ConnectClicked(func() {
+			err := rl.DupSelected()
+			if err != nil {
+				ui.ErrorPopup("Dup Record", err.Error())
+				return
+			}
+		})
+
 		row.AddSpace(3)
 		delete := row.AddButton("Delete")
 		delete.ConnectClicked(func() {
