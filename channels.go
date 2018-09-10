@@ -67,13 +67,9 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiRxOnly,
 		codeplug.FtCiLoneWorker,
 		codeplug.FtCiVox,
-		codeplug.FtCiAllowTalkaround)
-
-	if settings.displayGPS {
-		form.AddFieldTypeRows(r,
-			codeplug.FtCiSendGPSInfo,
-			codeplug.FtCiReceiveGPSInfo)
-	}
+		codeplug.FtCiAllowTalkaround,
+		codeplug.FtCiSendGPSInfo,
+		codeplug.FtCiReceiveGPSInfo)
 
 	column = row.AddVbox()
 	groupBox = column.AddGroupbox("Digital Data")
@@ -85,14 +81,16 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiEmergencyAlarmAck,
 		codeplug.FtCiDataCallConfirmed,
 		codeplug.FtCiCompressedUdpDataHeader,
+		codeplug.FtCiDCDMSwitch,
+		codeplug.FtCiLeaderMS,
 		codeplug.FtCiEmergencySystem,
 		codeplug.FtCiContactName,
 		codeplug.FtCiGroupList,
 		codeplug.FtCiColorCode,
 		codeplug.FtCiRepeaterSlot,
+		codeplug.FtCiInCallCriteria,
 		codeplug.FtCiPrivacy,
-		codeplug.FtCiPrivacyNumber,
-		codeplug.FtCiInCallCriteria)
+		codeplug.FtCiPrivacyNumber)
 
 	if settings.displayGPS {
 		form.AddFieldTypeRows(r, codeplug.FtCiGPSSystem)
@@ -116,6 +114,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddFieldTypeRows(r,
 		codeplug.FtCiCtcssEncode,
 		codeplug.FtCiTxSignallingSystem,
+		codeplug.FtCiDQTTurnoffFreq,
 		codeplug.FtCiReverseBurst)
 
 	column = row.AddVbox()

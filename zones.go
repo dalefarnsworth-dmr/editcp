@@ -34,7 +34,36 @@ func zones(edt *editor) {
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
+	r := currentRecord(recordBox.Window())
+
 	column := recordBox.AddVbox()
-	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtZiName, codeplug.FtZiChannel_md380, "Channels")
+	row := column.AddHbox()
+	form := row.AddForm()
+	form.AddFieldTypeRows(r, codeplug.FtZiName)
+
+	if r.HasFieldType(codeplug.FtZiChannel_md380) {
+		column.AddHbox().AddGroupbox("Channels").AddFieldMembers(r,
+			codeplug.FtZiChannel_md380,
+			&settings.sortAvailableChannels)
+	}
+
+	//func(r *codeplug.Record) bool {
+	//	f := r.Field(codeplug.FtCiRxFrequency)
+	//	freq, _ := strconv.ParseFloat(f.String(), 64)
+	//	return r.Codeplug().FrequencyValidA(freq)
+	//}
+
+	if r.HasFieldType(codeplug.FtZiChannelA_uv380) {
+		hBox := column.AddHbox()
+
+		hBox.AddGroupbox("A Channels").AddHbox().AddFieldMembers(r,
+			codeplug.FtZiChannelA_uv380,
+			&settings.sortAvailableChannels)
+
+		hBox.AddSpace(5)
+
+		hBox.AddGroupbox("B Channels").AddHbox().AddFieldMembers(r,
+			codeplug.FtZiChannelB_uv380,
+			&settings.sortAvailableChannelsB)
+	}
 }

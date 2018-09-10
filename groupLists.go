@@ -34,7 +34,16 @@ func groupLists(edt *editor) {
 }
 
 func glRecord(edt *editor, recordBox *ui.HBox) {
+	r := currentRecord(recordBox.Window())
+
 	column := recordBox.AddVbox()
-	addFieldMembers(column, &settings.sortAvailableContacts,
-		codeplug.FtGlName, codeplug.FtGlContact, "Contacts")
+	row := column.AddHbox()
+	form := row.AddForm()
+	form.AddFieldTypeRows(r, codeplug.FtGlName)
+
+	row = column.AddHbox().AddGroupbox("Contacts").AddHbox()
+
+	row.AddFieldMembers(r,
+		codeplug.FtGlContact,
+		&settings.sortAvailableChannels)
 }

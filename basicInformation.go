@@ -41,6 +41,8 @@ func biRecord(edt *editor, recordBox *ui.HBox) {
 	form.AddReadOnlyFieldTypeRows(r,
 		codeplug.FtBiModel,
 		codeplug.FtBiFrequencyRange_md380,
+		codeplug.FtBiFrequencyRangeA,
+		codeplug.FtBiFrequencyRangeB,
 		codeplug.FtBiLastProgrammedTime,
 	)
 }

@@ -34,16 +34,23 @@ func scanLists(edt *editor) {
 }
 
 func slRecord(edt *editor, recordBox *ui.HBox) {
-	column := recordBox.AddVbox()
-	addFieldMembers(column, &settings.sortAvailableChannels,
-		codeplug.FtSlName, codeplug.FtSlChannel_md380, "Channels")
-
-	row := column.AddHbox()
-
 	r := currentRecord(recordBox.Window())
 
+	column := recordBox.AddVbox()
+	row := column.AddHbox()
+	form := row.AddForm()
+	form.AddFieldTypeRows(r, codeplug.FtSlName)
+
+	row = column.AddHbox().AddGroupbox("Channels").AddHbox()
+
+	row.AddFieldMembers(r,
+		codeplug.FtSlChannel_md380,
+		&settings.sortAvailableChannels)
+
+	row = column.AddHbox()
+
 	column = row.AddVbox()
-	form := column.AddForm()
+	form = column.AddForm()
 	form.AddFieldTypeRows(r,
 		codeplug.FtSlPriorityChannel1_md380,
 		codeplug.FtSlPriorityChannel2_md380,

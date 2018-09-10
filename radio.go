@@ -93,7 +93,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 
 		if !cp.Valid() {
 			fmtStr := `
-%d invalid field values were found in the codeplug.
+%d records with invalid field values were found in the codeplug.
 
 Select "Menu->Edit->Show Invalid Fields" to view them.`
 			msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
@@ -107,7 +107,7 @@ Select "Menu->Edit->Show Invalid Fields" to view them.`
 		edt.updateMenuBar()
 		if !valid {
 			fmtStr := `
-%d invalid field values were found in the codeplug.
+%d records with invalid field values were found in the codeplug.
 
 Click on Cancel and then select "Menu->Edit->Show Invalid Fields" to view them.
 

@@ -43,14 +43,15 @@ var editorOpened = false
 var editors []*editor
 
 type editorSettings struct {
-	sortAvailableChannels bool
-	sortAvailableContacts bool
-	codeplugDirectory     string
-	autosaveInterval      int
-	recentFiles           []string
-	model                 string
-	frequencyRange        string
-	displayGPS            bool
+	sortAvailableChannels  bool
+	sortAvailableChannelsB bool
+	sortAvailableContacts  bool
+	codeplugDirectory      string
+	autosaveInterval       int
+	recentFiles            []string
+	model                  string
+	freqRange              string
+	displayGPS             bool
 }
 
 var appSettings *ui.AppSettings
@@ -166,7 +167,7 @@ func (edt *editor) saveAs(filename string) string {
 	edt.updateMenuBar()
 	if !valid {
 		fmtStr := `
-%d invalid field values were found in the codeplug.
+%d records with invalid field values were found in the codeplug.
 
 Click on Cancel and then select "Menu->Edit->Show Invalid Fields" to view them.
 
@@ -320,20 +321,20 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		model, frequencyRange := modelFrequencyRange(cp)
+		model, freqRange := modelFrequencyRange(cp)
 
-		if model == "" || frequencyRange == "" {
+		if model == "" || freqRange == "" {
 			return
 		}
 
-		err = cp.Load(model, frequencyRange)
+		err = cp.Load(model, freqRange)
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
 		}
 		if !cp.Valid() {
 			fmtStr := `
-%d invalid field values were found in the codeplug.
+%d records with invalid field values were found in the codeplug.
 
 Select "Menu->Edit->Show Invalid Fields" to view them.`
 			msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
@@ -377,24 +378,67 @@ func (edt *editor) FreeCodeplug() {
 	edt.updateButtons()
 }
 
-func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange string) {
-	models, frequencyRangesMap := cp.ModelsFrequencyRanges()
+func modelFreqRanges(cp *codeplug.Codeplug, model string) (rangesA, rangesB []string) {
+	_, freqRangesMap := cp.ModelsFrequencyRanges()
+	rangeMapA := make(map[string]bool)
+	rangeMapB := make(map[string]bool)
+
+	freqRanges := freqRangesMap[model]
+	for _, r := range freqRanges {
+		ranges := strings.Split(r, "_")
+		rangeMapA[ranges[0]+" MHz"] = true
+		if len(ranges) > 1 {
+			rangeMapB[ranges[1]+" MHz"] = true
+		}
+	}
+
+	rangesA = make([]string, 0)
+	for r := range rangeMapA {
+		rangesA = append(rangesA, r)
+	}
+
+	rangesB = make([]string, 0)
+	for r := range rangeMapB {
+		rangesB = append(rangesB, r)
+	}
+
+	return rangesA, rangesB
+}
+
+func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string) {
+	models, freqRangesMap := cp.ModelsFrequencyRanges()
 	if len(models) == 1 {
 		model = models[0]
-		frequencyRanges := frequencyRangesMap[model]
-		if len(frequencyRanges) == 1 {
-			frequencyRange = frequencyRanges[0]
-			return model, frequencyRange
+		ranges := freqRangesMap[model]
+		if ranges != nil && len(ranges) == 1 {
+			return model, ranges[0]
+
 		}
 	}
 
 	model = settings.model
-	frequencyRange = settings.frequencyRange
 
 	mOpts := append([]string{"<select model>"}, models...)
 
-	frequencyRanges := frequencyRangesMap[model]
-	vOpts := append([]string{"<select frequency range>"}, frequencyRanges...)
+	var vOptsA []string
+	var rangeA string
+	var rangeB string
+	var rangesA = make([]string, 0)
+	var rangesB = make([]string, 0)
+
+	rangesA, rangesB = modelFreqRanges(cp, model)
+	settingRanges := strings.Split(settings.freqRange, "_")
+
+	rangeA = settingRanges[0] + " MHz"
+	if len(rangesB) == 0 {
+		vOptsA = append([]string{"<select frequency range>"}, rangesA...)
+	} else {
+		vOptsA = append([]string{"<select frequency range A>"}, rangesA...)
+	}
+	if len(settingRanges) > 1 {
+		rangeB = settingRanges[1] + " MHz"
+	}
+	vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
 
 	dialog := ui.NewDialog("Select codeplug type")
 
@@ -404,29 +448,108 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange st
 	okButton := ui.NewButtonWidget("Ok", func() {
 		dialog.Accept()
 	})
-	okButton.SetEnabled(containsString(frequencyRange, vOpts[1:]))
+	opt := vOptsA[0]
+	enable := containsString(rangeA, vOptsA[1:])
+	if enable {
+		opt = rangeA
+	}
+	if len(rangesB) != 0 {
+		enable = enable && containsString(rangeB, vOptsB[1:])
+	}
+	okButton.SetEnabled(enable)
 
-	vCb := ui.NewComboboxWidget(frequencyRange, vOpts, func(s string) {
-		frequencyRange = s
-		okButton.SetEnabled(containsString(frequencyRange, vOpts[1:]))
+	vCbA := ui.NewComboboxWidget(opt, vOptsA, func(s string) {
+		rangeA = s
+		enable := containsString(rangeA, vOptsA[1:])
+		rangesA, rangesB = modelFreqRanges(cp, model)
+		if len(rangesB) != 0 {
+			enable = enable && containsString(rangeB, rangesB)
+		}
+		okButton.SetEnabled(enable)
 	})
-	vCb.SetEnabled(containsString(model, mOpts[1:]))
+	vCbA.SetEnabled(containsString(model, mOpts[1:]))
+
+	opt = vOptsB[0]
+	if containsString(rangeB, vOptsB[1:]) {
+		opt = rangeB
+	}
+
+	vCbB := ui.NewComboboxWidget(opt, vOptsB, func(s string) {
+		rangeB = s
+		enable := containsString(rangeA, vOptsA[1:])
+		rangesA, rangesB = modelFreqRanges(cp, model)
+		if len(rangesB) != 0 {
+			enable = enable && containsString(rangeB, rangesB)
+		}
+		okButton.SetEnabled(enable)
+	})
+	vCbB.SetEnabled(containsString(model, mOpts[1:]))
 
 	if len(models) == 1 {
 		mOpts = models
 	}
 
-	mCb := ui.NewComboboxWidget(model, mOpts, func(s string) {
-		vCb.SetEnabled(containsString(s, mOpts[1:]))
-		vOpts = append(vOpts[:1], frequencyRangesMap[s]...)
-		ui.UpdateComboboxWidget(vCb, vOpts[0], vOpts)
+	var form *ui.Form
+	var mCb *ui.Widget
+
+	mCb = ui.NewComboboxWidget(model, mOpts, func(s string) {
 		model = s
+
+		rangesA, rangesB = modelFreqRanges(cp, model)
+		settingRanges := strings.Split(settings.freqRange, "_")
+		rangeA = settingRanges[0] + " MHz"
+		if len(rangesB) == 0 {
+			vOptsA = append([]string{"<select frequency range>"}, rangesA...)
+		} else {
+			vOptsA = append([]string{"<select frequency range A>"}, rangesA...)
+		}
+		if len(settingRanges) > 1 {
+			rangeB = settingRanges[1] + " MHz"
+		}
+		vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
+		vCbA.SetEnabled(containsString(model, mOpts[1:]))
+
+		opt := vOptsA[0]
+		enable := containsString(rangeA, vOptsA[1:])
+		if enable {
+			opt = rangeA
+		}
+		if len(rangesB) > 1 {
+			enable = enable && containsString(rangeB, vOptsB[1:])
+		}
+		okButton.SetEnabled(enable)
+
+		ui.UpdateComboboxWidget(vCbA, opt, vOptsA)
+
+		vCbA.SetLabel("")
+		if len(rangesB) > 1 {
+			vCbA.SetLabel("A")
+		}
+
+		opt = vOptsB[0]
+		if containsString(rangeB, vOptsB[1:]) {
+			opt = rangeB
+		}
+
+		if len(rangesB) > 1 {
+			vCbB.SetEnabled(containsString(model, mOpts[1:]))
+			ui.UpdateComboboxWidget(vCbB, opt, vOptsB)
+			vCbB.SetVisible(true)
+		} else {
+			vCbB.SetVisible(false)
+		}
 	})
 
 	dialog.AddLabel("Select the codeplug model and frequency range.")
-	form := dialog.AddForm()
+	form = dialog.AddForm()
 	form.AddRow("", mCb)
-	form.AddRow("", vCb)
+	form.AddRow("", vCbA)
+	if len(rangesB) > 1 {
+		vCbA.SetLabel("A")
+	}
+	form.AddRow("B", vCbB)
+	vCbB.SetVisible(len(rangesB) > 1)
+
 	row := dialog.AddHbox()
 	row.AddWidget(cancelButton)
 	row.AddWidget(okButton)
@@ -435,15 +558,19 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, frequencyRange st
 		return "", ""
 	}
 
+	freqRange = rangeA
+	if len(rangesB) > 1 {
+		freqRange += "_" + rangeB
+	}
+	freqRange = strings.Replace(freqRange, " MHz", "", -1)
+
 	if containsString(model, models) {
 		settings.model = model
-		if containsString(frequencyRange, frequencyRangesMap[model]) {
-			settings.frequencyRange = frequencyRange
-		}
+		settings.freqRange = freqRange
 	}
 	saveSettings()
 
-	return model, frequencyRange
+	return model, freqRange
 }
 
 func containsString(str string, strs []string) bool {
@@ -485,6 +612,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	if cp != nil {
 		mw.SetCodeplug(cp)
 	}
+
 	edt.updateFilename()
 
 	mw.ConnectClose(func() bool {
@@ -665,9 +793,11 @@ func (edt *editor) updateMenuBar() {
 		zones(edt)
 	}).SetEnabled(cp != nil)
 
-	menu.AddAction("GPS Systems", func() {
-		gpsSystems(edt)
-	}).SetEnabled(cp != nil && settings.displayGPS)
+	if cp != nil && cp.HasRecordType(codeplug.RtGPSSystems) {
+		menu.AddAction("GPS Systems", func() {
+			gpsSystems(edt)
+		}).SetEnabled(cp != nil && settings.displayGPS)
+	}
 
 	menu.AddSeparator()
 
@@ -752,9 +882,11 @@ func (edt *editor) updateButtons() {
 	ziButton.SetEnabled(cp != nil)
 	ziButton.ConnectClicked(func() { zones(edt) })
 
-	gpButton := column.AddButton("GPS Systems")
-	gpButton.SetEnabled(cp != nil && settings.displayGPS)
-	gpButton.ConnectClicked(func() { gpsSystems(edt) })
+	if cp != nil && cp.HasRecordType(codeplug.RtGPSSystems) {
+		gpButton := column.AddButton("GPS Systems")
+		gpButton.SetEnabled(cp != nil && settings.displayGPS)
+		gpButton.ConnectClicked(func() { gpsSystems(edt) })
+	}
 
 	row.AddSeparator()
 
@@ -1154,22 +1286,16 @@ func currentRecord(w *ui.Window) *codeplug.Record {
 	return records[rIndex]
 }
 
-func addFieldMembers(vBox *ui.VBox, sortAvailable *bool, nameType codeplug.FieldType, memberType codeplug.FieldType, headerName string) *ui.FieldMembers {
-	r := currentRecord(vBox.Window())
-
-	return vBox.AddFieldMembers(r, sortAvailable,
-		nameType, memberType, headerName)
-}
-
 func loadSettings() {
 	as := appSettings
 	as.Sync()
 	settings.sortAvailableChannels = as.Bool("sortAvailableChannels", false)
+	settings.sortAvailableChannelsB = as.Bool("sortAvailableChannelsB", false)
 	settings.sortAvailableContacts = as.Bool("sortAvailableContacts", false)
 	settings.codeplugDirectory = as.String("codeplugDirectory", "")
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	settings.model = as.String("model", "")
-	settings.frequencyRange = as.String("frequencyRange", "")
+	settings.freqRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
 
 	size := as.BeginReadArray("recentFiles")
@@ -1184,11 +1310,12 @@ func loadSettings() {
 func saveSettings() {
 	as := appSettings
 	as.SetBool("sortAvailableChannels", settings.sortAvailableChannels)
+	as.SetBool("sortAvailableChannelsB", settings.sortAvailableChannelsB)
 	as.SetBool("sortAvailableContacts", settings.sortAvailableContacts)
 	as.SetString("codeplugDirectory", settings.codeplugDirectory)
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.SetString("model", settings.model)
-	as.SetString("frequencyRange", settings.frequencyRange)
+	as.SetString("frequencyRange", settings.freqRange)
 	as.SetBool("displayGPS", settings.displayGPS)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))

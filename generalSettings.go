@@ -75,10 +75,16 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 	form = groupBox.AddForm()
 	form.AddFieldTypeRows(r,
 		codeplug.FtGsPwAndLockEnable,
-	)
-	form.AddFieldTypeRows(r,
 		codeplug.FtGsPowerOnPassword,
 	)
+
+	if r.HasFieldType(codeplug.FtGsCHVoiceAnnouncement) {
+		groupBox = column.AddGroupbox("Voice Announcement")
+		form = groupBox.AddForm()
+		form.AddFieldTypeRows(r,
+			codeplug.FtGsCHVoiceAnnouncement,
+		)
+	}
 
 	column = row.AddVbox()
 	form = column.AddForm()
@@ -89,15 +95,34 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsVoxSensitivity,
 		codeplug.FtGsTxPreambleDuration,
 		codeplug.FtGsRxLowBatteryInterval,
+		codeplug.FtGsChannelsHangTime,
 		codeplug.FtGsBacklightColor,
-		codeplug.FtGsFreqChannelMode,
-		codeplug.FtGsModeSelect,
+	)
+	if r.Codeplug().Type() == "MD-40" {
+		form.AddFieldTypeRows(r,
+			codeplug.FtGsFreqChannelMode,
+			codeplug.FtGsModeSelect,
+		)
+	}
+	form.AddFieldTypeRows(r,
 		codeplug.FtGsLockUnlock,
 		codeplug.FtGsPcProgPassword,
 		codeplug.FtGsRadioProgPassword,
 		codeplug.FtGsBacklightTime,
 		codeplug.FtGsSetKeypadLockTime,
+	)
+	if r.Codeplug().Type() == "MD-UV390" {
+		form.AddFieldTypeRows(r,
+			codeplug.FtGsFreqChannelMode_uv380,
+			codeplug.FtGsModeSelectA,
+			codeplug.FtGsModeSelectB,
+		)
+	}
+	form.AddFieldTypeRows(r,
+		codeplug.FtGsTimeZone,
 		codeplug.FtGsDisableAllLeds,
+		codeplug.FtGsGroupCallMatch,
+		codeplug.FtGsPrivateCallMatch,
 	)
 
 	groupBox = column.AddGroupbox("Talkaround")
@@ -114,4 +139,20 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsIntroScreenLine1,
 		codeplug.FtGsIntroScreenLine2,
 	)
+	if !r.HasFieldType(codeplug.FtGsRadioID1) {
+		return
+	}
+
+	column = row.AddVbox()
+	form = column.AddForm()
+	form.AddFieldTypeRows(r,
+		codeplug.FtGsRadioID1,
+		codeplug.FtGsRadioID2,
+		codeplug.FtGsRadioID3,
+		codeplug.FtGsMicLevel,
+		codeplug.FtGsTxMode,
+		codeplug.FtGsEditRadioID,
+		codeplug.FtGsPublicZone,
+	)
+
 }
