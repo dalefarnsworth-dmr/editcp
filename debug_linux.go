@@ -45,6 +45,10 @@ func dprint(v ...interface{}) {
 		str = fmt.Sprintf("%s:%d", filename, line)
 	}
 
+	for i := range v {
+		v[i] = fmt.Sprintf("%#v", v[i])
+	}
+
 	v = append([]interface{}{str}, v...)
 
 	fmt.Fprintln(os.Stderr, v...)
