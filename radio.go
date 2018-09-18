@@ -390,7 +390,14 @@ func writeFirmware(url string, msgs []string) {
 		return
 	}
 
-	err = df.WriteFirmware(filename)
+	file, err := os.Open(filename)
+	if err != nil {
+		logFatalf("writeFirmware: %s", err.Error())
+	}
+
+	defer file.Close()
+
+	err = df.WriteFirmware(file)
 	if err != nil {
 		pd.Close()
 		title := "write of new firmware failed"
