@@ -160,6 +160,46 @@ writing the new codeplug.`
 		}
 	}).SetEnabled(cp != nil && cp.Loaded())
 
+	menu.AddSeparator()
+
+	menu.AddAction("Write factory firmware to radio...", func() {
+		path := "https://farnsworth.org/dale/md380tools/"
+		d003URL := path + "original_firmware/D003.020.bin"
+		d013URL := path + "original_firmware/D013.020.bin"
+		d013_34URL := path + "original_firmware/D013.034.bin"
+		s013URL := path + "original_firmware/S013.020.bin"
+		d14_04URL := path + "original_firmware/D014.004.bin"
+
+		modelURLs := []modelURL{
+			modelURL{"MD-380 old (D03.20)", d003URL},
+			modelURL{"MD-380 (D13.20)", d013URL},
+			modelURL{"MD-380 new (D13.34)", d013_34URL},
+			modelURL{"MD-380 newest (D14.04", d14_04URL},
+			modelURL{"MD-380G (S13.20)", s013URL},
+			modelURL{"MD-390 (D13.20)", d013URL},
+			modelURL{"MD-390G (S13.20)", s013URL},
+			modelURL{"RT3 (D03.20)", d003URL},
+			modelURL{"RT8 (S13.20)", s013URL},
+		}
+
+		title := "Write factory firmware to radio..."
+		upgrade := false
+		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
+		if canceled {
+			return
+		}
+
+		msgs := []string{
+			fmt.Sprintf("Downloading original %s firmware...\n%s", model, url),
+			"Erasing the radio's firmware flash memory...",
+			fmt.Sprintf("Writing factory %s firmware to radio...", model),
+		}
+
+		writeFirmware(url, msgs)
+	})
+
+	menu.AddSeparator()
+
 	md380toolsMenu := menu.AddMenu("md380tools...")
 
 	md380toolsMenu.AddAction("Write user database to radio...", func() {
@@ -290,42 +330,6 @@ writing the new codeplug.`
 			fmt.Sprintf("Downloading KD4Z md380tools %s firmware...\n%s", model, url),
 			"Erasing the radio's firmware flash memory...",
 			fmt.Sprintf("Writing KD4Z md380tools %s firmware to radio...", model),
-		}
-
-		writeFirmware(url, msgs)
-	})
-
-	md380toolsMenu.AddAction("Write original firmware to radio...", func() {
-		path := "https://farnsworth.org/dale/md380tools/"
-		d003URL := path + "original_firmware/D003.020.bin"
-		d013URL := path + "original_firmware/D013.020.bin"
-		d013_34URL := path + "original_firmware/D013.034.bin"
-		s013URL := path + "original_firmware/S013.020.bin"
-		d14_04URL := path + "original_firmware/D014.004.bin"
-
-		modelURLs := []modelURL{
-			modelURL{"MD-380 old (D03.20)", d003URL},
-			modelURL{"MD-380 (D13.20)", d013URL},
-			modelURL{"MD-380 new (D13.34)", d013_34URL},
-			modelURL{"MD-380 newest (D14.04", d14_04URL},
-			modelURL{"MD-380G (S13.20)", s013URL},
-			modelURL{"MD-390 (D13.20)", d013URL},
-			modelURL{"MD-390G (S13.20)", s013URL},
-			modelURL{"RT3 (D03.20)", d003URL},
-			modelURL{"RT8 (S13.20)", s013URL},
-		}
-
-		title := "Write original firmware to radio..."
-		upgrade := false
-		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
-		if canceled {
-			return
-		}
-
-		msgs := []string{
-			fmt.Sprintf("Downloading original %s firmware...\n%s", model, url),
-			"Erasing the radio's firmware flash memory...",
-			fmt.Sprintf("Writing original %s firmware to radio...", model),
 		}
 
 		writeFirmware(url, msgs)
