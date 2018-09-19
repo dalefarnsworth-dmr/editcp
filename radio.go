@@ -45,6 +45,181 @@ type modelURL struct {
 	url   string
 }
 
+func writeMD380toolsUsers() {
+	title := "Write user database to radio"
+	text := `
+The users database contains DMR ID numbers and callsigns of all registered
+users. It can only be be written to radios that have been upgraded to the
+md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
+
+	cancel, download := userdbDialog(title, text)
+	if cancel {
+		return
+	}
+
+	locType := core.QStandardPaths__CacheLocation
+	cacheDir := core.QStandardPaths_WritableLocation(locType)
+	tmpFilename := filepath.Join(cacheDir, "users.tmp")
+
+	msgs := []string{
+		"Downloading user database from web sites...",
+		"Erasing the radio's flash memory for user database...",
+		"Writing user database to radio...",
+	}
+	msgIndex := 0
+	if !download {
+		msgIndex = 1
+	}
+
+	filename := userdbFilename()
+	os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
+
+	pd := ui.NewProgressDialog(msgs[msgIndex])
+
+	if download {
+		db := userdb.New()
+		err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
+			if cur == userdb.MinProgress {
+				pd.SetLabelText(msgs[msgIndex])
+				msgIndex++
+			}
+			pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
+			pd.SetValue(cur)
+			if pd.WasCanceled() {
+				return errors.New("cancelled")
+			}
+			return nil
+		})
+		if err != nil {
+			os.Remove(tmpFilename)
+			pd.Close()
+			title := fmt.Sprintf("Download of user database failed")
+			ui.ErrorPopup(title, err.Error())
+			return
+		}
+
+		os.Rename(tmpFilename, filename)
+	}
+	df, err := dfu.New(func(cur int) error {
+		if cur == dfu.MinProgress {
+			pd.SetLabelText(msgs[msgIndex])
+			msgIndex++
+		}
+		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
+		pd.SetValue(cur)
+		if pd.WasCanceled() {
+			return errors.New("cancelled")
+		}
+		return nil
+
+	})
+	if err == nil {
+		defer df.Close()
+		err = df.WriteUsers(filename)
+	}
+	if err != nil {
+		pd.Close()
+		title := fmt.Sprintf("write of user database failed: %s", err.Error())
+		ui.ErrorPopup(title, err.Error())
+	}
+}
+
+func writeExpandedUsers(title, text string) {
+	cancel, download := userdbDialog(title, text)
+	if cancel {
+		return
+	}
+
+	locType := core.QStandardPaths__CacheLocation
+	cacheDir := core.QStandardPaths_WritableLocation(locType)
+	tmpFilename := filepath.Join(cacheDir, "users.tmp")
+
+	msgs := []string{
+		"Downloading user database from web sites...",
+		"Erasing the radio's flash memory for user database...",
+		"Writing user database to radio...",
+	}
+	msgIndex := 0
+	if !download {
+		msgIndex = 1
+	}
+
+	filename := userdbFilename()
+	os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
+
+	pd := ui.NewProgressDialog(msgs[msgIndex])
+
+	if download {
+		db := userdb.New()
+		err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
+			if cur == userdb.MinProgress {
+				pd.SetLabelText(msgs[msgIndex])
+				msgIndex++
+			}
+			pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
+			pd.SetValue(cur)
+			if pd.WasCanceled() {
+				return errors.New("cancelled")
+			}
+			return nil
+		})
+		if err != nil {
+			os.Remove(tmpFilename)
+			pd.Close()
+			title := fmt.Sprintf("Download of user database failed")
+			ui.ErrorPopup(title, err.Error())
+			return
+		}
+
+		os.Rename(tmpFilename, filename)
+	}
+	df, err := dfu.New(func(cur int) error {
+		if cur == dfu.MinProgress {
+			pd.SetLabelText(msgs[msgIndex])
+			msgIndex++
+		}
+		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
+		pd.SetValue(cur)
+		if pd.WasCanceled() {
+			return errors.New("cancelled")
+		}
+		return nil
+
+	})
+	if err == nil {
+		defer df.Close()
+		file, err := os.Open(filename)
+		if err == nil {
+			defer file.Close()
+			users := dfu.ParseUsers(file)
+			err = df.WriteMD2017Users(users)
+		}
+	}
+	if err != nil {
+		pd.Close()
+		title := fmt.Sprintf("write of user database failed: %s", err.Error())
+		ui.ErrorPopup(title, err.Error())
+	}
+}
+
+func writeMD2017Users() {
+	title := "Write user database to radio"
+	text := `
+The users database contains DMR ID numbers and callsigns of all registered
+users. It can only be be written to MD-2017 radios.`
+
+	writeExpandedUsers(title, text)
+}
+
+func writeUV380Users() {
+	title := "Write user database to radio"
+	text := `
+The users database contains DMR ID numbers and callsigns of all registered
+users. It can only be be written to MD-UV380 radios.`
+
+	writeExpandedUsers(title, text)
+}
+
 func (edt *editor) addRadioMenu(menu *ui.Menu) {
 	cp := edt.codeplug
 	mb := edt.mainWindow.MenuBar()
@@ -199,82 +374,17 @@ writing the new codeplug.`
 	})
 
 	menu.AddSeparator()
+	writeUsersMenu := menu.AddMenu("Write user database to radio...")
+
+	writeUsersMenu.AddAction("Write md380tools user database to radio...", writeMD380toolsUsers)
+	writeUsersMenu.AddAction("Write MD2017 user database to radio...", writeMD2017Users)
+	writeUsersMenu.AddAction("Write MD-UV380 user database to radio...", writeUV380Users)
+
+	menu.AddSeparator()
 
 	md380toolsMenu := menu.AddMenu("md380tools...")
 
-	md380toolsMenu.AddAction("Write user database to radio...", func() {
-		title := "Write user database to radio"
-		cancel, download := userdbDialog(title)
-		if cancel {
-			return
-		}
-
-		locType := core.QStandardPaths__CacheLocation
-		cacheDir := core.QStandardPaths_WritableLocation(locType)
-		tmpFilename := filepath.Join(cacheDir, "users.tmp")
-
-		msgs := []string{
-			"Downloading user database from web sites...",
-			"Erasing the radio's flash memory for user database...",
-			"Writing user database to radio...",
-		}
-		msgIndex := 0
-		if !download {
-			msgIndex = 1
-		}
-
-		filename := userdbFilename()
-		os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
-
-		pd := ui.NewProgressDialog(msgs[msgIndex])
-
-		if download {
-			db := userdb.New()
-			err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
-				if cur == userdb.MinProgress {
-					pd.SetLabelText(msgs[msgIndex])
-					msgIndex++
-				}
-				pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
-				pd.SetValue(cur)
-				if pd.WasCanceled() {
-					return errors.New("cancelled")
-				}
-				return nil
-			})
-			if err != nil {
-				os.Remove(tmpFilename)
-				pd.Close()
-				title := fmt.Sprintf("Download of user database failed")
-				ui.ErrorPopup(title, err.Error())
-				return
-			}
-
-			os.Rename(tmpFilename, filename)
-		}
-		dfu, err := dfu.New(func(cur int) error {
-			if cur == dfu.MinProgress {
-				pd.SetLabelText(msgs[msgIndex])
-				msgIndex++
-			}
-			pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
-			pd.SetValue(cur)
-			if pd.WasCanceled() {
-				return errors.New("cancelled")
-			}
-			return nil
-
-		})
-		if err == nil {
-			defer dfu.Close()
-			err = dfu.WriteUsers(filename)
-		}
-		if err != nil {
-			pd.Close()
-			title := fmt.Sprintf("write of user database failed: %s", err.Error())
-			ui.ErrorPopup(title, err.Error())
-		}
-	})
+	md380toolsMenu.AddAction("Write user database to radio...", writeMD380toolsUsers)
 
 	md380toolsMenu.AddAction("Write md380tools firmware to radio...", func() {
 		path := "https://farnsworth.org/dale/md380tools/firmware/"
@@ -418,7 +528,7 @@ func userdbFilename() string {
 	return filepath.Join(cacheDir, name)
 }
 
-func userdbDialog(title string) (canceled, download bool) {
+func userdbDialog(title string, text string) (canceled, download bool) {
 	loadSettings()
 
 	usersFilename := userdbFilename()
@@ -438,10 +548,7 @@ func userdbDialog(title string) (canceled, download bool) {
 	filenameBox := ui.NewHbox()
 	filenameBox.AddLabel("   " + usersFilename)
 
-	labelText := `
-The users database contains DMR ID numbers and callsigns of all registered
-users. It can only be be written to radios that have been upgraded to the
-md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
+	labelText := text + `
 
 WARNING: Corruption may occur if a signal is received while writing to the
 radio.  The radio should be tuned to an unprogrammed (or at least quiet)
