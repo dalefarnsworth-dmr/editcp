@@ -24,6 +24,7 @@
 package main
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"fmt"
 	"os"
@@ -706,6 +707,12 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
+	menu.AddAction("Convert codeplug to new radio type...", func() {
+		edt.convertCodeplug()
+	}).SetEnabled(cp != nil)
+
+	menu.AddSeparator()
+
 	importMenu := menu.AddMenu("Import...")
 	importMenu.AddAction("Import text file...", func() {
 		edt.importText()
@@ -1016,6 +1023,31 @@ func (edt *editor) exportText() {
 		ui.ErrorPopup(title, err.Error())
 		return
 	}
+}
+
+func (edt *editor) convertCodeplug() {
+	body := edt.codeplug.TextLines()
+	body = body[1:len(body)]
+
+	edt = newEditor(edt.app, codeplug.FileTypeNew, "")
+	cp := edt.codeplug
+	header := cp.TextLines()[0:1]
+
+	body = append(header, body...)
+	text := strings.Join(body, "")
+
+	reader := bytes.NewReader([]byte(text))
+	cp.ImportText(reader)
+
+	if !cp.Valid() {
+		fmtStr := `
+%d records with invalid field values were found in the codeplug.
+
+Select "Menu->Edit->Show Invalid Fields" to view them.`
+		msg := fmt.Sprintf(fmtStr, len(cp.Warnings()))
+		ui.InfoPopup("codeplug warning", msg)
+	}
+	edt.updateMenuBar()
 }
 
 func (edt *editor) importText() {
