@@ -397,11 +397,13 @@ func modelFreqRanges(cp *codeplug.Codeplug, model string) (rangesA, rangesB []st
 	for r := range rangeMapA {
 		rangesA = append(rangesA, r)
 	}
+	sort.Strings(rangesA)
 
 	rangesB = make([]string, 0)
 	for r := range rangeMapB {
 		rangesB = append(rangesB, r)
 	}
+	sort.Strings(rangesB)
 
 	return rangesA, rangesB
 }
