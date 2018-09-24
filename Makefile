@@ -78,6 +78,11 @@ dmrRadio-$(VERSION).tar.xz: ../dmrRadio/dmrRadio
 	tar cJf dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)
 	rm -rf dmrRadio-$(VERSION)
 
+FORCE:
+
+changelog.txt: FORCE
+	sh generateChangelog >changelog.txt
+
 clean:
 	rm -rf ../dmrRadio/dmrRadio
 
@@ -86,11 +91,12 @@ clobber: clean
 
 # The targets below are probably only useful for me. -Dale Farnsworth
 
-upload: tag editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)-installer.exe
+upload: tag changelog.txt editcp-$(VERSION).tar.xz editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)-installer.exe
 	rsync editcp-$(VERSION).tar.xz farnsworth.org:
 	rsync editcp-$(VERSION)-installer.exe farnsworth.org:
 	rsync dmrRadio-$(VERSION).tar.xz farnsworth.org:
 	rsync dmrRadio-$(VERSION)-installer.exe farnsworth.org:
+	rsync changelog.txt farnsworth.org:
 	git push
 	git push --tags
 

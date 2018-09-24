@@ -1,0 +1,19 @@
+#/bin/sh
+
+addline=
+for c in $(git rev-list master); do
+	decorate="$(git show --no-patch --pretty="%d" $c)"
+	if echo $decorate | grep --quiet tag; then
+		tag="$(echo $decorate | sed -e 's/.*tag: //;s/[,)].*//')"
+		test -n "$addline" && echo
+		echo "$tag:"
+		continue
+	fi
+	git show --no-patch --pretty="%s" $c |
+		fmt |
+		sed -e 's/^/    /'
+	git show --no-patch --pretty="%b" $c |
+		fmt -w 68 |
+		sed -e 's/^/        /'
+	addline=true
+done
