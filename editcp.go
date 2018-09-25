@@ -322,13 +322,13 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			return
 		}
 
-		model, freqRange := modelFrequencyRange(cp)
+		typ, freqRange := typeFrequencyRange(cp)
 
-		if model == "" || freqRange == "" {
+		if typ == "" || freqRange == "" {
 			return
 		}
 
-		err = cp.Load(model, freqRange)
+		err = cp.Load(typ, freqRange)
 		if err != nil {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
@@ -379,12 +379,12 @@ func (edt *editor) FreeCodeplug() {
 	edt.updateButtons()
 }
 
-func modelFreqRanges(cp *codeplug.Codeplug, model string) (rangesA, rangesB []string) {
-	_, freqRangesMap := cp.ModelsFrequencyRanges()
+func typeFreqRanges(cp *codeplug.Codeplug, typ string) (rangesA, rangesB []string) {
+	_, freqRangesMap := cp.TypesFrequencyRanges()
 	rangeMapA := make(map[string]bool)
 	rangeMapB := make(map[string]bool)
 
-	freqRanges := freqRangesMap[model]
+	freqRanges := freqRangesMap[typ]
 	for _, r := range freqRanges {
 		ranges := strings.Split(r, "_")
 		rangeMapA[ranges[0]+" MHz"] = true
@@ -408,20 +408,20 @@ func modelFreqRanges(cp *codeplug.Codeplug, model string) (rangesA, rangesB []st
 	return rangesA, rangesB
 }
 
-func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string) {
-	models, freqRangesMap := cp.ModelsFrequencyRanges()
-	if len(models) == 1 {
-		model = models[0]
-		ranges := freqRangesMap[model]
+func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
+	types, freqRangesMap := cp.TypesFrequencyRanges()
+	if len(types) == 1 {
+		typ = types[0]
+		ranges := freqRangesMap[typ]
 		if ranges != nil && len(ranges) == 1 {
-			return model, ranges[0]
+			return typ, ranges[0]
 
 		}
 	}
 
-	model = settings.model
+	typ = settings.model
 
-	mOpts := append([]string{"<select model>"}, models...)
+	mOpts := append([]string{"<select model>"}, types...)
 
 	var vOptsA []string
 	var rangeA string
@@ -429,7 +429,7 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 	var rangesA = make([]string, 0)
 	var rangesB = make([]string, 0)
 
-	rangesA, rangesB = modelFreqRanges(cp, model)
+	rangesA, rangesB = typeFreqRanges(cp, typ)
 	settingRanges := strings.Split(settings.freqRange, "_")
 
 	rangeA = settingRanges[0] + " MHz"
@@ -464,13 +464,13 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 	vCbA := ui.NewComboboxWidget(opt, vOptsA, func(s string) {
 		rangeA = s
 		enable := containsString(rangeA, vOptsA[1:])
-		rangesA, rangesB = modelFreqRanges(cp, model)
+		rangesA, rangesB = typeFreqRanges(cp, typ)
 		if len(rangesB) != 0 {
 			enable = enable && containsString(rangeB, rangesB)
 		}
 		okButton.SetEnabled(enable)
 	})
-	vCbA.SetEnabled(containsString(model, mOpts[1:]))
+	vCbA.SetEnabled(containsString(typ, mOpts[1:]))
 
 	opt = vOptsB[0]
 	if containsString(rangeB, vOptsB[1:]) {
@@ -480,25 +480,25 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 	vCbB := ui.NewComboboxWidget(opt, vOptsB, func(s string) {
 		rangeB = s
 		enable := containsString(rangeA, vOptsA[1:])
-		rangesA, rangesB = modelFreqRanges(cp, model)
+		rangesA, rangesB = typeFreqRanges(cp, typ)
 		if len(rangesB) != 0 {
 			enable = enable && containsString(rangeB, rangesB)
 		}
 		okButton.SetEnabled(enable)
 	})
-	vCbB.SetEnabled(containsString(model, mOpts[1:]))
+	vCbB.SetEnabled(containsString(typ, mOpts[1:]))
 
-	if len(models) == 1 {
-		mOpts = models
+	if len(types) == 1 {
+		mOpts = types
 	}
 
 	var form *ui.Form
 	var mCb *ui.Widget
 
-	mCb = ui.NewComboboxWidget(model, mOpts, func(s string) {
-		model = s
+	mCb = ui.NewComboboxWidget(typ, mOpts, func(s string) {
+		typ = s
 
-		rangesA, rangesB = modelFreqRanges(cp, model)
+		rangesA, rangesB = typeFreqRanges(cp, typ)
 		settingRanges := strings.Split(settings.freqRange, "_")
 		rangeA = settingRanges[0] + " MHz"
 		if len(rangesB) == 0 {
@@ -510,7 +510,7 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 			rangeB = settingRanges[1] + " MHz"
 		}
 		vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
-		vCbA.SetEnabled(containsString(model, mOpts[1:]))
+		vCbA.SetEnabled(containsString(typ, mOpts[1:]))
 
 		opt := vOptsA[0]
 		enable := containsString(rangeA, vOptsA[1:])
@@ -535,7 +535,7 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 		}
 
 		if len(rangesB) > 1 {
-			vCbB.SetEnabled(containsString(model, mOpts[1:]))
+			vCbB.SetEnabled(containsString(typ, mOpts[1:]))
 			ui.UpdateComboboxWidget(vCbB, opt, vOptsB)
 			vCbB.SetVisible(true)
 		} else {
@@ -567,13 +567,13 @@ func modelFrequencyRange(cp *codeplug.Codeplug) (model string, freqRange string)
 	}
 	freqRange = strings.Replace(freqRange, " MHz", "", -1)
 
-	if containsString(model, models) {
-		settings.model = model
+	if containsString(typ, types) {
+		settings.model = typ
 		settings.freqRange = freqRange
 	}
 	saveSettings()
 
-	return model, freqRange
+	return typ, freqRange
 }
 
 func containsString(str string, strs []string) bool {
