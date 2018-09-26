@@ -1042,11 +1042,11 @@ func (edt *editor) exportText() {
 
 func (edt *editor) convertCodeplug() {
 	body := edt.codeplug.TextLines()
-	body = body[1:len(body)]
+	body = body[1:]
 
 	edt = newEditor(edt.app, codeplug.FileTypeNew, "")
 	cp := edt.codeplug
-	header := cp.TextLines()[0:1]
+	header := cp.TextLines()[:1]
 
 	cp.RemoveAllRecords()
 
