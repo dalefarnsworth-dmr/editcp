@@ -1048,6 +1048,8 @@ func (edt *editor) convertCodeplug() {
 	cp := edt.codeplug
 	header := cp.TextLines()[0:1]
 
+	cp.RemoveAllRecords()
+
 	body = append(header, body...)
 	text := strings.Join(body, "")
 
