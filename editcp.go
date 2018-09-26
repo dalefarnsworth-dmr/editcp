@@ -1177,7 +1177,9 @@ func thanks() {
 		"  Marco Carrara, IW2KWD, for suggesting improvements",
 		"  Bob Finch, W9YA, for reporting bugs",
 		"",
-		"Please let me know of errors or omissions in the above list.",
+		"I apologize to the many contributors whom I've missed.",
+		"If you've reported a bug or suggestion, let me know and",
+		"I'll add you to this list.",
 		"Dale Farnsworth, NO7K, dale@farnsworth.org",
 	}
 
