@@ -97,28 +97,15 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsRxLowBatteryInterval,
 		codeplug.FtGsChannelsHangTime,
 		codeplug.FtGsBacklightColor,
-	)
-	if r.Codeplug().Type() == "MD-40" {
-		form.AddFieldTypeRows(r,
-			codeplug.FtGsFreqChannelMode,
-			codeplug.FtGsModeSelect,
-		)
-	}
-	form.AddFieldTypeRows(r,
 		codeplug.FtGsLockUnlock,
 		codeplug.FtGsPcProgPassword,
 		codeplug.FtGsRadioProgPassword,
 		codeplug.FtGsBacklightTime,
 		codeplug.FtGsSetKeypadLockTime,
-	)
-	if r.Codeplug().Type() == "MD-UV390" {
-		form.AddFieldTypeRows(r,
-			codeplug.FtGsFreqChannelMode_uv380,
-			codeplug.FtGsModeSelectA,
-			codeplug.FtGsModeSelectB,
-		)
-	}
-	form.AddFieldTypeRows(r,
+		codeplug.FtGsFreqChannelMode,
+		codeplug.FtGsModeSelect,
+		codeplug.FtGsModeSelectA,
+		codeplug.FtGsModeSelectB,
 		codeplug.FtGsTimeZone,
 		codeplug.FtGsDisableAllLeds,
 		codeplug.FtGsGroupCallMatch,
