@@ -37,6 +37,9 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
+// This turns on the experimental checkbox in preferences
+const needExperimental = false
+
 const autosaveSuffix = ".autosave"
 const maxRecentFiles = 10
 
@@ -53,6 +56,7 @@ type editorSettings struct {
 	model                  string
 	freqRange              string
 	displayGPS             bool
+	experimental           bool
 }
 
 var appSettings *ui.AppSettings
@@ -244,6 +248,15 @@ func main() {
 	//	}
 	//}()
 
+	args := os.Args[1:]
+	for i := len(args) - 1; i >= 0; i-- {
+		switch args[i] {
+		case "--experimental":
+			settings.experimental = true
+			args = append(args[:i], args[i+1:]...)
+		}
+	}
+
 	app, err := ui.NewApp()
 	if err != nil {
 		logPrint(err.Error())
@@ -254,7 +267,7 @@ func main() {
 	appSettings = app.NewSettings()
 	loadSettings()
 
-	filenames := os.Args[1:]
+	filenames := args
 	if len(filenames) == 0 {
 		filenames = []string{""}
 	}
@@ -1331,6 +1344,7 @@ func loadSettings() {
 	settings.model = as.String("model", "")
 	settings.freqRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
+	settings.experimental = as.Bool("experimental", false)
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -1351,6 +1365,7 @@ func saveSettings() {
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.freqRange)
 	as.SetBool("displayGPS", settings.displayGPS)
+	as.SetBool("experimental", settings.experimental)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {

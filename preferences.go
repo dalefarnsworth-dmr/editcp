@@ -37,7 +37,6 @@ func (edt *editor) preferences() {
 	form := groupBox.AddForm()
 
 	displayGPS := settings.displayGPS
-
 	checked := displayGPS
 	checkbox := ui.NewCheckboxWidget(checked, func(checked bool) {
 		displayGPS = checked
@@ -55,6 +54,23 @@ func (edt *editor) preferences() {
 		autosaveInterval = i
 	})
 	form.AddRow("Auto Save interval (minutes):", spinbox)
+
+	var experimental bool
+	if needExperimental {
+		dialog.AddSpace(2)
+
+		row = dialog.AddHbox()
+		groupBox = row.AddGroupbox("Advanced")
+		form = groupBox.AddForm()
+
+		experimental = settings.experimental
+		checked = experimental
+		checkbox = ui.NewCheckboxWidget(checked, func(checked bool) {
+			experimental = checked
+		})
+		form.AddRow("Enable experimental features:", checkbox)
+	}
+
 	dialog.AddSpace(2)
 
 	row = dialog.AddHbox()
@@ -75,9 +91,13 @@ func (edt *editor) preferences() {
 
 	settings.displayGPS = displayGPS
 	edt.setDisplayGPS(displayGPS)
-	edt.updateMenuBar()
+
+	settings.experimental = experimental
 
 	settings.autosaveInterval = autosaveInterval
 	edt.setAutosaveInterval(autosaveInterval)
+
+	edt.updateMenuBar()
+
 	saveSettings()
 }
