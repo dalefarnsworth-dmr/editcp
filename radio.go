@@ -63,7 +63,7 @@ md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
 
 	msgs := []string{
 		"Downloading user database from web sites...",
-		"Erasing the radio's flash memory for user database...",
+		"Erasing the radio's user database...",
 		"Writing user database to radio...",
 	}
 	msgIndex := 0
@@ -136,7 +136,8 @@ func writeExpandedUsers(title, text string) {
 
 	msgs := []string{
 		"Downloading user database from web sites...",
-		"Erasing the radio's flash memory for user database...",
+		"Preparing to write user database to radio...",
+		"Erasing the radio's user database...",
 		"Writing user database to radio...",
 	}
 	msgIndex := 0
@@ -311,6 +312,7 @@ writing the new codeplug.`
 
 		msgs := []string{
 			"Preparing to write codeplug to radio...",
+			"Erasing the radio's codeplug...",
 			"Writing codeplug to radio...",
 		}
 		msgIndex := 0
@@ -366,7 +368,7 @@ writing the new codeplug.`
 
 		msgs := []string{
 			fmt.Sprintf("Downloading original %s firmware...\n%s", model, url),
-			"Erasing the radio's firmware flash memory...",
+			"Erasing the radio's firmware...",
 			fmt.Sprintf("Writing factory %s firmware to radio...", model),
 		}
 
@@ -409,7 +411,7 @@ writing the new codeplug.`
 
 		msgs := []string{
 			fmt.Sprintf("Downloading md380tools %s firmware...\n%s", model, url),
-			"Erasing the radio's firmware flash memory...",
+			"Erasing the radio's firmware...",
 			fmt.Sprintf("Writing md380tools %s firmware to radio...", model),
 		}
 
@@ -438,7 +440,7 @@ writing the new codeplug.`
 
 		msgs := []string{
 			fmt.Sprintf("Downloading KD4Z md380tools %s firmware...\n%s", model, url),
-			"Erasing the radio's firmware flash memory...",
+			"Erasing the radio's firmware...",
 			fmt.Sprintf("Writing KD4Z md380tools %s firmware to radio...", model),
 		}
 
