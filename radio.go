@@ -50,7 +50,11 @@ func writeMD380toolsUsers() {
 	text := `
 The users database contains DMR ID numbers and callsigns of all registered
 users. It can only be be written to radios that have been upgraded to the
-md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.`
+md380tools firmware.  See https://github.com/travisgoodspeed/md380tools.
+
+WARNING: Corruption may occur if a signal is received while writing to the
+radio.  The radio should be tuned to an unprogrammed (or at least quiet)
+channel while writing the new user database.`
 
 	cancel, download := userdbDialog(title, text)
 	if cancel {
@@ -207,7 +211,9 @@ func writeMD2017Users() {
 	title := "Write user database to radio"
 	text := `
 The users database contains DMR ID numbers and callsigns of all registered
-users. It can only be be written to MD-2017 radios.`
+users. It can only be be written to MD-2017 radios.
+
+WARNING: This only works on MD-2017 radios with the "CSV" firmware versions.`
 
 	writeExpandedUsers(title, text)
 }
@@ -216,7 +222,9 @@ func writeUV380Users() {
 	title := "Write user database to radio"
 	text := `
 The users database contains DMR ID numbers and callsigns of all registered
-users. It can only be be written to MD-UV380 radios.`
+users. It can only be be written to MD-UV380 radios.
+
+WARNING: This only works on MD-UV380 radios with the "CSV" firmware versions.`
 
 	writeExpandedUsers(title, text)
 }
@@ -530,7 +538,7 @@ func userdbFilename() string {
 	return filepath.Join(cacheDir, name)
 }
 
-func userdbDialog(title string, text string) (canceled, download bool) {
+func userdbDialog(title string, labelText string) (canceled, download bool) {
 	loadSettings()
 
 	usersFilename := userdbFilename()
@@ -549,12 +557,6 @@ func userdbDialog(title string, text string) (canceled, download bool) {
 
 	filenameBox := ui.NewHbox()
 	filenameBox.AddLabel("   " + usersFilename)
-
-	labelText := text + `
-
-WARNING: Corruption may occur if a signal is received while writing to the
-radio.  The radio should be tuned to an unprogrammed (or at least quiet)
-channel while writing the new user database.`
 
 	dialog.AddLabel(labelText[1:])
 
