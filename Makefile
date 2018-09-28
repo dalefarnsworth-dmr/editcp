@@ -101,6 +101,7 @@ upload-no-push: changelog.txt editcp-$(VERSION).tar.xz editcp-$(VERSION)-install
 upload: tag upload-no-push
 	git push
 	git push --tags
+	rsh farnsworth.org uploaded
 
 tag:
 	git log --no-decorate -1 --oneline | grep -q -i "update.*version"
