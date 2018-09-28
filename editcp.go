@@ -748,6 +748,10 @@ func (edt *editor) updateMenuBar() {
 		edt.exportText()
 	})
 
+	exportMenu.AddAction("Export to text (one line per record)...", func() {
+		edt.exportTextOneLineRecords()
+	})
+
 	exportMenu.AddAction("Export to Spreadsheet...", func() {
 		edt.exportXLSX()
 	})
@@ -1033,6 +1037,26 @@ func (edt *editor) exportText() {
 	saveSettings()
 
 	err := edt.codeplug.ExportText(filename)
+	if err != nil {
+		title := fmt.Sprintf("Export to %s", filename)
+		ui.ErrorPopup(title, err.Error())
+		return
+	}
+}
+
+func (edt *editor) exportTextOneLineRecords() {
+	dir := settings.codeplugDirectory
+	base := baseFilename(edt.codeplug.Filename())
+	ext := "txt"
+	dir = filepath.Join(dir, base+"."+ext)
+	filename := ui.SaveFilename("Export to text file", dir, ext)
+	if filename == "" {
+		return
+	}
+	settings.codeplugDirectory = filepath.Dir(filename)
+	saveSettings()
+
+	err := edt.codeplug.ExportTextOneLineRecords(filename)
 	if err != nil {
 		title := fmt.Sprintf("Export to %s", filename)
 		ui.ErrorPopup(title, err.Error())
