@@ -196,8 +196,8 @@ func writeExpandedUsers(title, text string) {
 		file, err := os.Open(filename)
 		if err == nil {
 			defer file.Close()
-			users := dfu.ParseUsers(file)
-			err = df.WriteMD2017Users(users)
+			users := dfu.ParseUV380Users(file)
+			err = df.WriteUV380Users(users)
 		}
 	}
 	if err != nil {
