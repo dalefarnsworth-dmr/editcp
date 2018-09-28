@@ -237,7 +237,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 	menu.AddAction("Read codeplug from radio", func() {
 		err := codeplug.RadioExists()
 		if err != nil {
-			title := fmt.Sprintf("Read codeplug from radio failed")
+			title := "Read codeplug from radio failed"
 			ui.ErrorPopup(title, err.Error())
 			return
 		}
@@ -270,7 +270,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		})
 		if err != nil {
 			pd.Close()
-			title := fmt.Sprintf("Read codeplug from radio failed")
+			title := "Read codeplug from radio failed"
 			ui.ErrorPopup(title, err.Error())
 			edt.FreeCodeplug()
 		}
@@ -340,7 +340,7 @@ writing the new codeplug.`
 		})
 		if err != nil {
 			pd.Close()
-			title := fmt.Sprintf("Write codeplug to radio failed: %s", err.Error())
+			title := "Write codeplug to radio failed"
 			ui.ErrorPopup(title, err.Error())
 		}
 	}).SetEnabled(cp != nil && cp.Loaded())
