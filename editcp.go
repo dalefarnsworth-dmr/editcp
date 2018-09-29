@@ -125,7 +125,7 @@ func (edt *editor) revertFile() error {
 				ui.ErrorPopup("Revert Failed", err.Error())
 			}
 			edt.updateMenuBar()
-			ui.ResetWindows(cp)
+			ui.ResetWindows(cp, nil)
 
 		default:
 			break
@@ -828,12 +828,12 @@ func (edt *editor) updateMenuBar() {
 	menu.AddSeparator()
 
 	edt.undoAction = menu.AddAction("Undo", func() {
-		edt.codeplug.UndoChange()
+		ui.UndoChange(edt.codeplug)
 	})
 	edt.undoAction.SetEnabled(false)
 
 	edt.redoAction = menu.AddAction("Redo", func() {
-		edt.codeplug.RedoChange()
+		ui.RedoChange(edt.codeplug)
 	})
 	edt.redoAction.SetEnabled(false)
 
@@ -922,14 +922,14 @@ func (edt *editor) updateButtons() {
 	edt.undoButton.SetFixedHeight()
 	edt.undoButton.SetEnabled(false)
 	edt.undoButton.ConnectClicked(func() {
-		edt.codeplug.UndoChange()
+		ui.UndoChange(edt.codeplug)
 	})
 
 	edt.redoButton = column.AddButton("Redo")
 	edt.redoButton.SetFixedHeight()
 	edt.redoButton.SetEnabled(false)
 	edt.redoButton.ConnectClicked(func() {
-		edt.codeplug.RedoChange()
+		ui.RedoChange(edt.codeplug)
 	})
 
 	column.AddFiller()
