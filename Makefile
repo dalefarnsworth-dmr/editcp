@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber upload install docker-usb tag
+.PHONY: default linux windows clean clobber upload install docker_usb docker_windows_usb docker_linux_usb tag
 
 EDITCP_SRC = *.go
 RADIO_SRC = ../dmrRadio/*.go
@@ -54,13 +54,23 @@ deploy/win32/editcp.exe: $(SOURCES)
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
 
-docker-usb:
-	docker rmi -f therecipe/qt:windows_32_static
+docker_windows_usb:
+	docker rmi -f therecipe/qt:windows_32_static >/dev/null 2>&1
+	docker pull therecipe/qt:windows_32_static
 	cd ../docker/windows32-with-usb && \
-		docker build -t therecipe/qt:windows_32_static .
-	docker rmi -f therecipe/qt:linux
+		docker build -t therecipe/qt:windows_32_static_usb .
+	docker rmi -f therecipe/qt:windows_32_static
+	docker tag therecipe/qt:windows_32_static_usb therecipe/qt:windows_32_static
+
+docker_linux_usb:
+	docker rmi -f therecipe/qt:linux >/dev/null 2>&1
+	docker pull therecipe/qt:linux
 	cd ../docker/linux-with-usb && \
-		docker build -t therecipe/qt:linux .
+		docker build -t therecipe/qt:linux_usb .
+	docker rmi -f therecipe/qt:linux
+	docker tag therecipe/qt:linux_usb therecipe/qt:linux
+
+docker_usb: docker_usb_linux docker_usb_windows
 
 ../dmrRadio/dmrRadio: $(RADIO_SRCS)
 	cd ../dmrRadio && go build
