@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber upload install docker_usb docker_windows_usb docker_linux_usb tag
+.PHONY: default linux windows clean clobber install docker_usb docker_windows_usb docker_linux_usb tag
 
 EDITCP_SRC = *.go
 RADIO_SRC = ../dmrRadio/*.go
