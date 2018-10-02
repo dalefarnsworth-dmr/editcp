@@ -795,6 +795,10 @@ func (edt *editor) updateMenuBar() {
 		menuItems(edt)
 	}).SetEnabled(cp != nil)
 
+	menu.AddAction("Text Messages", func() {
+		textMessages(edt)
+	}).SetEnabled(cp != nil)
+
 	menu.AddAction("Privacy Settings", func() {
 		privacySettings(edt)
 	}).SetEnabled(cp != nil)
@@ -883,6 +887,10 @@ func (edt *editor) updateButtons() {
 	miButton := column.AddButton("Menu Items")
 	miButton.SetEnabled(cp != nil)
 	miButton.ConnectClicked(func() { menuItems(edt) })
+
+	tmButton := column.AddButton("Text Messages")
+	tmButton.SetEnabled(cp != nil)
+	tmButton.ConnectClicked(func() { textMessages(edt) })
 
 	psButton := column.AddButton("Privacy Settings")
 	psButton.SetEnabled(cp != nil)
