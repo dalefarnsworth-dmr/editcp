@@ -30,7 +30,7 @@ import (
 
 func channels(edt *editor) {
 	writable := true
-	edt.recordWindow(codeplug.RtChannels_md380, writable, ciRecord)
+	edt.newRecordWindow(codeplug.RtChannels_md380, writable, ciRecord)
 }
 
 func ciRecord(edt *editor, recordBox *ui.HBox) {

@@ -30,7 +30,7 @@ import (
 
 func zones(edt *editor) {
 	writable := true
-	edt.recordWindow(codeplug.RtZones_md380, writable, ziRecord)
+	edt.newRecordWindow(codeplug.RtZones_md380, writable, ziRecord)
 }
 
 func ziRecord(edt *editor, recordBox *ui.HBox) {
