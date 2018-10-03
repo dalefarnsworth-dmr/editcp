@@ -30,7 +30,7 @@ import (
 
 func gpsSystems(edt *editor) {
 	writable := false
-	edt.recordWindow(codeplug.RtGPSSystems, writable, gpRecord)
+	edt.newRecordWindow(codeplug.RtGPSSystems, writable, gpRecord)
 }
 
 func gpRecord(edt *editor, recordBox *ui.HBox) {

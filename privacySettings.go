@@ -32,7 +32,7 @@ import (
 
 func privacySettings(edt *editor) {
 	writable := false
-	edt.recordWindow(codeplug.RtPrivacySettings, writable, psRecord)
+	edt.newRecordWindow(codeplug.RtPrivacySettings, writable, psRecord)
 }
 
 func psRecord(edt *editor, recordBox *ui.HBox) {

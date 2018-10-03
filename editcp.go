@@ -263,7 +263,7 @@ func main() {
 		return
 	}
 	app.SetOrganizationName("codeplug")
-	app.SetApplicationName("Codeplug Editor")
+	app.SetApplicationName("Codeplug Editor x")
 	appSettings = app.NewSettings()
 	loadSettings()
 
@@ -506,7 +506,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	}
 
 	var form *ui.Form
-	var mCb *ui.Widget
+	var mCb *ui.FieldWidget
 
 	mCb = ui.NewComboboxWidget(typ, mOpts, func(s string) {
 		typ = s
@@ -795,6 +795,10 @@ func (edt *editor) updateMenuBar() {
 		menuItems(edt)
 	}).SetEnabled(cp != nil)
 
+	menu.AddAction("Button Definitions", func() {
+		buttonDefinitions(edt)
+	}).SetEnabled(cp != nil)
+
 	menu.AddAction("Text Messages", func() {
 		textMessages(edt)
 	}).SetEnabled(cp != nil)
@@ -873,7 +877,7 @@ func (edt *editor) updateButtons() {
 	cp := edt.codeplug
 
 	row := edt.mainWindow.AddHbox()
-	row.Clear()
+	ui.Clear(row)
 	column := row.AddVbox()
 
 	biButton := column.AddButton("Basic Information")
@@ -887,6 +891,10 @@ func (edt *editor) updateButtons() {
 	miButton := column.AddButton("Menu Items")
 	miButton.SetEnabled(cp != nil)
 	miButton.ConnectClicked(func() { menuItems(edt) })
+
+	bdButton := column.AddButton("Button Definitions")
+	bdButton.SetEnabled(cp != nil)
+	bdButton.ConnectClicked(func() { buttonDefinitions(edt) })
 
 	tmButton := column.AddButton("Text Messages")
 	tmButton.SetEnabled(cp != nil)
@@ -1237,7 +1245,12 @@ func updateUndoActions(edt *editor) {
 
 type fillRecord func(*editor, *ui.HBox)
 
-func (edt *editor) recordWindow(rType codeplug.RecordType, writable bool, fillRecord fillRecord) {
+func (edt *editor) recordWindow(rType codeplug.RecordType) *ui.Window {
+	windows := edt.mainWindow.RecordWindows()
+	return windows[rType]
+}
+
+func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fillRecord fillRecord) {
 	windows := edt.mainWindow.RecordWindows()
 	w := windows[rType]
 	if w != nil {
@@ -1264,10 +1277,10 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, writable bool, fillRe
 	if cp.MaxRecords(rType) == 1 {
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			selectorBox.Clear()
+			ui.Clear(selectorBox)
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
-			w.EnableWidgets()
+			w.Show()
 		}
 	} else {
 		rl = windowBox.AddRecordList(rType)
@@ -1276,18 +1289,17 @@ func (edt *editor) recordWindow(rType codeplug.RecordType, writable bool, fillRe
 		}
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			selectorBox.Clear()
+			ui.Clear(selectorBox)
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
 			addRecordSelector(selectorBox, writable)
-			w.EnableWidgets()
+			w.Show()
 		}
 	}
 
 	w.SetRecordFunc(recordFunc)
 	recordFunc()
 
-	w.Show()
 }
 
 func addRecordSelector(box *ui.VBox, writable bool) {
