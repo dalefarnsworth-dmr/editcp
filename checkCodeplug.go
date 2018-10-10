@@ -52,7 +52,7 @@ func checkCodeplug(edt *editor) {
 
 	var t *ui.TextEdit
 
-	b := windowBox.AddButton("Update")
+	b := windowBox.AddButton("Re-scan for invalid values")
 	b.ConnectClicked(func() {
 		t.SetPlainText(errorText(edt))
 	})
