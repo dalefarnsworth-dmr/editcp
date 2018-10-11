@@ -782,7 +782,11 @@ func (edt *editor) updateMenuBar() {
 		}
 	})
 
+	var showInvalidAction *ui.Action
 	menu = mb.AddMenu("Edit")
+	menu.ConnectAboutToShow(func() {
+		showInvalidAction.SetEnabled(cp != nil && len(cp.Warnings()) != 0)
+	})
 	menu.AddAction("Basic Information", func() {
 		basicInformation(edt)
 	}).SetEnabled(cp != nil)
@@ -847,9 +851,10 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
-	menu.AddAction("Show Invalid Fields", func() {
+	showInvalidAction = menu.AddAction("Show Invalid Fields", func() {
 		checkCodeplug(edt)
-	}).SetEnabled(cp != nil && len(cp.Warnings()) != 0)
+	})
+	showInvalidAction.SetEnabled(cp != nil && len(cp.Warnings()) != 0)
 
 	menu.AddSeparator()
 
