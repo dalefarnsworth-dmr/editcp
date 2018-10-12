@@ -673,9 +673,11 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 		return true
 	})
 
-	mw.ConnectChange(func(change *codeplug.Change) {
-		updateUndoActions(edt)
-	})
+	/*
+		mw.ConnectChange(func(change *codeplug.Change) {
+			updateUndoActions(edt)
+		})
+	*/
 
 	edt.updateMenuBar()
 
@@ -839,17 +841,19 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
-	edt.undoAction = menu.AddAction("Undo", func() {
-		ui.UndoChange(edt.codeplug)
-	})
-	edt.undoAction.SetEnabled(false)
+	/*
+		edt.undoAction = menu.AddAction("Undo", func() {
+			ui.UndoChange(edt.codeplug)
+		})
+		edt.undoAction.SetEnabled(false)
 
-	edt.redoAction = menu.AddAction("Redo", func() {
-		ui.RedoChange(edt.codeplug)
-	})
-	edt.redoAction.SetEnabled(false)
+		edt.redoAction = menu.AddAction("Redo", func() {
+			ui.RedoChange(edt.codeplug)
+		})
+		edt.redoAction.SetEnabled(false)
 
-	menu.AddSeparator()
+		menu.AddSeparator()
+	*/
 
 	showInvalidAction = menu.AddAction("Show Invalid Fields", func() {
 		checkCodeplug(edt)
@@ -935,23 +939,25 @@ func (edt *editor) updateButtons() {
 		gpButton.ConnectClicked(func() { gpsSystems(edt) })
 	}
 
-	row.AddSeparator()
+	/*
+		row.AddSeparator()
 
-	column = row.AddVbox()
+		column = row.AddVbox()
 
-	edt.undoButton = column.AddButton("Undo")
-	edt.undoButton.SetFixedHeight()
-	edt.undoButton.SetEnabled(false)
-	edt.undoButton.ConnectClicked(func() {
-		ui.UndoChange(edt.codeplug)
-	})
+		edt.undoButton = column.AddButton("Undo")
+		edt.undoButton.SetFixedHeight()
+		edt.undoButton.SetEnabled(false)
+		edt.undoButton.ConnectClicked(func() {
+			ui.UndoChange(edt.codeplug)
+		})
 
-	edt.redoButton = column.AddButton("Redo")
-	edt.redoButton.SetFixedHeight()
-	edt.redoButton.SetEnabled(false)
-	edt.redoButton.ConnectClicked(func() {
-		ui.RedoChange(edt.codeplug)
-	})
+		edt.redoButton = column.AddButton("Redo")
+		edt.redoButton.SetFixedHeight()
+		edt.redoButton.SetEnabled(false)
+		edt.redoButton.ConnectClicked(func() {
+			ui.RedoChange(edt.codeplug)
+		})
+	*/
 
 	column.AddFiller()
 	row.AddFiller()
