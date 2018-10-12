@@ -263,7 +263,7 @@ func main() {
 		return
 	}
 	app.SetOrganizationName("codeplug")
-	app.SetApplicationName("Codeplug Editor x")
+	app.SetApplicationName("Codeplug Editor")
 	appSettings = app.NewSettings()
 	loadSettings()
 
