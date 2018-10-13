@@ -30,7 +30,7 @@ import (
 
 func menuItems(edt *editor) {
 	writable := false
-	edt.newRecordWindow(codeplug.RtMenuItems, writable, miRecord)
+	edt.recordWindow(codeplug.RtMenuItems, writable, miRecord)
 }
 
 func miRecord(edt *editor, recordBox *ui.HBox) {

@@ -30,7 +30,7 @@ import (
 
 func textMessages(edt *editor) {
 	writable := true
-	edt.newRecordWindow(codeplug.RtTextMessages, writable, tmRecord)
+	edt.recordWindow(codeplug.RtTextMessages, writable, tmRecord)
 }
 
 func tmRecord(edt *editor, recordBox *ui.HBox) {

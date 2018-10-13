@@ -506,7 +506,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	}
 
 	var form *ui.Form
-	var mCb *ui.FieldWidget
+	var mCb *ui.Widget
 
 	mCb = ui.NewComboboxWidget(typ, mOpts, func(s string) {
 		typ = s
@@ -673,11 +673,9 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 		return true
 	})
 
-	/*
-		mw.ConnectChange(func(change *codeplug.Change) {
-			updateUndoActions(edt)
-		})
-	*/
+	mw.ConnectChange(func(change *codeplug.Change) {
+		updateUndoActions(edt)
+	})
 
 	edt.updateMenuBar()
 
@@ -784,11 +782,7 @@ func (edt *editor) updateMenuBar() {
 		}
 	})
 
-	var showInvalidAction *ui.Action
 	menu = mb.AddMenu("Edit")
-	menu.ConnectAboutToShow(func() {
-		showInvalidAction.SetEnabled(cp != nil && len(cp.Warnings()) != 0)
-	})
 	menu.AddAction("Basic Information", func() {
 		basicInformation(edt)
 	}).SetEnabled(cp != nil)
@@ -799,10 +793,6 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddAction("Menu Items", func() {
 		menuItems(edt)
-	}).SetEnabled(cp != nil)
-
-	menu.AddAction("Button Definitions", func() {
-		buttonDefinitions(edt)
 	}).SetEnabled(cp != nil)
 
 	menu.AddAction("Text Messages", func() {
@@ -841,24 +831,21 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
-	/*
-		edt.undoAction = menu.AddAction("Undo", func() {
-			ui.UndoChange(edt.codeplug)
-		})
-		edt.undoAction.SetEnabled(false)
-
-		edt.redoAction = menu.AddAction("Redo", func() {
-			ui.RedoChange(edt.codeplug)
-		})
-		edt.redoAction.SetEnabled(false)
-
-		menu.AddSeparator()
-	*/
-
-	showInvalidAction = menu.AddAction("Show Invalid Fields", func() {
-		checkCodeplug(edt)
+	edt.undoAction = menu.AddAction("Undo", func() {
+		ui.UndoChange(edt.codeplug)
 	})
-	showInvalidAction.SetEnabled(cp != nil && len(cp.Warnings()) != 0)
+	edt.undoAction.SetEnabled(false)
+
+	edt.redoAction = menu.AddAction("Redo", func() {
+		ui.RedoChange(edt.codeplug)
+	})
+	edt.redoAction.SetEnabled(false)
+
+	menu.AddSeparator()
+
+	menu.AddAction("Show Invalid Fields", func() {
+		checkCodeplug(edt)
+	}).SetEnabled(cp != nil && len(cp.Warnings()) != 0)
 
 	menu.AddSeparator()
 
@@ -886,7 +873,7 @@ func (edt *editor) updateButtons() {
 	cp := edt.codeplug
 
 	row := edt.mainWindow.AddHbox()
-	ui.Clear(row)
+	row.Clear()
 	column := row.AddVbox()
 
 	biButton := column.AddButton("Basic Information")
@@ -900,10 +887,6 @@ func (edt *editor) updateButtons() {
 	miButton := column.AddButton("Menu Items")
 	miButton.SetEnabled(cp != nil)
 	miButton.ConnectClicked(func() { menuItems(edt) })
-
-	bdButton := column.AddButton("Button Definitions")
-	bdButton.SetEnabled(cp != nil)
-	bdButton.ConnectClicked(func() { buttonDefinitions(edt) })
 
 	tmButton := column.AddButton("Text Messages")
 	tmButton.SetEnabled(cp != nil)
@@ -939,25 +922,23 @@ func (edt *editor) updateButtons() {
 		gpButton.ConnectClicked(func() { gpsSystems(edt) })
 	}
 
-	/*
-		row.AddSeparator()
+	row.AddSeparator()
 
-		column = row.AddVbox()
+	column = row.AddVbox()
 
-		edt.undoButton = column.AddButton("Undo")
-		edt.undoButton.SetFixedHeight()
-		edt.undoButton.SetEnabled(false)
-		edt.undoButton.ConnectClicked(func() {
-			ui.UndoChange(edt.codeplug)
-		})
+	edt.undoButton = column.AddButton("Undo")
+	edt.undoButton.SetFixedHeight()
+	edt.undoButton.SetEnabled(false)
+	edt.undoButton.ConnectClicked(func() {
+		ui.UndoChange(edt.codeplug)
+	})
 
-		edt.redoButton = column.AddButton("Redo")
-		edt.redoButton.SetFixedHeight()
-		edt.redoButton.SetEnabled(false)
-		edt.redoButton.ConnectClicked(func() {
-			ui.RedoChange(edt.codeplug)
-		})
-	*/
+	edt.redoButton = column.AddButton("Redo")
+	edt.redoButton.SetFixedHeight()
+	edt.redoButton.SetEnabled(false)
+	edt.redoButton.ConnectClicked(func() {
+		ui.RedoChange(edt.codeplug)
+	})
 
 	column.AddFiller()
 	row.AddFiller()
@@ -1256,12 +1237,7 @@ func updateUndoActions(edt *editor) {
 
 type fillRecord func(*editor, *ui.HBox)
 
-func (edt *editor) recordWindow(rType codeplug.RecordType) *ui.Window {
-	windows := edt.mainWindow.RecordWindows()
-	return windows[rType]
-}
-
-func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fillRecord fillRecord) {
+func (edt *editor) recordWindow(rType codeplug.RecordType, writable bool, fillRecord fillRecord) {
 	windows := edt.mainWindow.RecordWindows()
 	w := windows[rType]
 	if w != nil {
@@ -1288,10 +1264,10 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 	if cp.MaxRecords(rType) == 1 {
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			ui.Clear(selectorBox)
+			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
-			w.Show()
+			w.EnableWidgets()
 		}
 	} else {
 		rl = windowBox.AddRecordList(rType)
@@ -1300,17 +1276,18 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 		}
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			ui.Clear(selectorBox)
+			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
 			addRecordSelector(selectorBox, writable)
-			w.Show()
+			w.EnableWidgets()
 		}
 	}
 
 	w.SetRecordFunc(recordFunc)
 	recordFunc()
 
+	w.Show()
 }
 
 func addRecordSelector(box *ui.VBox, writable bool) {

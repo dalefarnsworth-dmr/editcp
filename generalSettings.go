@@ -30,7 +30,7 @@ import (
 
 func generalSettings(edt *editor) {
 	writable := false
-	edt.newRecordWindow(codeplug.RtGeneralSettings_md380, writable, gsRecord)
+	edt.recordWindow(codeplug.RtGeneralSettings_md380, writable, gsRecord)
 }
 
 func gsRecord(edt *editor, recordBox *ui.HBox) {

@@ -30,7 +30,7 @@ import (
 
 func scanLists(edt *editor) {
 	writable := true
-	edt.newRecordWindow(codeplug.RtScanLists_md380, writable, slRecord)
+	edt.recordWindow(codeplug.RtScanLists_md380, writable, slRecord)
 }
 
 func slRecord(edt *editor, recordBox *ui.HBox) {
