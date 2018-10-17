@@ -125,7 +125,7 @@ func (edt *editor) revertFile() error {
 				ui.ErrorPopup("Revert Failed", err.Error())
 			}
 			edt.updateMenuBar()
-			ui.ResetWindows(cp, nil)
+			edt.mainWindow.CodeplugChanged(nil)
 
 		default:
 			break
