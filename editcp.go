@@ -1294,7 +1294,6 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 		}
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			dprint("recordFunc")
 			ui.Clear(selectorBox)
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
