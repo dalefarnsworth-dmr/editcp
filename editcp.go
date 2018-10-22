@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"sort"
@@ -247,6 +248,8 @@ func main() {
 	//		logFatal(r)
 	//	}
 	//}()
+
+	log.SetFlags(log.Lshortfile)
 
 	args := os.Args[1:]
 	for i := len(args) - 1; i >= 0; i-- {
