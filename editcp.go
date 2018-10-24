@@ -169,7 +169,7 @@ func (edt *editor) saveAs(filename string) string {
 		saveSettings()
 	}
 
-	valid := cp.Valid()
+	valid := cp.Valid(settings.displayGPS)
 	edt.updateMenuBar()
 	if !valid {
 		fmtStr := `
@@ -349,7 +349,7 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
 		}
-		if !cp.Valid() {
+		if !cp.Valid(settings.displayGPS) {
 			fmtStr := `
 %d records with invalid field values were found in the codeplug.
 
@@ -1104,7 +1104,7 @@ func (edt *editor) convertCodeplug() {
 	reader := bytes.NewReader([]byte(text))
 	cp.ImportText(reader)
 
-	if !cp.Valid() {
+	if !cp.Valid(settings.displayGPS) {
 		fmtStr := `
 %d records with invalid field values were found in the codeplug.
 

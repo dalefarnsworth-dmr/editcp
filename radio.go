@@ -275,7 +275,7 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 			edt.FreeCodeplug()
 		}
 
-		if !cp.Valid() {
+		if !cp.Valid(settings.displayGPS) {
 			fmtStr := `
 %d records with invalid field values were found in the codeplug.
 
@@ -287,7 +287,7 @@ Select "Menu->Edit->Show Invalid Fields" to view them.`
 	})
 
 	menu.AddAction("Write codeplug to radio", func() {
-		valid := cp.Valid()
+		valid := cp.Valid(settings.displayGPS)
 		edt.updateMenuBar()
 		if !valid {
 			fmtStr := `
