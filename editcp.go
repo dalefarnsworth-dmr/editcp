@@ -56,7 +56,7 @@ type editorSettings struct {
 	recentFiles            []string
 	model                  string
 	freqRange              string
-	displayGPS             bool
+	gpsEnabled             bool
 	experimental           bool
 	uniqueContactNames     bool
 }
@@ -170,7 +170,7 @@ func (edt *editor) saveAs(filename string) string {
 		saveSettings()
 	}
 
-	valid := cp.Valid(settings.displayGPS)
+	valid := cp.Valid()
 	edt.updateMenuBar()
 	if !valid {
 		fmtStr := `
@@ -201,7 +201,7 @@ Or, click on Ignore to continue saving the file.`
 	return filename
 }
 
-func (edt *editor) setDisplayGPS(displayGPS bool) {
+func (edt *editor) setGPSEnabled(gpsEnabled bool) {
 	edt.updateButtons()
 	w := edt.mainWindow.RecordWindows()[codeplug.RtChannels_md380]
 	if w != nil {
@@ -340,6 +340,7 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 		}
 
 		cp.SetUniqueContactNames(settings.uniqueContactNames)
+		cp.SetGPSEnabled(settings.gpsEnabled)
 
 		typ, freqRange := typeFrequencyRange(cp)
 
@@ -352,7 +353,7 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			ui.ErrorPopup("Codeplug Load Error", err.Error())
 			return
 		}
-		if !cp.Valid(settings.displayGPS) {
+		if !cp.Valid() {
 			fmtStr := `
 %d records with invalid field values were found in the codeplug.
 
@@ -634,6 +635,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	if cp != nil {
 		mw.SetCodeplug(cp)
 		cp.SetUniqueContactNames(settings.uniqueContactNames)
+		cp.SetGPSEnabled(settings.gpsEnabled)
 	}
 
 	edt.updateFilename()
@@ -841,7 +843,7 @@ func (edt *editor) updateMenuBar() {
 	if cp != nil && cp.HasRecordType(codeplug.RtGPSSystems) {
 		menu.AddAction("GPS Systems", func() {
 			gpsSystems(edt)
-		}).SetEnabled(cp != nil && settings.displayGPS)
+		}).SetEnabled(cp != nil && settings.gpsEnabled)
 	}
 
 	menu.AddSeparator()
@@ -938,7 +940,7 @@ func (edt *editor) updateButtons() {
 
 	if cp != nil && cp.HasRecordType(codeplug.RtGPSSystems) {
 		gpButton := column.AddButton("GPS Systems")
-		gpButton.SetEnabled(cp != nil && settings.displayGPS)
+		gpButton.SetEnabled(cp != nil && settings.gpsEnabled)
 		gpButton.ConnectClicked(func() { gpsSystems(edt) })
 	}
 
@@ -1108,7 +1110,7 @@ func (edt *editor) convertCodeplug() {
 	reader := bytes.NewReader([]byte(text))
 	cp.ImportText(reader)
 
-	if !cp.Valid(settings.displayGPS) {
+	if !cp.Valid() {
 		fmtStr := `
 %d records with invalid field values were found in the codeplug.
 
@@ -1403,7 +1405,7 @@ func loadSettings() {
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	settings.model = as.String("model", "")
 	settings.freqRange = as.String("frequencyRange", "")
-	settings.displayGPS = as.Bool("displayGPS", true)
+	settings.gpsEnabled = as.Bool("displayGPS", true)
 	settings.experimental = as.Bool("experimental", false)
 	settings.uniqueContactNames = as.Bool("uniqueContactNames", true)
 
@@ -1425,7 +1427,7 @@ func saveSettings() {
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.freqRange)
-	as.SetBool("displayGPS", settings.displayGPS)
+	as.SetBool("displayGPS", settings.gpsEnabled)
 	as.SetBool("experimental", settings.experimental)
 	as.SetBool("uniqueContactNames", settings.uniqueContactNames)
 

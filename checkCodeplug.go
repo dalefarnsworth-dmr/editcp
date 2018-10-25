@@ -34,7 +34,7 @@ func errorText(edt *editor) string {
 	status := "No errors found"
 	errMsg := ""
 
-	if !cp.Valid(settings.displayGPS) {
+	if !cp.Valid() {
 		status = "The following field values are invalid:"
 		errMsg = strings.Join(cp.Warnings(), "\n")
 	}
