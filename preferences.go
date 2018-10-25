@@ -33,7 +33,7 @@ func (edt *editor) preferences() {
 	loadSettings()
 
 	row := dialog.AddHbox()
-	groupBox := row.AddGroupbox("Display Options")
+	groupBox := row.AddGroupbox("Options")
 	form := groupBox.AddForm()
 
 	displayGPS := settings.displayGPS
@@ -42,11 +42,14 @@ func (edt *editor) preferences() {
 		displayGPS = checked
 	})
 	form.AddRow("Display GPS fields:", checkbox)
-	dialog.AddSpace(2)
+	//dialog.AddSpace(2)
 
-	row = dialog.AddHbox()
-	groupBox = row.AddGroupbox("AutoSave")
-	form = groupBox.AddForm()
+	uniqueContactNames := settings.uniqueContactNames
+	checked = uniqueContactNames
+	checkbox = ui.NewCheckboxWidget(checked, func(checked bool) {
+		uniqueContactNames = checked
+	})
+	form.AddRow("Require Contact names to be unique:", checkbox)
 
 	autosaveInterval := settings.autosaveInterval
 
@@ -57,12 +60,6 @@ func (edt *editor) preferences() {
 
 	var experimental bool
 	if needExperimental {
-		dialog.AddSpace(2)
-
-		row = dialog.AddHbox()
-		groupBox = row.AddGroupbox("Advanced")
-		form = groupBox.AddForm()
-
 		experimental = settings.experimental
 		checked = experimental
 		checkbox = ui.NewCheckboxWidget(checked, func(checked bool) {
@@ -91,6 +88,8 @@ func (edt *editor) preferences() {
 
 	settings.displayGPS = displayGPS
 	edt.setDisplayGPS(displayGPS)
+
+	settings.uniqueContactNames = uniqueContactNames
 
 	settings.experimental = experimental
 

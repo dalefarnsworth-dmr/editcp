@@ -58,6 +58,7 @@ type editorSettings struct {
 	freqRange              string
 	displayGPS             bool
 	experimental           bool
+	uniqueContactNames     bool
 }
 
 var appSettings *ui.AppSettings
@@ -337,6 +338,8 @@ func (edt *editor) openCodeplug(fType codeplug.FileType, filename string) {
 			ui.ErrorPopup("Codeplug Error", err.Error())
 			return
 		}
+
+		cp.SetUniqueContactNames(settings.uniqueContactNames)
 
 		typ, freqRange := typeFrequencyRange(cp)
 
@@ -630,6 +633,7 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	cp := edt.codeplug
 	if cp != nil {
 		mw.SetCodeplug(cp)
+		cp.SetUniqueContactNames(settings.uniqueContactNames)
 	}
 
 	edt.updateFilename()
@@ -1401,6 +1405,7 @@ func loadSettings() {
 	settings.freqRange = as.String("frequencyRange", "")
 	settings.displayGPS = as.Bool("displayGPS", true)
 	settings.experimental = as.Bool("experimental", false)
+	settings.uniqueContactNames = as.Bool("uniqueContactNames", true)
 
 	size := as.BeginReadArray("recentFiles")
 	settings.recentFiles = make([]string, size)
@@ -1422,6 +1427,7 @@ func saveSettings() {
 	as.SetString("frequencyRange", settings.freqRange)
 	as.SetBool("displayGPS", settings.displayGPS)
 	as.SetBool("experimental", settings.experimental)
+	as.SetBool("uniqueContactNames", settings.uniqueContactNames)
 
 	as.BeginWriteArray("recentFiles", len(settings.recentFiles))
 	for i, name := range settings.recentFiles {
