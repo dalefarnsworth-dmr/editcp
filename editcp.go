@@ -1391,6 +1391,9 @@ func currentRecord(w *ui.Window) *codeplug.Record {
 		rIndex = rl.Current()
 	}
 	records := w.MainWindow().Codeplug().Records(w.RecordType())
+	if rIndex >= len(records) {
+		rIndex = len(records) - 1
+	}
 
 	return records[rIndex]
 }
