@@ -891,7 +891,7 @@ func (edt *editor) updateButtons() {
 	cp := edt.codeplug
 
 	row := edt.mainWindow.AddHbox()
-	ui.Clear(row)
+	row.Clear()
 	column := row.AddVbox()
 
 	biButton := column.AddButton("Basic Information")
@@ -1291,7 +1291,7 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 	if cp.MaxRecords(rType) == 1 {
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			ui.Clear(selectorBox)
+			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
 			w.Show()
@@ -1303,7 +1303,7 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 		}
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
-			ui.Clear(selectorBox)
+			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
 			addRecordSelector(selectorBox, writable)
