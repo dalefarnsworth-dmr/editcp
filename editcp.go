@@ -1099,6 +1099,9 @@ func (edt *editor) convertCodeplug() {
 	body = body[1:]
 
 	edt = newEditor(edt.app, codeplug.FileTypeNew, "")
+	if edt == nil {
+		return
+	}
 	cp := edt.codeplug
 	header := cp.TextLines()[:1]
 
