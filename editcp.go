@@ -68,10 +68,6 @@ type editor struct {
 	app           *ui.App
 	codeplug      *codeplug.Codeplug
 	mainWindow    *ui.MainWindow
-	undoAction    *ui.Action
-	redoAction    *ui.Action
-	undoButton    *ui.Button
-	redoButton    *ui.Button
 	prefWindow    *ui.Window
 	autosaveTimer *core.QTimer
 	codeplugHash  [sha256.Size]byte
@@ -682,10 +678,6 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 		return true
 	})
 
-	mw.ConnectChange(func(change *codeplug.Change) {
-		updateUndoActions(edt)
-	})
-
 	edt.updateMenuBar()
 
 	edt.updateButtons()
@@ -848,18 +840,6 @@ func (edt *editor) updateMenuBar() {
 
 	menu.AddSeparator()
 
-	edt.undoAction = menu.AddAction("Undo", func() {
-		ui.UndoChange(edt.codeplug)
-	})
-	edt.undoAction.SetEnabled(false)
-
-	edt.redoAction = menu.AddAction("Redo", func() {
-		ui.RedoChange(edt.codeplug)
-	})
-	edt.redoAction.SetEnabled(false)
-
-	menu.AddSeparator()
-
 	showInvalidAction = menu.AddAction("Show Invalid Fields", func() {
 		checkCodeplug(edt)
 	})
@@ -947,20 +927,6 @@ func (edt *editor) updateButtons() {
 	row.AddSeparator()
 
 	column = row.AddVbox()
-
-	edt.undoButton = column.AddButton("Undo")
-	edt.undoButton.SetFixedHeight()
-	edt.undoButton.SetEnabled(false)
-	edt.undoButton.ConnectClicked(func() {
-		ui.UndoChange(edt.codeplug)
-	})
-
-	edt.redoButton = column.AddButton("Redo")
-	edt.redoButton.SetFixedHeight()
-	edt.redoButton.SetEnabled(false)
-	edt.redoButton.ConnectClicked(func() {
-		ui.RedoChange(edt.codeplug)
-	})
 
 	column.AddFiller()
 	row.AddFiller()
@@ -1242,22 +1208,6 @@ func thanks() {
 
 	msg := strings.Join(msgs, "\n")
 	ui.InfoPopup("Thanks", msg)
-}
-
-func updateUndoActions(edt *editor) {
-	text := edt.codeplug.UndoString()
-	edt.undoAction.SetText("Undo: " + text)
-	edt.undoAction.SetEnabled(text != "")
-
-	edt.undoButton.SetText("Undo: " + edt.codeplug.UndoString())
-	edt.undoButton.SetEnabled(text != "")
-
-	text = edt.codeplug.RedoString()
-	edt.redoAction.SetText("Redo: " + edt.codeplug.RedoString())
-	edt.redoAction.SetEnabled(text != "")
-
-	edt.redoButton.SetText("Redo: " + edt.codeplug.RedoString())
-	edt.redoButton.SetEnabled(text != "")
 }
 
 type fillRecord func(*editor, *ui.HBox)
