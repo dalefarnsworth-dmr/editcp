@@ -1291,6 +1291,7 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 	if cp.MaxRecords(rType) == 1 {
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
+			w.BeginRecord()
 			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
@@ -1303,6 +1304,7 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 		}
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
+			w.BeginRecord()
 			selectorBox.Clear()
 			recordBox := selectorBox.AddHbox()
 			fillRecord(edt, recordBox)
