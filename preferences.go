@@ -36,13 +36,19 @@ func (edt *editor) preferences() {
 	groupBox := row.AddGroupbox("Options")
 	form := groupBox.AddForm()
 
-	gpsEnabled := settings.gpsEnabled
-	checked := gpsEnabled
+	editButtonsEnabled := settings.editButtonsEnabled
+	checked := editButtonsEnabled
 	checkbox := ui.NewCheckboxWidget(checked, func(checked bool) {
+		editButtonsEnabled = checked
+	})
+	form.AddRow("Enable edit buttons on main window:", checkbox)
+
+	gpsEnabled := settings.gpsEnabled
+	checked = gpsEnabled
+	checkbox = ui.NewCheckboxWidget(checked, func(checked bool) {
 		gpsEnabled = checked
 	})
 	form.AddRow("Display GPS fields:", checkbox)
-	//dialog.AddSpace(2)
 
 	uniqueContactNames := settings.uniqueContactNames
 	checked = uniqueContactNames
@@ -85,6 +91,9 @@ func (edt *editor) preferences() {
 	if !dialog.Exec() {
 		return
 	}
+
+	settings.editButtonsEnabled = editButtonsEnabled
+	edt.updateButtons()
 
 	settings.gpsEnabled = gpsEnabled
 	edt.setGPSEnabled(gpsEnabled)

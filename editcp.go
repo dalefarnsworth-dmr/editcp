@@ -56,6 +56,7 @@ type editorSettings struct {
 	recentFiles            []string
 	model                  string
 	freqRange              string
+	editButtonsEnabled     bool
 	gpsEnabled             bool
 	experimental           bool
 	uniqueContactNames     bool
@@ -872,6 +873,11 @@ func (edt *editor) updateButtons() {
 
 	row := edt.mainWindow.AddHbox()
 	row.Clear()
+
+	if !settings.editButtonsEnabled {
+		return
+	}
+
 	column := row.AddVbox()
 
 	biButton := column.AddButton("Basic Information")
@@ -1363,6 +1369,7 @@ func loadSettings() {
 	settings.autosaveInterval = as.Int("autosaveInterval", 1)
 	settings.model = as.String("model", "")
 	settings.freqRange = as.String("frequencyRange", "")
+	settings.editButtonsEnabled = as.Bool("editButtonsEnabled", true)
 	settings.gpsEnabled = as.Bool("displayGPS", true)
 	settings.experimental = as.Bool("experimental", false)
 	settings.uniqueContactNames = as.Bool("uniqueContactNames", true)
@@ -1385,6 +1392,7 @@ func saveSettings() {
 	as.SetInt("autosaveInterval", settings.autosaveInterval)
 	as.SetString("model", settings.model)
 	as.SetString("frequencyRange", settings.freqRange)
+	as.SetBool("editButtonsEnabled", settings.editButtonsEnabled)
 	as.SetBool("displayGPS", settings.gpsEnabled)
 	as.SetBool("experimental", settings.experimental)
 	as.SetBool("uniqueContactNames", settings.uniqueContactNames)
