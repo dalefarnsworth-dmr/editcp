@@ -24,6 +24,8 @@
 package main
 
 import (
+	"strings"
+
 	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
 )
@@ -34,12 +36,22 @@ func basicInformation(edt *editor) {
 }
 
 func biRecord(edt *editor, recordBox *ui.HBox) {
-	r := currentRecord(recordBox.Window())
+	w := recordBox.Window()
+	r := currentRecord(w)
+	cp := edt.codeplug
 
 	column := recordBox.AddVbox()
 	form := column.AddForm()
+
+	model, types := cp.ModelTypes()
+	if len(types) > 0 && (len(types) != 1 || types[0] != model) {
+		model += " (" + strings.Join(types, ", ") + ")"
+	}
+	modelWidget := ui.NewLineEditWidget(model)
+	modelWidget.SetLabel("Model Name")
+	form.AddWidget(modelWidget)
+
 	form.AddReadOnlyFieldTypeRows(r,
-		codeplug.FtBiModel,
 		codeplug.FtBiFrequencyRange_md380,
 		codeplug.FtBiFrequencyRangeA,
 		codeplug.FtBiFrequencyRangeB,
