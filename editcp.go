@@ -27,13 +27,13 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/dalefarnsworth/codeplug/codeplug"
+	"github.com/dalefarnsworth/codeplug/debug"
 	"github.com/dalefarnsworth/codeplug/ui"
 	"github.com/therecipe/qt/core"
 )
@@ -240,15 +240,52 @@ func (edt *editor) autosave() {
 	}
 }
 
+func displayPreviousPanic(text string) {
+	var removeFile bool
+
+	mw := ui.NewMainWindow()
+	mw.Resize(600, 400)
+	mw.SetTitle("Previous Crash Message")
+	mw.ConnectClose(func() bool {
+		if removeFile {
+			l.RemovePreviousPanicFile()
+		}
+
+		return true
+	})
+
+	vBox := mw.AddVbox()
+	vBox.AddSpace(1)
+	vBox.AddLabel("editcp previously crashed leaving this message:")
+
+	tEdit := vBox.AddTextEdit()
+	tEdit.SetReadOnly(true)
+	tEdit.SetNoLineWrap()
+	tEdit.SetPlainText(text)
+
+	label := fmt.Sprintf("(This message is contained in the file '%s')", l.PreviousPanicFilename)
+	vBox.AddLabel(label)
+
+	form := vBox.AddForm()
+	cb := ui.NewCheckboxWidget(false, func(checked bool) {
+		removeFile = checked
+	})
+	cb.SetLabel("Delete this message?")
+	form.AddWidget(cb)
+
+	hBox := vBox.AddHbox()
+	hBox.AddFiller()
+	hBox.SetFixedHeight()
+
+	button := ui.NewButtonWidget("Close", func() {
+		mw.Close()
+	})
+	hBox.AddWidget(button)
+
+	mw.Show()
+}
+
 func main() {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		logFatal(r)
-	//	}
-	//}()
-
-	log.SetFlags(log.Lshortfile)
-
 	args := os.Args[1:]
 	for i := len(args) - 1; i >= 0; i-- {
 		switch args[i] {
@@ -260,7 +297,7 @@ func main() {
 
 	app, err := ui.NewApp()
 	if err != nil {
-		logPrint(err.Error())
+		l.Println(err.Error())
 		return
 	}
 	app.SetOrganizationName("codeplug")
@@ -277,7 +314,12 @@ func main() {
 		newEditor(app, codeplug.FileTypeNone, filename)
 	}
 
-	if len(editors) == 0 {
+	panicString := l.PreviousPanicString()
+	if len(panicString) > 0 {
+		displayPreviousPanic(panicString)
+	}
+
+	if len(editors) == 0 && len(panicString) == 0 {
 		return
 	}
 
@@ -622,6 +664,8 @@ func newEditor(app *ui.App, fType codeplug.FileType, filename string) *editor {
 	if mw == nil {
 		mw = ui.NewMainWindow()
 		edt.mainWindow = mw
+
+		mw.Resize(600, 50)
 	}
 
 	if filename != "" || fType != codeplug.FileTypeNone {
@@ -700,9 +744,17 @@ func (edt *editor) updateMenuBar() {
 	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("New...", func() {
+		l.P("l.P")
+		l.Print("l.Print")
+		l.Println("l.Println")
+		l.Printf("l.Printf %s\n", "str")
+		l.Fatalf("l.Fatalf %s\n", "str")
 		newEditor(edt.app, codeplug.FileTypeNew, "")
 	})
 	menu.AddAction("Open...", func() {
+		l.PrintStack()
+		l.P("l.P")
+		l.Fatal("l.Fatal")
 		dir := settings.codeplugDirectory
 		exts := edt.codeplug.AllExts()
 		filenames := ui.OpenCPFilenames("Open codeplug file", dir, exts)
@@ -719,6 +771,8 @@ func (edt *editor) updateMenuBar() {
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
 	menu.AddAction("Revert", func() {
+		var f func()
+		f()
 		edt.revertFile()
 	}).SetEnabled(cp != nil)
 

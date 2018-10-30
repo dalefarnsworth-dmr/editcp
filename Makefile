@@ -9,7 +9,8 @@ CODEPLUG_SRC = ../codeplug/*.go
 DFU_SRC = ../dfu/*.go
 STDFU_SRC = ../stdfu/*.go
 USERDB_SRC = ../userdb/*.go
-SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
+DEBUG_SRC = ../debug/*.go
+SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC) $(DEBUG_SRC)
 RADIO_SRCS =  $(RADIO_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
