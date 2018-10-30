@@ -230,6 +230,27 @@ WARNING: This only works on MD-UV380 radios with the "CSV" firmware versions.`
 	writeExpandedUsers(title, text)
 }
 
+func factoryFirmwareDialog(modelURLs []modelURL) {
+	model, url := modelURLs[0].model, modelURLs[0].url
+	if len(modelURLs) > 1 {
+		title := "Write factory firmware to radio..."
+		upgrade := false
+		var canceled bool
+		canceled, model, url = firmwareDialog(title, modelURLs, upgrade)
+		if canceled {
+			return
+		}
+	}
+
+	msgs := []string{
+		fmt.Sprintf("Downloading factory %s firmware...\n%s", model, url),
+		"Erasing the radio's firmware...",
+		fmt.Sprintf("Writing factory %s firmware to radio...", model),
+	}
+
+	writeFirmware(url, msgs)
+}
+
 func (edt *editor) addRadioMenu(menu *ui.Menu) {
 	cp := edt.codeplug
 	mb := edt.mainWindow.MenuBar()
@@ -348,41 +369,76 @@ writing the new codeplug.`
 
 	menu.AddSeparator()
 
-	menu.AddAction("Write factory firmware to radio...", func() {
-		path := "https://farnsworth.org/dale/md380tools/"
-		d003URL := path + "original_firmware/D003.020.bin"
-		d013URL := path + "original_firmware/D013.020.bin"
-		d013_34URL := path + "original_firmware/D013.034.bin"
-		s013URL := path + "original_firmware/S013.020.bin"
-		d14_04URL := path + "original_firmware/D014.004.bin"
+	fwMenu := menu.AddMenu("Write factory firmware to radio...")
+
+	fwMenu.AddAction("Write MD-380 factory firmware...", func() {
+		dir := "https://farnsworth.org/dale/dmr/factory_firmware/md380/"
 
 		modelURLs := []modelURL{
-			modelURL{"MD-380 old (D03.20)", d003URL},
-			modelURL{"MD-380 (D13.20)", d013URL},
-			modelURL{"MD-380 new (D13.34)", d013_34URL},
-			modelURL{"MD-380 newest (D14.04", d14_04URL},
-			modelURL{"MD-380G (S13.20)", s013URL},
-			modelURL{"MD-390 (D13.20)", d013URL},
-			modelURL{"MD-390G (S13.20)", s013URL},
-			modelURL{"RT3 (D03.20)", d003URL},
-			modelURL{"RT8 (S13.20)", s013URL},
+			modelURL{"MD-380 old (D03.20)", dir + "D003.020.bin"},
+			modelURL{"MD-380 (D13.20)", dir + "D013.020.bin"},
+			modelURL{"MD-380 new (D13.34)", dir + "D013.034.bin"},
+			modelURL{"MD-380 newest (D14.04", dir + "D014.004.bin"},
+			modelURL{"MD-380G (S13.20)", dir + "S013.020.bin"},
 		}
 
-		title := "Write factory firmware to radio..."
-		upgrade := false
-		canceled, model, url := firmwareDialog(title, modelURLs, upgrade)
-		if canceled {
-			return
-		}
-
-		msgs := []string{
-			fmt.Sprintf("Downloading original %s firmware...\n%s", model, url),
-			"Erasing the radio's firmware...",
-			fmt.Sprintf("Writing factory %s firmware to radio...", model),
-		}
-
-		writeFirmware(url, msgs)
+		factoryFirmwareDialog(modelURLs)
 	})
+
+	fwMenu.AddAction("Write MD-390 factory firmware...", func() {
+		dir := "https://farnsworth.org/dale/dmr/factory_firmware/md390/"
+
+		modelURLs := []modelURL{
+			modelURL{"MD-390 (D13.20)", dir + "D013.020.bin"},
+			modelURL{"MD-390G (S13.20)", dir + "S013.020.bin"},
+		}
+
+		factoryFirmwareDialog(modelURLs)
+	})
+
+	fwMenu.AddAction("Write RT3 factory firmware", func() {
+		dir := "https://farnsworth.org/dale/dmr/factory_firmware/rt3/"
+
+		modelURLs := []modelURL{
+			modelURL{"RT3 (D03.20)", dir + "D003.020.bin"},
+		}
+
+		factoryFirmwareDialog(modelURLs)
+	})
+
+	fwMenu.AddAction("Write RT8 factory firmware", func() {
+		dir := "https://farnsworth.org/dale/dmr/factory_firmware/rt8/"
+
+		modelURLs := []modelURL{
+			modelURL{"RT8 (S13.20)", dir + "S013.020.bin"},
+		}
+
+		factoryFirmwareDialog(modelURLs)
+	})
+
+	/*
+		fwMenu.AddAction("Write MD-UV380 factory firmware...", func() {
+			dir := "https://farnsworth.org/dale/dmr/factory_firmware/uv380/"
+
+			modelURLs := []modelURL{
+				modelURL{"MD-UV380 REC (D17.05)", dir + "MD-UV380(REC)-D17.05.bin"},
+				modelURL{"MD-UV380 CSV (V17.05)", dir + "MD-UV380(CSV)-V17.05.bin"},
+			}
+
+			factoryFirmwareDialog(modelURLs)
+		})
+
+		fwMenu.AddAction("Write MD-UV390 factory firmware...", func() {
+			dir := "https://farnsworth.org/dale/dmr/factory_firmware/uv390/"
+
+			modelURLs := []modelURL{
+				modelURL{"MD-UV390 GPS-REC (S17.05)", dir + "MD-UV390(GPS-REC)-S17.05.bin"},
+				modelURL{"MD-UV390 GPS-CSV (P17.05)", dir + "MD-UV390(CSV-GPS)-P17.05.bin"},
+			}
+
+			factoryFirmwareDialog(modelURLs)
+		})
+	*/
 
 	menu.AddSeparator()
 	writeUsersMenu := menu.AddMenu("Write user database to radio...")
