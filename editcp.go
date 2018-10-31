@@ -744,17 +744,9 @@ func (edt *editor) updateMenuBar() {
 	mb.Clear()
 	menu := mb.AddMenu("File")
 	menu.AddAction("New...", func() {
-		l.P("l.P")
-		l.Print("l.Print")
-		l.Println("l.Println")
-		l.Printf("l.Printf %s\n", "str")
-		l.Fatalf("l.Fatalf %s\n", "str")
 		newEditor(edt.app, codeplug.FileTypeNew, "")
 	})
 	menu.AddAction("Open...", func() {
-		l.PrintStack()
-		l.P("l.P")
-		l.Fatal("l.Fatal")
 		dir := settings.codeplugDirectory
 		exts := edt.codeplug.AllExts()
 		filenames := ui.OpenCPFilenames("Open codeplug file", dir, exts)
@@ -771,8 +763,6 @@ func (edt *editor) updateMenuBar() {
 	recentMenu.SetEnabled(len(settings.recentFiles) != 0)
 
 	menu.AddAction("Revert", func() {
-		var f func()
-		f()
 		edt.revertFile()
 	}).SetEnabled(cp != nil)
 
