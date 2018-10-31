@@ -40,7 +40,7 @@ func fieldTypeWidget(w *ui.Window, r *codeplug.Record, fType codeplug.FieldType)
 }
 
 func stack(w *ui.Window, r *codeplug.Record, fTypes ...codeplug.FieldType) *ui.StackedWidget {
-	sw := ui.NewStackedWidget()
+	sw := ui.NewStackedWidget(w)
 	for _, fType := range fTypes {
 		field := r.Field(fType)
 		widget := w.NewFieldWidget("", field)
