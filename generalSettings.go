@@ -112,17 +112,6 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsPrivateCallHangTime,
 	)
 
-	groupBox = column.AddGroupbox("Intro Screen")
-	form = groupBox.AddForm()
-	form.AddFieldTypeRows(r,
-		codeplug.FtGsIntroScreen,
-		codeplug.FtGsIntroScreenLine1,
-		codeplug.FtGsIntroScreenLine2,
-	)
-	if !r.HasFieldType(codeplug.FtGsRadioID1) {
-		return
-	}
-
 	column = row.AddVbox()
 	form = column.AddForm()
 	form.AddFieldTypeRows(r,
@@ -144,4 +133,13 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsEnableContactsCSV,
 	)
 
+	groupBox = column.AddGroupbox("Intro Screen")
+	form = groupBox.AddForm()
+	form.AddFieldTypeRows(r,
+		codeplug.FtGsIntroScreen,
+		codeplug.FtGsIntroScreenLine1,
+		codeplug.FtGsIntroScreenLine2,
+	)
+
+	column.AddFiller()
 }
