@@ -85,6 +85,7 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 			codeplug.FtGsCHVoiceAnnouncement,
 		)
 	}
+	column.AddFiller()
 
 	column = row.AddVbox()
 	form = column.AddForm()
@@ -102,14 +103,6 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsRadioProgPassword,
 		codeplug.FtGsBacklightTime,
 		codeplug.FtGsSetKeypadLockTime,
-		codeplug.FtGsFreqChannelMode,
-		codeplug.FtGsModeSelect,
-		codeplug.FtGsModeSelectA,
-		codeplug.FtGsModeSelectB,
-		codeplug.FtGsTimeZone,
-		codeplug.FtGsDisableAllLeds,
-		codeplug.FtGsGroupCallMatch,
-		codeplug.FtGsPrivateCallMatch,
 	)
 
 	groupBox = column.AddGroupbox("Talkaround")
@@ -138,6 +131,14 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsRadioID3,
 		codeplug.FtGsMicLevel,
 		codeplug.FtGsTxMode,
+		codeplug.FtGsFreqChannelMode,
+		codeplug.FtGsModeSelect,
+		codeplug.FtGsModeSelectA,
+		codeplug.FtGsModeSelectB,
+		codeplug.FtGsTimeZone,
+		codeplug.FtGsDisableAllLeds,
+		codeplug.FtGsGroupCallMatch,
+		codeplug.FtGsPrivateCallMatch,
 		codeplug.FtGsEditRadioID,
 		codeplug.FtGsPublicZone,
 		codeplug.FtGsEnableContactsCSV,
