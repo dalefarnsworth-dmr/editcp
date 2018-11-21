@@ -1288,7 +1288,6 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 	w.SetTitle(cp.Filename() + edt.titleSuffix() + " " + r.TypeName())
 
 	windowBox := w.AddHbox()
-	var rl *ui.RecordList
 	var recordFunc func()
 
 	if cp.MaxRecords(rType) == 1 {
@@ -1300,10 +1299,7 @@ func (edt *editor) newRecordWindow(rType codeplug.RecordType, writable bool, fil
 			w.Show()
 		}
 	} else {
-		rl = windowBox.AddRecordList(rType)
-		if rl.Current() < 0 {
-			rl.SetCurrent(0)
-		}
+		windowBox.AddRecordList(rType)
 		selectorBox := windowBox.AddVbox()
 		recordFunc = func() {
 			selectorBox.Clear()
