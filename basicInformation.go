@@ -24,8 +24,6 @@
 package main
 
 import (
-	"strings"
-
 	"github.com/dalefarnsworth/codeplug/codeplug"
 	"github.com/dalefarnsworth/codeplug/ui"
 )
@@ -43,10 +41,7 @@ func biRecord(edt *editor, recordBox *ui.HBox) {
 	column := recordBox.AddVbox()
 	form := column.AddForm()
 
-	model, types := cp.ModelTypes()
-	if len(types) > 0 && (len(types) != 1 || types[0] != model) {
-		model += " (" + strings.Join(types, ", ") + ")"
-	}
+	model := codeplug.ModelTypes(cp.Model())
 	modelWidget := ui.NewLineEditWidget(model)
 	modelWidget.SetLabel("Model Name")
 	form.AddWidget(modelWidget)

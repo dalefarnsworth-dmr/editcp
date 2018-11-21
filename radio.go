@@ -327,7 +327,7 @@ Or, click on Ignore to continue writing to the radio.`
 		}
 
 		title := "Write codeplug to radio"
-		model := cp.Model()
+		model := codeplug.ModelTypes(cp.Model())
 		freq := cp.FrequencyRange()
 		warn := `
 
