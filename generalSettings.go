@@ -130,6 +130,8 @@ func gsRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtGsPrivateCallMatch,
 		codeplug.FtGsEditRadioID,
 		codeplug.FtGsPublicZone,
+		codeplug.FtGsMenuControl,
+		codeplug.FtGsTwoChannel,
 		codeplug.FtGsEnableContactsCSV,
 	)
 
