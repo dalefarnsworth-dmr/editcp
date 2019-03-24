@@ -81,6 +81,7 @@ func ciRecord(edt *editor, recordBox *ui.HBox) {
 		codeplug.FtCiEmergencyAlarmAck,
 		codeplug.FtCiDataCallConfirmed,
 		codeplug.FtCiCompressedUdpDataHeader,
+		codeplug.FtCiAllowInterrupt,
 		codeplug.FtCiDCDMSwitch,
 		codeplug.FtCiLeaderMS,
 		codeplug.FtCiEmergencySystem,
