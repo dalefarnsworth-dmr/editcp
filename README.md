@@ -40,28 +40,30 @@ $ sudo apt-get install git
 
 3. `Editcp` uses the QT GUI library. You'll need to install
 the [Qt binding for Go](https://github.com/therecipe/qt). I recommend
-you follow the instructions in the *Minimal Installation* paragraph on
-this page: https://github.com/therecipe/qt/wiki/Installation.
+the docker installation described at
+https://github.com/therecipe/qt/wiki/Deploying-Linux-to-Linux
+and
+https://github.com/therecipe/qt/wiki/Deploying-Linux-to-Windows-32-bit-Static
 
-4. Get the source code:
+4. `Editcp` uses the libusb-1.0-0-dev package. You'll need to install it.
+Also, if you're using the docker qt installation, you'll need to install
+libusb-1.0-0-dev in the docker images it uses. This can be done by running
+```bash
+$ sudo docker tag therecipe/qt:windows_32_static therecipe/qt:windows_32_static-orig
+$ sudo docker tag therecipe/qt:linux therecipe/qt:linux-orig
+$ sudo make docker_usb
+
+5. Get the source code:
 ```bash
 $ go get github.com/dalefarnsworth/codeplug/...
 $ go get github.com/google/gousb
 $ go get github.com/tealeg/xlsx
 ```
 
-5. Change to the `editcp` source directory:
+6. Change to the `editcp` source directory:
 ```bash
 $ cd $GOPATH/src/github.com/dalefarnsworth/codeplug/editcp
 ```
-
-6. `Editcp` uses the libusb-1.0-0-dev package. You'll need to install it.
-If you're using the qt *Minimal Installation*, you'll need to install
-libusb-1.0-0-dev in the docker images it uses. This can be done by running
-```bash
-$ docker tag therecipe/qt:windows_32_static therecipe/qt:windows_32_static-orig
-$ docker tag therecipe/qt:linux therecipe/qt:linux-orig
-$ make docker-usb
 ```
 
 7. Build `editcp`:

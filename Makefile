@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber install docker_usb docker_windows_usb docker_linux_usb tag
+.PHONY: default linux windows clean clobber install docker_usb docker_usb_windows docker_usb_linux tag
 
 EDITCP_SRC = *.go
 RADIO_SRC = ../dmrRadio/*.go
@@ -55,7 +55,7 @@ deploy/win32/editcp.exe: $(SOURCES)
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
 
-docker_windows_usb:
+docker_usb_windows:
 	docker rmi -f therecipe/qt:windows_32_static >/dev/null 2>&1
 	docker pull therecipe/qt:windows_32_static
 	cd ../docker/windows32-with-usb && \
@@ -63,7 +63,7 @@ docker_windows_usb:
 	docker rmi -f therecipe/qt:windows_32_static
 	docker tag therecipe/qt:windows_32_static_usb therecipe/qt:windows_32_static
 
-docker_linux_usb:
+docker_usb_linux:
 	docker rmi -f therecipe/qt:linux >/dev/null 2>&1
 	docker pull therecipe/qt:linux
 	cd ../docker/linux-with-usb && \
