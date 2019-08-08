@@ -33,11 +33,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/dalefarnsworth/codeplug/codeplug"
-	l "github.com/dalefarnsworth/codeplug/debug"
-	"github.com/dalefarnsworth/codeplug/dfu"
-	"github.com/dalefarnsworth/codeplug/ui"
-	"github.com/dalefarnsworth/codeplug/userdb"
+	"github.com/dalefarnsworth-dmr/codeplug"
+	l "github.com/dalefarnsworth-dmr/debug"
+	"github.com/dalefarnsworth-dmr/dfu"
+	"github.com/dalefarnsworth-dmr/ui"
+	"github.com/dalefarnsworth-dmr/userdb"
 	"github.com/therecipe/qt/core"
 )
 

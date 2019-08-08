@@ -24,7 +24,7 @@
 package main
 
 import (
-	"github.com/dalefarnsworth/codeplug/ui"
+	"github.com/dalefarnsworth-dmr/ui"
 )
 
 func (edt *editor) preferences() {

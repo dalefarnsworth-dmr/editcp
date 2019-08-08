@@ -26,8 +26,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/dalefarnsworth/codeplug/codeplug"
-	"github.com/dalefarnsworth/codeplug/ui"
+	"github.com/dalefarnsworth-dmr/codeplug"
+	"github.com/dalefarnsworth-dmr/ui"
 )
 
 func privacySettings(edt *editor) {

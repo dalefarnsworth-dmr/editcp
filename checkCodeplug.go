@@ -26,7 +26,7 @@ package main
 import (
 	"strings"
 
-	"github.com/dalefarnsworth/codeplug/ui"
+	"github.com/dalefarnsworth-dmr/ui"
 )
 
 func errorText(edt *editor) string {

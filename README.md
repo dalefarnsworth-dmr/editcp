@@ -55,14 +55,14 @@ $ sudo make docker_usb
 
 5. Get the source code:
 ```bash
-$ go get github.com/dalefarnsworth/codeplug/...
+$ go get github.com/dalefarnsworth-dmr/editcp/...
 $ go get github.com/google/gousb
 $ go get github.com/tealeg/xlsx
 ```
 
 6. Change to the `editcp` source directory:
 ```bash
-$ cd $GOPATH/src/github.com/dalefarnsworth/codeplug/editcp
+$ cd $GOPATH/src/github.com/dalefarnsworth-dmr/editcp
 ```
 ```
 
@@ -90,7 +90,7 @@ $ editcp file.rdt
 
 ## Installing Pre-built Executables
 Instructions for downloading pre-built executables for Windows and Linux are
-available at https://www.farnsworth.org/dale/codeplug/editcp.
+available at https://www.farnsworth.org/dale/editcp.
 
 ## Disclaimer
 `Editcp` has only been used by a small number of people at present. While

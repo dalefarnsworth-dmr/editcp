@@ -32,9 +32,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/dalefarnsworth/codeplug/codeplug"
-	"github.com/dalefarnsworth/codeplug/debug"
-	"github.com/dalefarnsworth/codeplug/ui"
+	"github.com/dalefarnsworth-dmr/codeplug"
+	"github.com/dalefarnsworth-dmr/debug"
+	"github.com/dalefarnsworth-dmr/ui"
 	"github.com/therecipe/qt/core"
 )
 
@@ -1232,7 +1232,7 @@ USA
 dale@farnsworth.org
 
 The source code for editcp may be found at
-https://github.com/dalefarnsworth/codeplug
+https://github.com/dalefarnsworth-dmr/editcp
 `
 	ui.InfoPopup("About editcp", msg)
 }

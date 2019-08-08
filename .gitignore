@@ -4,3 +4,4 @@ editcp.nsi
 editcp-*.exe
 deploy/
 *.rdt
+go.sum
