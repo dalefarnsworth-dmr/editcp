@@ -52,6 +52,7 @@ libusb-1.0-0-dev in the docker images it uses. This can be done by running
 $ sudo docker tag therecipe/qt:windows_32_static therecipe/qt:windows_32_static-orig
 $ sudo docker tag therecipe/qt:linux therecipe/qt:linux-orig
 $ sudo make docker_usb
+```
 
 5. Get the source code:
 ```bash
@@ -63,7 +64,6 @@ $ go get github.com/tealeg/xlsx
 6. Change to the `editcp` source directory:
 ```bash
 $ cd $GOPATH/src/github.com/dalefarnsworth-dmr/editcp
-```
 ```
 
 7. Build `editcp`:
