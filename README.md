@@ -53,6 +53,9 @@ $ sudo docker tag therecipe/qt:windows_32_static therecipe/qt:windows_32_static-
 $ sudo docker tag therecipe/qt:linux therecipe/qt:linux-orig
 $ sudo make docker_usb
 ```
+If you are building under macOS, then there is no need to use docker,
+see
+[Deploying Linux to macOS](https://github.com/therecipe/qt/wiki/Deploying-Linux-to-macOS).
 
 5. Get the source code:
 ```bash
@@ -70,6 +73,7 @@ $ cd $GOPATH/src/github.com/dalefarnsworth-dmr/editcp
 ```bash
 $ make
 ```
+Under macOS, instead of running `make`, run `qtdeploy build desktop`
 
 8. Install `editcp`:
 ```bash
@@ -78,6 +82,7 @@ $ make install
 You will be prompted for a directory name where a symbolic link to
 the `editcp` executable will be placed. If you don't have write permissions
 for that directory, you will need to run this command as root.
+Under macOS, skip running `make install`
 
 9. You man now run `editcp`, optionally passing the name of a codeplug file.
 ```bash
@@ -87,6 +92,9 @@ or
 ```bash
 $ editcp file.rdt
 ```
+Under macOS, the app is at `deploy/darwin/editcp.app`.  To run from
+the Terminal so as to see stdout and stderr, run
+`./deploy/darwin/editcp.app/Contents/MacOS/editcp`
 
 ## Installing Pre-built Executables
 Instructions for downloading pre-built executables for Windows and Linux are
