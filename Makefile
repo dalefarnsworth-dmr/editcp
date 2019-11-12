@@ -55,6 +55,11 @@ deploy/win32/editcp.exe: $(SOURCES)
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
 
+macOS: darwin
+darwin: FORCE
+	@echo "Under macOS/darwin, it is ok to ignore the sed warnings about extra characters"
+	qtdeploy build desktop
+
 docker_usb_windows:
 	docker rmi -f therecipe/qt:windows_32_static >/dev/null 2>&1
 	docker pull therecipe/qt:windows_32_static
