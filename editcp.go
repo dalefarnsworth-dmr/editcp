@@ -483,6 +483,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	mOpts := append([]string{"<select model>"}, types...)
 
 	var vOptsA []string
+	var vOptsB []string
 	var rangeA string
 	var rangeB string
 	var rangesA = make([]string, 0)
@@ -500,7 +501,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	if len(settingRanges) > 1 {
 		rangeB = settingRanges[1] + " MHz"
 	}
-	vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
+	vOptsB = append([]string{"<select frequency range B>"}, rangesB...)
 
 	dialog := ui.NewDialog("Select codeplug type")
 
@@ -521,6 +522,9 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	okButton.SetEnabled(enable)
 
 	vCbA := ui.NewComboboxWidget(opt, vOptsA, func(index int) {
+		if index == -1 {
+		   index = 0
+		}
 		rangeA = vOptsA[index]
 		enable := containsString(rangeA, vOptsA[1:])
 		rangesA, rangesB = typeFreqRanges(cp, typ)
@@ -537,6 +541,9 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	}
 
 	vCbB := ui.NewComboboxWidget(opt, vOptsB, func(index int) {
+		if index == -1 {
+		   index = 0
+		}
 		rangeB = vOptsB[index]
 		enable := containsString(rangeA, vOptsA[1:])
 		rangesA, rangesB = typeFreqRanges(cp, typ)
@@ -568,7 +575,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 		if len(settingRanges) > 1 {
 			rangeB = settingRanges[1] + " MHz"
 		}
-		vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
+		vOptsB = append([]string{"<select frequency range B>"}, rangesB...)
 		vCbA.SetEnabled(containsString(typ, mOpts[1:]))
 
 		opt := vOptsA[0]
