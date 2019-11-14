@@ -647,6 +647,9 @@ func firmwareDialog(title string, modelURLs []modelURL, upgrade bool) (canceled 
 
 	model = models[0]
 	modelCombobox := ui.NewComboboxWidget(model, models, func(index int) {
+		if index < 0 {
+			return
+		}
 		model = models[index]
 	})
 

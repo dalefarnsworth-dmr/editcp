@@ -521,6 +521,9 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	okButton.SetEnabled(enable)
 
 	vCbA := ui.NewComboboxWidget(opt, vOptsA, func(index int) {
+		if index < 0 {
+			return
+		}
 		rangeA = vOptsA[index]
 		enable := containsString(rangeA, vOptsA[1:])
 		rangesA, rangesB = typeFreqRanges(cp, typ)
@@ -537,6 +540,9 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	}
 
 	vCbB := ui.NewComboboxWidget(opt, vOptsB, func(index int) {
+		if index < 0 {
+			return
+		}
 		rangeB = vOptsB[index]
 		enable := containsString(rangeA, vOptsA[1:])
 		rangesA, rangesB = typeFreqRanges(cp, typ)
@@ -555,6 +561,9 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 	var mCb *ui.FieldWidget
 
 	mCb = ui.NewComboboxWidget(typ, mOpts, func(index int) {
+		if index < 0 {
+			return
+		}
 		typ = mOpts[index]
 
 		rangesA, rangesB = typeFreqRanges(cp, typ)
