@@ -83,8 +83,13 @@ channel while writing the new user database.`
 	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
-		db := userdb.New()
-		err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
+		db, err := userdb.NewCuratedDB()
+		if err != nil {
+			title := fmt.Sprintf("Download of user database failed")
+			ui.ErrorPopup(title, err.Error())
+			return
+		}
+		db.SetProgressCallback(func(cur int) error {
 			if cur == userdb.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -95,6 +100,7 @@ channel while writing the new user database.`
 			}
 			return nil
 		})
+		err = db.WriteMD380ToolsFile(tmpFilename)
 		if err != nil {
 			os.Remove(tmpFilename)
 			pd.Close()
@@ -121,7 +127,10 @@ channel while writing the new user database.`
 	})
 	if err == nil {
 		defer df.Close()
-		err = df.WriteUsers(filename)
+		db, err := userdb.NewFileDB(filename)
+		if err == nil {
+			err = df.WriteMD380Users(db)
+		}
 	}
 	if err != nil {
 		pd.Close()
@@ -158,8 +167,13 @@ func writeExpandedUsers(title, text string) {
 	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
-		db := userdb.New()
-		err := db.WriteMD380ToolsFile(tmpFilename, func(cur int) error {
+		db, err := userdb.NewCuratedDB()
+		if err != nil {
+			title := fmt.Sprintf("Download of user database failed")
+			ui.ErrorPopup(title, err.Error())
+			return
+		}
+		db.SetProgressCallback(func(cur int) error {
 			if cur == userdb.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
@@ -170,6 +184,7 @@ func writeExpandedUsers(title, text string) {
 			}
 			return nil
 		})
+		err = db.WriteMD380ToolsFile(tmpFilename)
 		if err != nil {
 			os.Remove(tmpFilename)
 			pd.Close()
@@ -196,11 +211,11 @@ func writeExpandedUsers(title, text string) {
 	})
 	if err == nil {
 		defer df.Close()
-		file, err := os.Open(filename)
 		if err == nil {
-			defer file.Close()
-			users := dfu.ParseUV380Users(file)
-			err = df.WriteUV380Users(users)
+			db, err := userdb.NewFileDB(filename)
+			if err == nil {
+				err = df.WriteUV380Users(db)
+			}
 		}
 	}
 	if err != nil {
