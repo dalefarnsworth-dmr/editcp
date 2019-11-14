@@ -577,7 +577,7 @@ func typeFrequencyRange(cp *codeplug.Codeplug) (typ string, freqRange string) {
 		if len(settingRanges) > 1 {
 			rangeB = settingRanges[1] + " MHz"
 		}
-		vOptsB := append([]string{"<select frequency range B>"}, rangesB...)
+		vOptsB = append([]string{"<select frequency range B>"}, rangesB...)
 		vCbA.SetEnabled(containsString(typ, mOpts[1:]))
 
 		opt := vOptsA[0]

@@ -80,6 +80,7 @@ channel while writing the new user database.`
 	os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
 
 	pd := ui.NewProgressDialog(msgs[msgIndex])
+	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
 		db := userdb.New()
@@ -88,7 +89,6 @@ channel while writing the new user database.`
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
 			}
-			pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return errors.New("cancelled")
@@ -105,12 +105,13 @@ channel while writing the new user database.`
 
 		os.Rename(tmpFilename, filename)
 	}
+
+	pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 	df, err := dfu.New(func(cur int) error {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++
 		}
-		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 		pd.SetValue(cur)
 		if pd.WasCanceled() {
 			return errors.New("cancelled")
@@ -154,6 +155,7 @@ func writeExpandedUsers(title, text string) {
 	os.MkdirAll(filepath.Dir(filename), os.ModeDir|0755)
 
 	pd := ui.NewProgressDialog(msgs[msgIndex])
+	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
 		db := userdb.New()
@@ -162,7 +164,6 @@ func writeExpandedUsers(title, text string) {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
 			}
-			pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return errors.New("cancelled")
@@ -179,12 +180,13 @@ func writeExpandedUsers(title, text string) {
 
 		os.Rename(tmpFilename, filename)
 	}
+
+	pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 	df, err := dfu.New(func(cur int) error {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++
 		}
-		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 		pd.SetValue(cur)
 		if pd.WasCanceled() {
 			return errors.New("cancelled")
@@ -277,13 +279,13 @@ func (edt *editor) addRadioMenu(menu *ui.Menu) {
 		}
 		msgIndex := 0
 		pd := ui.NewProgressDialog(msgs[msgIndex])
+		pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 		err = cp.ReadRadio(func(cur int) error {
 			if cur == codeplug.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
 			}
 
-			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return errors.New("cancelled")
@@ -348,12 +350,12 @@ writing the new codeplug.`
 		msgIndex := 0
 
 		pd := ui.NewProgressDialog(msgs[msgIndex])
+		pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 		err := cp.WriteRadio(func(cur int) error {
 			if cur == codeplug.MinProgress {
 				pd.SetLabelText(msgs[msgIndex])
 				msgIndex++
 			}
-			pd.SetRange(codeplug.MinProgress, codeplug.MaxProgress)
 			pd.SetValue(cur)
 			if pd.WasCanceled() {
 				return errors.New("cancelled")
@@ -526,13 +528,13 @@ func writeFirmware(url string, msgs []string) {
 
 	msgIndex := 0
 	pd := ui.NewProgressDialog(msgs[msgIndex])
+	pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 
 	df, err := dfu.New(func(cur int) error {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++
 		}
-		pd.SetRange(dfu.MinProgress, dfu.MaxProgress)
 		pd.SetValue(cur)
 		if pd.WasCanceled() {
 			return errors.New("cancelled")
@@ -548,12 +550,12 @@ func writeFirmware(url string, msgs []string) {
 	}
 	defer df.Close()
 
+	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 	err = download(url, filename, func(cur int) bool {
 		if cur == dfu.MinProgress {
 			pd.SetLabelText(msgs[msgIndex])
 			msgIndex++
 		}
-		pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 		pd.SetValue(cur)
 		if pd.WasCanceled() {
 			return false
