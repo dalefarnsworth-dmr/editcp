@@ -3,7 +3,6 @@ SHELL = /bin/sh
 .PHONY: default linux windows clean clobber install docker_usb docker_usb_windows docker_usb_linux tag
 
 EDITCP_SRC = *.go
-RADIO_SRC = ../dmrRadio/*.go
 UI_SRC = ../ui/*.go
 CODEPLUG_SRC = ../codeplug/*.go
 DFU_SRC = ../dfu/*.go
@@ -11,12 +10,11 @@ STDFU_SRC = ../stdfu/*.go
 USERDB_SRC = ../userdb/*.go
 DEBUG_SRC = ../debug/*.go
 SOURCES = $(EDITCP_SRC) $(UI_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC) $(DEBUG_SRC)
-RADIO_SRCS =  $(RADIO_SRC) $(CODEPLUG_SRC) $(DFU_SRC) $(STDFU_SRC) $(USERDB_SRC)
 VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
-default: linux dmrRadio
+default: linux
 
-linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules ../dmrRadio/dmrRadio
+linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
 
 deploy/linux/editcp: $(SOURCES)
 	qtdeploy -docker build
@@ -42,13 +40,10 @@ editcp-$(VERSION).tar.xz: linux
 install: linux
 	cd deploy/linux && ./install .
 
-windows: editcp-$(VERSION)-installer.exe dmrRadio-$(VERSION)-installer.exe
+windows: editcp-$(VERSION)-installer.exe
 
 editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi dll/*.dll
 	makensis -DVERSION=$(VERSION) editcp.nsi
-
-dmrRadio-$(VERSION)-installer.exe: ../dmrRadio/dmrRadio.exe editcp.nsi dll/*.dll
-	makensis -DVERSION=$(VERSION) dmrRadio.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
 	qtdeploy -docker build windows_32_static
@@ -78,29 +73,14 @@ docker_usb_linux:
 
 docker_usb: docker_usb_linux docker_usb_windows
 
-../dmrRadio/dmrRadio: $(RADIO_SRCS)
-	cd ../dmrRadio && go build
-
-../dmrRadio/dmrRadio.exe: $(RADIO_SRCS)
-	cd ../dmrRadio && GOOS=windows GOARCH=386 go build
-
-dmrRadio: dmrRadio-$(VERSION).tar.xz
-
-dmrRadio-$(VERSION).tar.xz: ../dmrRadio/dmrRadio
-	cd ../dmrRadio && go build
-	rm -rf dmrRadio-$(VERSION)
-	mkdir -p dmrRadio-$(VERSION)
-	cp -al ../dmrRadio/dmrRadio dmrRadio-$(VERSION)
-	tar cJf dmrRadio-$(VERSION).tar.xz dmrRadio-$(VERSION)
-	rm -rf dmrRadio-$(VERSION)
-
 FORCE:
 
-changelog.txt: FORCE
-	sh generateChangelog >changelog.txt
+editcp-changelog: editcp-changelog.txt
+
+editcp-changelog.txt: FORCE
+	sh generateChangelog >editcp-changelog.txt
 
 clean:
-	rm -rf ../dmrRadio/dmrRadio
 
 clobber: clean
-	rm -rf editcp-* deploy/* dmrRadio-*
+	rm -rf editcp-* deploy/*
