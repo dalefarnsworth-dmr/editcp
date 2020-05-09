@@ -59,7 +59,7 @@ see
 
 5. Get the source code:
 ```bash
-$ go get github.com/dalefarnsworth-dmr/editcp/...
+$ go get -d github.com/dalefarnsworth-dmr/editcp/...
 $ go get github.com/google/gousb
 $ go get github.com/tealeg/xlsx
 ```
