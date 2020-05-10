@@ -98,10 +98,10 @@ the Terminal so as to see stdout and stderr, run
 
 ## Installing Pre-built Executables
 Instructions for downloading pre-built executables for Windows and Linux are
-available at https://www.farnsworth.org/dale/editcp.
+available at https://www.farnsworth.org/dale/codeplug/editcp.
 
 ## Disclaimer
-`Editcp` has only been used by a small number of people at present. While
+While
 no problems have been observed in radios after loading codeplugs edited by
 `editcp`, I can't guarantee that such will never occur. Use `editcp` at
 your own risk.
