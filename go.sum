@@ -4,12 +4,16 @@ github.com/dalefarnsworth-dmr/debug v1.0.17 h1:cKYIsa+2Dumnwd23OY9wPZucga3BE2Oa8
 github.com/dalefarnsworth-dmr/debug v1.0.17/go.mod h1:Pz2CVbdU7+6jxHfmqY2S9y/9wKg3M4WzIatuRxelYwQ=
 github.com/dalefarnsworth-dmr/dfu v1.0.17 h1:5bJ8c8jtk1Q97pjkNdID+LCaEfPaQkMscXdEIt5QFCc=
 github.com/dalefarnsworth-dmr/dfu v1.0.17/go.mod h1:CJDInd1jAGjukONpfCDwIyFDYMQcEvM4L6+osty6AuI=
+github.com/dalefarnsworth-dmr/dfu v1.0.18 h1:hZUfiTJMekjdnYaArwWs+E/vGt2/K/WWLwipua0uQ8s=
+github.com/dalefarnsworth-dmr/dfu v1.0.18/go.mod h1:CJDInd1jAGjukONpfCDwIyFDYMQcEvM4L6+osty6AuI=
 github.com/dalefarnsworth-dmr/stdfu v1.0.17 h1:w2eFPrSmGuz/gIyJTG9YvNUGnHDNiUFLsUCn3njcwEg=
 github.com/dalefarnsworth-dmr/stdfu v1.0.17/go.mod h1:DiLCvz4eBcmbZv2cTkmnYdc6/frv2WJBYENruWPLVto=
 github.com/dalefarnsworth-dmr/ui v1.0.17 h1:WYHTgijwaXr7sF7EdkdWf7ZlCIMHe7tI0/RVXDaH6xs=
 github.com/dalefarnsworth-dmr/ui v1.0.17/go.mod h1:IJmHM4BS74DqA5vfPghlfZblhIFUZOGmoEi6cAtzUTk=
 github.com/dalefarnsworth-dmr/userdb v1.0.17 h1:mmPhmEH6LZsRiIfjDRbm1wF6+Q0zHDWcZiT1Ac3uzgg=
 github.com/dalefarnsworth-dmr/userdb v1.0.17/go.mod h1:T88CcTuutI3Ew3GjHf6PQZfD2BYi2aP/NRZ0l97o6XE=
+github.com/dalefarnsworth-dmr/userdb v1.0.18 h1:9BC7KVrZ1w8UbKRCXTiR8Q90uVD2WWRqLNbQQ8RmofA=
+github.com/dalefarnsworth-dmr/userdb v1.0.18/go.mod h1:T88CcTuutI3Ew3GjHf6PQZfD2BYi2aP/NRZ0l97o6XE=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/google/gousb v0.0.0-20190812193832-18f4c1d8a750 h1:DVKHLo3yE4psTjD9aM2pY7EHoicaQbgmaxxvvHC6ZSM=
