@@ -4,3 +4,6 @@ editcp.nsi
 editcp-*.exe
 deploy/
 *.rdt
+TODO
+replaces
+vendor
