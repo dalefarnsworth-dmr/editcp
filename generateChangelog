@@ -7,7 +7,6 @@ for c in $(git rev-list master); do
 		tag="$(echo $decorate | sed -e 's/.*tag: //;s/[,)].*//')"
 		test -n "$addline" && echo
 		echo "$tag:"
-		continue
 	fi
 	git show --no-patch --pretty="%s" $c |
 		fmt |
