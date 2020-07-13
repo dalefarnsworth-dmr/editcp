@@ -1,4 +1,4 @@
-// Copyright 2017-2019 Dale Farnsworth. All rights reserved.
+// Copyright 2017-2020 Dale Farnsworth. All rights reserved.
 
 // Dale Farnsworth
 // 1007 W Mendoza Ave
@@ -23,4 +23,4 @@
 
 package main
 
-const version = "1.0.20"
+const version = "1.0.21"

@@ -3,7 +3,7 @@ module github.com/dalefarnsworth-dmr/editcp
 go 1.12
 
 require (
-	github.com/dalefarnsworth-dmr/codeplug v1.0.20
+	github.com/dalefarnsworth-dmr/codeplug v1.0.21
 	github.com/dalefarnsworth-dmr/debug v1.0.19
 	github.com/dalefarnsworth-dmr/dfu v1.0.19
 	github.com/dalefarnsworth-dmr/stdfu v1.0.19 // indirect

@@ -17,7 +17,8 @@ default: linux
 linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
 
 deploy/linux/editcp: $(SOURCES)
-	qtdeploy -docker build
+	go mod vendor
+	qtdeploy -docker build linux
 	rm -rf deploy/linux/qml
 
 .PHONY: deploy/linux/editcp.sh	# Force, in case it's overwritten by install
@@ -46,6 +47,7 @@ editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi dll/*.dll
 	makensis -DVERSION=$(VERSION) editcp.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
+	go mod vendor
 	qtdeploy -docker build windows_32_static
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
