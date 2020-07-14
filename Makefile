@@ -14,9 +14,10 @@ VERSION = $(shell sed -n '/version =/{s/^[^"]*"//;s/".*//p;q}' <version.go)
 
 default: linux
 
-linux: deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
+linux: clean deploy/linux/editcp deploy/linux/editcp.sh deploy/linux/install deploy/linux/99-md380.rules
 
 deploy/linux/editcp: $(SOURCES)
+	go mod tidy
 	go mod vendor
 	qtdeploy -docker build linux
 	rm -rf deploy/linux/qml
@@ -41,20 +42,23 @@ editcp-$(VERSION).tar.xz: linux
 install: linux
 	cd deploy/linux && ./install .
 
-windows: editcp-$(VERSION)-installer.exe
+windows: clean editcp-$(VERSION)-installer.exe
 
 editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi dll/*.dll
 	makensis -DVERSION=$(VERSION) editcp.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
+	go mod tidy
 	go mod vendor
 	qtdeploy -docker build windows_32_static
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
 
-macOS: darwin
+macOS: clean darwin
 darwin: FORCE
 	@echo "Under macOS/darwin, it is ok to ignore the sed warnings about extra characters"
+	go mod tidy
+	go mod vendor
 	qtdeploy build desktop
 
 docker_usb_windows:
@@ -83,6 +87,7 @@ editcp-changelog.txt: FORCE
 	sh generateChangelog >editcp-changelog.txt
 
 clean:
+	rm -rf deploy/*
 
 clobber: clean
-	rm -rf editcp-* deploy/*
+	rm -rf editcp-*
