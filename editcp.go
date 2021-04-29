@@ -286,6 +286,8 @@ func displayPreviousPanic(text string) {
 }
 
 func main() {
+	WindowsSaveDebuggingInfo()
+
 	args := os.Args[1:]
 	for i := len(args) - 1; i >= 0; i-- {
 		switch args[i] {
