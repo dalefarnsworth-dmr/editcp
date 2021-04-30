@@ -1,6 +1,6 @@
 SHELL = /bin/sh
 
-.PHONY: default linux windows clean clobber install docker_usb docker_usb_windows docker_usb_linux tag
+.PHONY: default linux windows windows64 clean clobber install docker_usb docker_usb_windows docker_usb_windows64 docker_usb_linux tag
 
 EDITCP_SRC = *.go
 UI_SRC = ../ui/*.go
@@ -44,8 +44,13 @@ install: linux
 
 windows: clean editcp-$(VERSION)-installer.exe
 
+windows64: clean editcp64-$(VERSION)-installer.exe
+
 editcp-$(VERSION)-installer.exe: deploy/win32/editcp.exe editcp.nsi dll/*.dll
 	makensis -DVERSION=$(VERSION) editcp.nsi
+
+editcp64-$(VERSION)-installer.exe: deploy/win64/editcp64.exe editcp64.nsi dll/*.dll
+	makensis -DVERSION=$(VERSION) editcp64.nsi
 
 deploy/win32/editcp.exe: $(SOURCES)
 	go mod tidy
@@ -53,6 +58,13 @@ deploy/win32/editcp.exe: $(SOURCES)
 	qtdeploy -docker build windows_32_static
 	mkdir -p deploy/win32
 	cp deploy/windows/editcp.exe deploy/win32
+
+deploy/win64/editcp64.exe: $(SOURCES)
+	go mod tidy
+	go mod vendor
+	qtdeploy -docker build windows_64_static
+	mkdir -p deploy/win64
+	cp deploy/windows/editcp.exe deploy/win64/editcp64.exe
 
 macOS: clean darwin
 darwin: FORCE
@@ -69,6 +81,14 @@ docker_usb_windows:
 	docker rmi -f therecipe/qt:windows_32_static
 	docker tag therecipe/qt:windows_32_static_usb therecipe/qt:windows_32_static
 
+docker_usb_windows64:
+	docker rmi -f therecipe/qt:windows_64_static >/dev/null 2>&1
+	docker pull therecipe/qt:windows_64_static
+	cd ../docker/windows64-with-usb && \
+		docker build -t therecipe/qt:windows_64_static_usb .
+	docker rmi -f therecipe/qt:windows_64_static
+	docker tag therecipe/qt:windows_64_static_usb therecipe/qt:windows_64_static
+
 docker_usb_linux:
 	docker rmi -f therecipe/qt:linux >/dev/null 2>&1
 	docker pull therecipe/qt:linux
@@ -77,7 +97,7 @@ docker_usb_linux:
 	docker rmi -f therecipe/qt:linux
 	docker tag therecipe/qt:linux_usb therecipe/qt:linux
 
-docker_usb: docker_usb_linux docker_usb_windows
+docker_usb: docker_usb_linux docker_usb_windows docker_usb_windows64
 
 FORCE:
 

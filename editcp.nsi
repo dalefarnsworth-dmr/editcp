@@ -9,6 +9,8 @@
 ; The name of the installer
 Name "editcp"
 
+Target x86-unicode
+
 ; The file to write
 OutFile "editcp-${VERSION}-installer.exe"
 
@@ -127,6 +129,7 @@ Section "Uninstall"
   Delete "$DESKTOP\EditCp.lnk"
 
   ; Remove directories used
-  RMDir "$SMPROGRAMS\editcp"
+  RMDir /r "$SMPROGRAMS\editcp"
   RMDir "$INSTDIR"
+  RMDir /r "$PROGRAMFILES32\editcp"
 SectionEnd

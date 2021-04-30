@@ -33,7 +33,7 @@ import (
 	"strings"
 
 	"github.com/dalefarnsworth-dmr/codeplug"
-	"github.com/dalefarnsworth-dmr/debug"
+	l "github.com/dalefarnsworth-dmr/debug"
 	"github.com/dalefarnsworth-dmr/ui"
 	"github.com/therecipe/qt/core"
 )
@@ -286,8 +286,7 @@ func displayPreviousPanic(text string) {
 }
 
 func main() {
-	WindowsSaveDebuggingInfo()
-
+	l.WindowsSaveDebuggingInfo()
 	args := os.Args[1:]
 	for i := len(args) - 1; i >= 0; i-- {
 		switch args[i] {
