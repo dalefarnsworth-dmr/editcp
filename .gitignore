@@ -1,7 +1,7 @@
 editcp
 editcp*.tar.*
-editcp.nsi
-editcp-*.exe
+editcp*.nsi
+editcp*.exe
 deploy/
 *.rdt
 TODO
