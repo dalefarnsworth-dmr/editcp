@@ -395,7 +395,8 @@ writing the new codeplug.`
 			modelURL{"MD-380 old (D03.20)", dir + "D003.020.bin"},
 			modelURL{"MD-380 (D13.20)", dir + "D013.020.bin"},
 			modelURL{"MD-380 new (D13.34)", dir + "D013.034.bin"},
-			modelURL{"MD-380 newest (D14.04", dir + "D014.004.bin"},
+			modelURL{"MD-380 newer (D14.04", dir + "D014.004.bin"},
+			modelURL{"MD-380 newest (D15.01", dir + "D015.001.bin"},
 			modelURL{"MD-380G (S13.20)", dir + "S013.020.bin"},
 		}
 
