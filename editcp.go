@@ -1259,7 +1259,7 @@ func thanks() {
 		"  Martin Jones, KI0KO, for reporting bugs",
 		"  Marco Carrara, IW2KWD, for suggesting improvements",
 		"  Bob Finch, W9YA, for reporting bugs",
-		"  Tyler Tidman, VA3DGN, for reporting bugs",
+		"  Tyler Tidman, VA3DGN, for reporting bugs + RT90 & MD-9600 support",
 		"",
 		"I apologize to the many contributors whom I've missed.",
 		"If you've reported a fix, a bug or suggestion, let me",
