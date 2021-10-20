@@ -83,7 +83,7 @@ channel while writing the new user database.`
 	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
-		db, err := userdb.NewCuratedDB()
+		db, err := userdb.New(userdb.CuratedUsers(), userdb.Abbreviate(true))
 		if err != nil {
 			title := fmt.Sprintf("Download of user database failed")
 			ui.ErrorPopup(title, err.Error())
@@ -127,7 +127,7 @@ channel while writing the new user database.`
 	})
 	if err == nil {
 		defer df.Close()
-		db, err := userdb.NewFileDB(filename)
+		db, err := userdb.New(userdb.FromFile(filename), userdb.Abbreviate(true))
 		if err == nil {
 			err = df.WriteMD380Users(db)
 		}
@@ -167,7 +167,7 @@ func writeExpandedUsers(title, text string) {
 	pd.SetRange(userdb.MinProgress, userdb.MaxProgress)
 
 	if download {
-		db, err := userdb.NewCuratedDB()
+		db, err := userdb.New(userdb.CuratedUsers(), userdb.Abbreviate(false))
 		if err != nil {
 			title := fmt.Sprintf("Download of user database failed")
 			ui.ErrorPopup(title, err.Error())
@@ -212,7 +212,7 @@ func writeExpandedUsers(title, text string) {
 	if err == nil {
 		defer df.Close()
 		if err == nil {
-			db, err := userdb.NewFileDB(filename)
+			db, err := userdb.New(userdb.FromFile(filename), userdb.Abbreviate(false))
 			if err == nil {
 				err = df.WriteUV380Users(db)
 			}
